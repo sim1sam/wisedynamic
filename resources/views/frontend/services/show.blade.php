@@ -2,10 +2,16 @@
 
 @section('content')
 <!-- Hero Banner -->
-<header class="theme-gradient text-white pt-28 pb-12">
+<header class="theme-gradient text-white pt-28 pb-16">
     <div class="container mx-auto px-6">
-        <h1 class="text-3xl md:text-4xl font-extrabold leading-tight">{{ $title }}</h1>
-        <p class="mt-3 text-white/90">{{ $subtitle }}</p>
+        <div class="max-w-4xl">
+            <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">{{ $title }}</h1>
+            <p class="mt-4 text-white/90 text-lg">{{ $subtitle }}</p>
+            <div class="mt-8 flex flex-wrap gap-4">
+                <a href="#services" class="btn-primary px-6 py-3 rounded-full font-semibold shadow">Learn More</a>
+                <a href="{{ url('/#contact') }}?service={{ urlencode($title) }}" class="bg-white text-gray-900 px-6 py-3 rounded-full font-semibold hover:opacity-90">Apply Now</a>
+            </div>
+        </div>
     </div>
 </header>
 
