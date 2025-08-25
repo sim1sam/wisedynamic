@@ -11,17 +11,14 @@
     @else
         <!-- Fallback: Tailwind CSS and Font Awesome via CDN -->
         <script src="https://cdn.tailwindcss.com"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <!-- Use Font Awesome 5 for 'fas' compatibility used across views -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
         <style>
             /* Minimal shared utilities used across pages */
             .gradient-bg { background: linear-gradient(90deg, #0976bc, #0e0f3e); }
             .gradient-text { background: linear-gradient(90deg, #0976bc, #0e0f3e); -webkit-background-clip: text; background-clip: text; color: transparent; }
             .theme-gradient { background: linear-gradient(135deg, #0976bc 0%, #0e0f3e 100%); }
-            /* Override common Tailwind blue utilities with brand colors */
-            .bg-blue-600 { background-color: #0976bc !important; }
-            .hover\:bg-blue-700:hover { background-color: #0e0f3e !important; }
-            .text-blue-600 { color: #0976bc !important; }
-            .border-blue-600 { border-color: #0976bc !important; }
+            /* Avoid overriding Tailwind defaults to prevent design regressions */
 
             /* Brand helpers */
             .service-icon { background-color: #0976bc; box-shadow: 0 10px 20px rgba(9,118,188,0.25); }
@@ -32,14 +29,27 @@
             .price-highlight { color: #0e0f3e; }
             .card-hover { transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
             .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(14,15,62,0.12); border-color: #0976bc; }
+            /* Minimal animations used in sections */
+            .service-icon { transition: all .3s ease; }
+            .service-icon:hover { transform: rotate(360deg); }
+            @keyframes floating { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-10px);} }
+            .floating { animation: floating 3s ease-in-out infinite; }
+            @keyframes slideUp { from { transform: translateY(24px); opacity: 0;} to { transform: translateY(0); opacity: 1;} }
+            .animate-slideUp { animation: slideUp .6s ease-out; }
+            @keyframes pulse { 0%,100%{ transform: scale(1);} 50%{ transform: scale(1.03);} }
+            .animate-pulse-custom { animation: pulse 2s infinite; }
             .section-divider { width: 5rem; height: 4px; background: linear-gradient(90deg, #0976bc, #0e0f3e); margin: 0 auto; border-radius: 9999px; }
         </style>
     @endif
     @stack('head')
 </head>
-<body>
+ <body>
+    {{-- Global Navigation --}}
+    @include('frontend.home.sections.nav')
     @yield('content')
+    {{-- Global Footer --}}
+    @include('frontend.home.sections.footer')
 
     @stack('scripts')
-</body>
+  </body>
 </html>

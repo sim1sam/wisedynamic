@@ -13,3 +13,8 @@ Route::get('/login', function () {
 Route::get('/register', function () {
     return view('auth.register');
 })->name('register');
+
+// Services page
+Route::get('/services', function () {
+    return view('frontend.services.index');
+})->name('services');
