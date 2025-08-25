@@ -28,7 +28,7 @@
             @endif
         </div>
 
-        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
             <!-- 1. Website Development -->
             @if($category === '' || $category === 'website development')
             <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 card-hover hover:shadow-2xl hover:-translate-y-1 transition-all">
@@ -44,7 +44,7 @@
                 </ul>
                 <div class="flex items-center justify-between pt-4 border-t">
                     <span class="font-bold text-gray-900">BDT 499+</span>
-                    <a href="{{ url('/#contact') }}?service=Website+Development" class="btn-primary px-5 py-2 rounded-full">Apply</a>
+                    <a href="{{ route('services.show', 'website-development') }}" class="btn-primary px-5 py-2 rounded-full">Apply</a>
                 </div>
             </div>
             @endif
@@ -64,7 +64,7 @@
                 </ul>
                 <div class="flex items-center justify-between pt-4 border-t">
                     <span class="font-bold text-gray-900">BDT 1499</span>
-                    <a href="{{ url('/#contact') }}?service=App+Development" class="btn-primary px-5 py-2 rounded-full">Apply</a>
+                    <a href="{{ route('services.show', 'app-development') }}" class="btn-primary px-5 py-2 rounded-full">Apply</a>
                 </div>
             </div>
             @endif
@@ -84,7 +84,7 @@
                 </ul>
                 <div class="flex items-center justify-between pt-4 border-t">
                     <span class="font-bold text-gray-900">BDT 299</span>
-                    <a href="{{ url('/#contact') }}?service=UI%2FUX+%26+Branding" class="btn-primary px-5 py-2 rounded-full">Apply</a>
+                    <a href="{{ route('services.show', 'ui-ux-branding') }}" class="btn-primary px-5 py-2 rounded-full">Apply</a>
                 </div>
             </div>
             @endif
@@ -104,7 +104,7 @@
                 </ul>
                 <div class="flex items-center justify-between pt-4 border-t">
                     <span class="font-bold text-gray-900">BDT 199/mo</span>
-                    <a href="{{ url('/#contact') }}?service=Digital+Marketing" class="btn-primary px-5 py-2 rounded-full">Apply</a>
+                    <a href="{{ route('services.show', 'digital-marketing') }}" class="btn-primary px-5 py-2 rounded-full">Apply</a>
                 </div>
             </div>
             @endif
@@ -124,7 +124,7 @@
                 </ul>
                 <div class="flex items-center justify-between pt-4 border-t">
                     <span class="font-bold text-gray-900">BDT 349+</span>
-                    <a href="{{ url('/#contact') }}?service=eCommerce+Solutions" class="btn-primary px-5 py-2 rounded-full">Apply</a>
+                    <a href="{{ route('services.show', 'ecommerce-solutions') }}" class="btn-primary px-5 py-2 rounded-full">Apply</a>
                 </div>
             </div>
             @endif
@@ -144,7 +144,7 @@
                 </ul>
                 <div class="flex items-center justify-between pt-4 border-t">
                     <span class="font-bold text-gray-900">BDT 49/mo</span>
-                    <a href="{{ url('/#contact') }}?service=Maintenance+%26+Support" class="btn-primary px-5 py-2 rounded-full">Apply</a>
+                    <a href="{{ route('services.show', 'maintenance-support') }}" class="btn-primary px-5 py-2 rounded-full">Apply</a>
                 </div>
             </div>
             @endif
@@ -164,7 +164,7 @@
                 </ul>
                 <div class="flex items-center justify-between pt-4 border-t">
                     <span class="font-bold text-gray-900">BDT 299+</span>
-                    <a href="{{ url('/#contact') }}?service=Custom+Development" class="btn-primary px-5 py-2 rounded-full">Apply</a>
+                    <a href="{{ route('services.show', 'custom-development') }}" class="btn-primary px-5 py-2 rounded-full">Apply</a>
                 </div>
             </div>
             @endif
@@ -184,7 +184,7 @@
                 </ul>
                 <div class="flex items-center justify-between pt-4 border-t">
                     <span class="font-bold text-gray-900">BDT 199</span>
-                    <a href="{{ url('/#contact') }}?service=Security+Hardening" class="btn-primary px-5 py-2 rounded-full">Apply</a>
+                    <a href="{{ route('services.show', 'security-hardening') }}" class="btn-primary px-5 py-2 rounded-full">Apply</a>
                 </div>
             </div>
             @endif
