@@ -22,10 +22,15 @@
             <h2 class="text-4xl font-bold mb-4 gradient-text">Our Services</h2>
             <div class="section-divider mb-6"></div>
             <p class="text-xl text-gray-600">Clear features, upfront pricing, and fast apply.</p>
+            <?php $category = strtolower(request('category', '')); ?>
+            @if($category !== '')
+                <p class="mt-2 text-sm text-gray-500">Category: <span class="font-semibold text-gray-700">{{ request('category') }}</span></p>
+            @endif
         </div>
 
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
             <!-- 1. Website Development -->
+            @if($category === '' || $category === 'website development')
             <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 card-hover hover:shadow-2xl hover:-translate-y-1 transition-all">
                 <div class="w-16 h-16 service-icon rounded-full mb-5 flex items-center justify-center">
                     <i class="fas fa-laptop-code text-white text-2xl"></i>
@@ -42,8 +47,10 @@
                     <a href="{{ url('/#contact') }}?service=Website+Development" class="btn-primary px-5 py-2 rounded-full">Apply</a>
                 </div>
             </div>
+            @endif
 
             <!-- 2. App Development -->
+            @if($category === '' || $category === 'app development')
             <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 card-hover hover:shadow-2xl hover:-translate-y-1 transition-all">
                 <div class="w-16 h-16 service-icon rounded-full mb-5 flex items-center justify-center">
                     <i class="fas fa-mobile-alt text-white text-2xl"></i>
@@ -60,8 +67,10 @@
                     <a href="{{ url('/#contact') }}?service=App+Development" class="btn-primary px-5 py-2 rounded-full">Apply</a>
                 </div>
             </div>
+            @endif
 
             <!-- 3. UI/UX & Branding -->
+            @if($category === '' || $category === 'ui/ux & branding' || $category === 'ui/ux & branding' || $category === 'uiux & branding' || $category === 'uiux and branding')
             <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 card-hover hover:shadow-2xl hover:-translate-y-1 transition-all">
                 <div class="w-16 h-16 service-icon rounded-full mb-5 flex items-center justify-center">
                     <i class="fas fa-pencil-ruler text-white text-2xl"></i>
@@ -78,8 +87,10 @@
                     <a href="{{ url('/#contact') }}?service=UI%2FUX+%26+Branding" class="btn-primary px-5 py-2 rounded-full">Apply</a>
                 </div>
             </div>
+            @endif
 
             <!-- 4. Digital Marketing -->
+            @if($category === '' || $category === 'digital marketing')
             <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 card-hover hover:shadow-2xl hover:-translate-y-1 transition-all">
                 <div class="w-16 h-16 service-icon rounded-full mb-5 flex items-center justify-center">
                     <i class="fas fa-bullhorn text-white text-2xl"></i>
@@ -96,8 +107,10 @@
                     <a href="{{ url('/#contact') }}?service=Digital+Marketing" class="btn-primary px-5 py-2 rounded-full">Apply</a>
                 </div>
             </div>
+            @endif
 
             <!-- 5. eCommerce Solutions -->
+            @if($category === '' || $category === 'ecommerce solutions' || $category === 'e-commerce solutions' || $category === 'web app & e-commerce' || $category === 'payment gateway')
             <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 card-hover hover:shadow-2xl hover:-translate-y-1 transition-all">
                 <div class="w-16 h-16 service-icon rounded-full mb-5 flex items-center justify-center">
                     <i class="fas fa-store text-white text-2xl"></i>
@@ -114,8 +127,10 @@
                     <a href="{{ url('/#contact') }}?service=eCommerce+Solutions" class="btn-primary px-5 py-2 rounded-full">Apply</a>
                 </div>
             </div>
+            @endif
 
             <!-- 6. Maintenance & Support -->
+            @if($category === '' || $category === 'maintenance & support' || $category === 'website management')
             <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 card-hover hover:shadow-2xl hover:-translate-y-1 transition-all">
                 <div class="w-16 h-16 service-icon rounded-full mb-5 flex items-center justify-center">
                     <i class="fas fa-life-ring text-white text-2xl"></i>
@@ -132,8 +147,10 @@
                     <a href="{{ url('/#contact') }}?service=Maintenance+%26+Support" class="btn-primary px-5 py-2 rounded-full">Apply</a>
                 </div>
             </div>
+            @endif
 
             <!-- 7. Custom Development -->
+            @if($category === '' || $category === 'custom development' || $category === 'background music')
             <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 card-hover hover:shadow-2xl hover:-translate-y-1 transition-all">
                 <div class="w-16 h-16 service-icon rounded-full mb-5 flex items-center justify-center">
                     <i class="fas fa-cubes text-white text-2xl"></i>
@@ -150,8 +167,10 @@
                     <a href="{{ url('/#contact') }}?service=Custom+Development" class="btn-primary px-5 py-2 rounded-full">Apply</a>
                 </div>
             </div>
+            @endif
 
             <!-- 8. Security Hardening -->
+            @if($category === '' || $category === 'security hardening')
             <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 card-hover hover:shadow-2xl hover:-translate-y-1 transition-all">
                 <div class="w-16 h-16 service-icon rounded-full mb-5 flex items-center justify-center">
                     <i class="fas fa-shield-alt text-white text-2xl"></i>
@@ -168,6 +187,7 @@
                     <a href="{{ url('/#contact') }}?service=Security+Hardening" class="btn-primary px-5 py-2 rounded-full">Apply</a>
                 </div>
             </div>
+            @endif
         </div>
     </div>
 </section>
