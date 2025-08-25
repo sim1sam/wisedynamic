@@ -1,18 +1,20 @@
 @extends('layouts.app')
 
 @section('content')
-<section class="py-16 bg-gray-50">
-    <div class="container mx-auto px-6 relative">
-        <!-- Title & Sub -->
-        <div class="text-center max-w-4xl mx-auto mb-10">
-            <h1 class="text-3xl md:text-4xl font-extrabold text-blue-600">{{ $title }}</h1>
-            <p class="mt-3 text-gray-600 leading-relaxed">{{ $subtitle }}</p>
-        </div>
+<!-- Hero Banner -->
+<header class="theme-gradient text-white pt-28 pb-12">
+    <div class="container mx-auto px-6">
+        <h1 class="text-3xl md:text-4xl font-extrabold leading-tight">{{ $title }}</h1>
+        <p class="mt-3 text-white/90">{{ $subtitle }}</p>
+    </div>
+</header>
 
-        <!-- Main layout with sidebar aligned to banner -->
-        <div class="relative lg:pb-6">
+<section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-6">
+        <!-- Main layout with sidebar aligned and with proper gaps -->
+        <div class="lg:grid lg:grid-cols-[1fr,24rem] lg:gap-6">
             <!-- Left: image and content -->
-            <div class="space-y-8 lg:pr-96">
+            <div class="space-y-8">
                 <!-- Visual -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-4 lg:mr-3">
                     @if(!empty($image))
@@ -71,8 +73,8 @@
             </div>
 
             <!-- Right: Sidebar CTA -->
-            <aside>
-                <div class="theme-gradient text-white rounded-xl shadow-lg p-6 lg:absolute lg:right-[12px] lg:top-[12px] lg:w-96 lg:min-h-80 flex flex-col justify-between">
+            <aside class="mt-8 lg:mt-0 lg:fixed lg:right-6 lg:top-24 lg:w-96">
+                <div class="theme-gradient text-white rounded-xl shadow-lg p-6 min-h-80 flex flex-col justify-between">
                     <h3 class="text-lg font-bold mb-1">Start Your Project</h3>
                     <p class="text-white/90 mb-4">Let's turn your vision into a real, high‑performing solution tailored for growth.</p>
 
