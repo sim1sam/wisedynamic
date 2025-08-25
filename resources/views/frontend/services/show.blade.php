@@ -73,8 +73,8 @@
             </div>
 
             <!-- Right: Sidebar CTA -->
-            <aside class="mt-8 lg:mt-0 lg:fixed lg:right-6 lg:top-24 lg:w-96">
-                <div class="theme-gradient text-white rounded-xl shadow-lg p-6 min-h-80 flex flex-col justify-between">
+            <aside class="mt-8 lg:mt-0 lg:sticky lg:top-24 lg:self-start">
+                <div class="theme-gradient text-white rounded-xl shadow-lg p-6 min-h-80 flex flex-col justify-between lg:w-full">
                     <h3 class="text-lg font-bold mb-1">Start Your Project</h3>
                     <p class="text-white/90 mb-4">Let's turn your vision into a real, high‑performing solution tailored for growth.</p>
 
