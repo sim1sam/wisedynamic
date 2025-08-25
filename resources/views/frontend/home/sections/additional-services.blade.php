@@ -3,7 +3,7 @@
     <div class="container mx-auto px-6">
         <div class="text-center mb-12">
             <h2 class="text-4xl font-bold mb-4 gradient-text">Additional Services</h2>
-            <div class="w-20 h-1 gradient-bg mx-auto mb-6"></div>
+            <div class="section-divider mb-6"></div>
         </div>
         
         <div class="grid lg:grid-cols-3 gap-8">

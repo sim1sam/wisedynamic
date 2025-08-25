@@ -3,7 +3,7 @@
     <div class="container mx-auto px-6">
         <div class="text-center mb-12">
             <h2 class="text-4xl font-bold mb-4 gradient-text">Why Choose Wise Dynamic?</h2>
-            <div class="w-20 h-1 bg-blue-600 mx-auto mb-6"></div>
+            <div class="section-divider mb-6"></div>
             <p class="text-xl text-gray-700">We blend creativity, technology, and personalized support</p>
         </div>
         

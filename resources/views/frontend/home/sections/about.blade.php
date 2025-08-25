@@ -3,7 +3,7 @@
     <div class="container mx-auto px-6">
         <div class="text-center mb-12">
             <h2 class="text-4xl font-bold mb-4 gradient-text">About Wise Dynamic</h2>
-            <div class="w-20 h-1 gradient-bg mx-auto mb-6"></div>
+            <div class="section-divider mb-6"></div>
             <p class="text-xl text-gray-600 max-w-3xl mx-auto">BASIS certified IT firm since 2020, empowering young entrepreneurs with affordable, high-quality digital solutions</p>
         </div>
         
