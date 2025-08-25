@@ -9,7 +9,7 @@
             <div class="flex items-center space-x-6">
                 <a href="{{ route('home') }}" class="font-medium {{ request()->routeIs('home') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600' }}">Home</a>
                 <a href="{{ route('services') }}" class="font-medium {{ request()->routeIs('services') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600' }}">Services</a>
-                <a href="{{ url('/#packages') }}" class="text-gray-700 hover:text-blue-600 font-medium">Packages</a>
+                <a href="{{ route('packages') }}" class="text-gray-700 hover:text-blue-600 font-medium">Packages</a>
                 <a href="{{ url('/#contact') }}" class="text-gray-700 hover:text-blue-600 font-medium">Contact</a>
 
                 @guest

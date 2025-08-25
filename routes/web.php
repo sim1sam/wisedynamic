@@ -5,6 +5,11 @@ use App\Http\Controllers\HomeController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+// Packages page
+Route::get('/packages', function () {
+    return view('frontend.packages.index');
+})->name('packages');
+
 // Auth pages (simple static views for now)
 Route::get('/login', function () {
     return view('auth.login');

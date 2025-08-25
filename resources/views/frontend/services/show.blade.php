@@ -94,7 +94,7 @@
                         <li class="flex"><i class="fas fa-check text-white mr-3 mt-1"></i><span>100% transparency and ownership</span></li>
                     </ul>
 
-                    <a href="{{ url('/#contact') }}?service={{ urlencode($title) }}" class="block w-full text-center px-5 py-3 rounded-full mb-3 bg-white text-gray-900 font-semibold hover:opacity-90">Apply Now</a>
+                    <a href="{{ url('/#contact') }}?service={{ urlencode($title) }}" class="block w-full text-center px-5 py-3 rounded-full mt-2 mb-3 bg-white text-gray-900 font-semibold hover:opacity-90">Apply Now</a>
                     <a href="#" class="block text-center w-full border border-white/60 rounded-full py-3 text-white hover:bg-white/10">View Portfolio</a>
                 </div>
             </aside>
