@@ -10,7 +10,7 @@
                 <a href="{{ route('home') }}" class="font-medium {{ request()->routeIs('home') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600' }}">Home</a>
                 <a href="{{ route('services') }}" class="font-medium {{ request()->routeIs('services') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600' }}">Services</a>
                 <a href="{{ route('packages') }}" class="text-gray-700 hover:text-blue-600 font-medium">Packages</a>
-                <a href="{{ url('/#contact') }}" class="text-gray-700 hover:text-blue-600 font-medium">Contact</a>
+                <a href="{{ route('contact') }}" class="font-medium {{ request()->routeIs('contact') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600' }}">Contact</a>
 
                 @guest
                 <a href="{{ route('login') }}" class="text-gray-700 hover:text-blue-600 font-medium">Login</a>

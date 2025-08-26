@@ -31,6 +31,11 @@ Route::get('/services', function () {
     return view('frontend.services.index');
 })->name('services');
 
+// Contact page
+Route::get('/contact', function () {
+    return view('frontend.contact.index');
+})->name('contact');
+
 // Service detail pages
 Route::get('/services/{slug}', function (string $slug) {
     $map = [
