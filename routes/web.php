@@ -6,6 +6,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\SlideController as AdminSlideController;
+use App\Http\Controllers\Admin\FooterSettingController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -55,6 +56,8 @@ Route::get('/contact', function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::resource('slides', AdminSlideController::class);
+    Route::get('settings/footer', [FooterSettingController::class, 'edit'])->name('settings.footer.edit');
+    Route::put('settings/footer', [FooterSettingController::class, 'update'])->name('settings.footer.update');
 });
 
 // Service detail pages

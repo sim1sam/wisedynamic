@@ -103,6 +103,12 @@
                   <p>Slider</p>
                 </a>
               </li>
+              <li class="nav-item">
+                <a href="{{ route('admin.settings.footer.edit') }}" class="nav-link {{ request()->routeIs('admin.settings.footer.*') ? 'active' : '' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Footer</p>
+                </a>
+              </li>
             </ul>
           </li>
           <li class="nav-item">
