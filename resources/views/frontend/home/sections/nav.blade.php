@@ -14,8 +14,7 @@
                 <a href="{{ route('contact') }}" class="font-medium {{ request()->routeIs('contact') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600' }}">Contact</a>
 
                 @guest
-                <a href="{{ route('login') }}" class="text-gray-700 hover:text-blue-600 font-medium">Login</a>
-                <a href="{{ route('register') }}" class="btn-primary px-5 py-2.5 rounded-full font-semibold shadow hover:opacity-95 transition">Register</a>
+                <a href="{{ route('login') }}" class="inline-block bg-gradient-to-r from-blue-600 to-purple-600 text-white px-5 py-2.5 rounded-full font-semibold shadow hover:shadow-lg transition">Login</a>
                 @endguest
 
                 @auth
