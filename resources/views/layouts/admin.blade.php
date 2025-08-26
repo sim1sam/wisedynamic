@@ -88,6 +88,23 @@
               <p>Dashboard</p>
             </a>
           </li>
+          <li class="nav-item has-treeview {{ request()->is('admin/slides*') ? 'menu-open' : '' }}">
+            <a href="#" class="nav-link {{ request()->is('admin/slides*') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-cogs"></i>
+              <p>
+                Website Settings
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('admin.slides.index') }}" class="nav-link {{ request()->routeIs('admin.slides.*') ? 'active' : '' }}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Slider</p>
+                </a>
+              </li>
+            </ul>
+          </li>
           <li class="nav-item">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-users"></i>

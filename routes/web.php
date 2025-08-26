@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Admin\SlideController as AdminSlideController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -53,6 +54,7 @@ Route::get('/contact', function () {
 // Admin routes (protected)
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::resource('slides', AdminSlideController::class);
 });
 
 // Service detail pages
