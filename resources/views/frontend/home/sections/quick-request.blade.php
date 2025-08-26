@@ -1,18 +1,33 @@
 <section id="quick-request" class="py-10 bg-white relative">
     <div class="container mx-auto px-6">
-        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-6 md:p-8">
-            <div class="grid md:grid-cols-3 gap-6 md:gap-8 items-center">
+        <div class="relative overflow-hidden rounded-3xl p-6 md:p-10 theme-gradient text-white shadow-xl">
+            <!-- Decorative blobs -->
+            <div class="pointer-events-none absolute -top-8 -right-8 w-48 h-48 rounded-full bg-white/10 blur-2xl"></div>
+            <div class="pointer-events-none absolute -bottom-10 -left-10 w-56 h-56 rounded-full bg-white/10 blur-2xl"></div>
+
+            <div class="relative grid md:grid-cols-3 gap-6 md:gap-10 items-center">
                 <div class="md:col-span-2">
-                    <h3 class="text-2xl md:text-3xl font-extrabold text-gray-900">Quick Add Request</h3>
-                    <p class="text-gray-600 mt-2">Boost your post across social media. Send the essentials, we’ll do the rest.</p>
-                    <ul class="mt-4 space-y-2 text-gray-700 list-disc pl-5">
-                        <li>All major platforms supported (Facebook, Instagram, TikTok, YouTube, more)</li>
-                        <li>Define budget and duration to match your goals</li>
-                        <li>Fast turnaround with expert setup</li>
+                    <h3 class="text-2xl md:text-3xl font-extrabold tracking-tight">Quick Add Request</h3>
+                    <p class="mt-2 text-white/90">Boost your post across social media. Send the essentials, we’ll do the rest.</p>
+                    <ul class="mt-5 space-y-2">
+                        <li class="flex items-start gap-3">
+                            <span class="mt-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-white/20 text-white">✓</span>
+                            <span>All major platforms supported (Facebook, Instagram, TikTok, YouTube, more)</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="mt-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-white/20 text-white">✓</span>
+                            <span>Define budget and duration to match your goals</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="mt-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-white/20 text-white">✓</span>
+                            <span>Fast turnaround with expert setup</span>
+                        </li>
                     </ul>
                 </div>
                 <div class="flex md:justify-end">
-                    <button id="qr-open" class="btn-primary px-7 py-3 rounded-full font-semibold self-start md:self-auto">Add Request</button>
+                    <button id="qr-open" class="px-8 py-3 rounded-full font-semibold bg-white text-gray-900 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition transform">
+                        Add Request
+                    </button>
                 </div>
             </div>
         </div>
