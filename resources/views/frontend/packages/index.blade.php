@@ -65,7 +65,7 @@
                     <p>Integration: <span class="font-semibold">BDT 5,000/-</span></p>
                 </div>
                 <div class="flex flex-wrap gap-3 mt-4">
-                    <a href="{{ url('/#contact') }}?package=startup" class="btn-primary px-6 py-3 rounded-full font-semibold">Get</a>
+                    <a href="{{ route('cart.show', ['package' => 'startup']) }}" class="btn-primary px-6 py-3 rounded-full font-semibold">Get</a>
                     <a href="{{ url('/#contact') }}?package=startup&consultation=free" class="btn-outline-primary px-6 py-3 rounded-full font-semibold">Free Consultation</a>
                 </div>
             </div>
@@ -111,7 +111,7 @@
                     <p>Integration: <span class="font-semibold">BDT 4,000/-</span></p>
                 </div>
                 <div class="flex flex-wrap gap-3 mt-4">
-                    <a href="{{ url('/#contact') }}?package=streamline" class="btn-primary px-6 py-3 rounded-full font-semibold">Get</a>
+                    <a href="{{ route('cart.show', ['package' => 'streamline']) }}" class="btn-primary px-6 py-3 rounded-full font-semibold">Get</a>
                     <a href="{{ url('/#contact') }}?package=streamline&consultation=free" class="btn-outline-primary px-6 py-3 rounded-full font-semibold">Free Consultation</a>
                 </div>
             </div>
@@ -159,7 +159,7 @@
                     <p>Payment Gateway Setup: <span class="font-semibold">BDT 17,500/-</span></p>
                 </div>
                 <div class="flex flex-wrap gap-3 mt-4">
-                    <a href="{{ url('/#contact') }}?package=scale" class="btn-primary px-6 py-3 rounded-full font-semibold">Get</a>
+                    <a href="{{ route('cart.show', ['package' => 'scale']) }}" class="btn-primary px-6 py-3 rounded-full font-semibold">Get</a>
                     <a href="{{ url('/#contact') }}?package=scale&consultation=free" class="btn-outline-primary px-6 py-3 rounded-full font-semibold">Free Consultation</a>
                 </div>
             </div>
@@ -204,7 +204,7 @@
                     <p class="font-semibold text-center">Contact for Custom Quote</p>
                 </div>
                 <div class="flex flex-wrap gap-3 mt-4">
-                    <a href="{{ url('/#contact') }}?package=stable" class="btn-primary px-6 py-3 rounded-full font-semibold">Get</a>
+                    <a href="{{ route('cart.show', ['package' => 'stable']) }}" class="btn-primary px-6 py-3 rounded-full font-semibold">Get</a>
                     <a href="{{ url('/#contact') }}?package=stable&consultation=free" class="btn-outline-primary px-6 py-3 rounded-full font-semibold">Free Consultation</a>
                 </div>
             </div>
@@ -237,7 +237,7 @@
                 </div>
 
                 <div class="flex flex-wrap gap-3 mt-2">
-                    <a href="{{ url('/#contact') }}?package=social" class="btn-primary px-6 py-3 rounded-full font-semibold">Get</a>
+                    <a href="{{ route('cart.show', ['package' => 'social']) }}" class="btn-primary px-6 py-3 rounded-full font-semibold">Get</a>
                     <a href="{{ url('/#contact') }}?package=social&consultation=free" class="btn-outline-primary px-6 py-3 rounded-full font-semibold">Free Consultation</a>
                 </div>
             </div>
@@ -259,7 +259,7 @@
                 </div>
 
                 <div class="flex flex-wrap gap-3 mt-2">
-                    <a href="{{ url('/#contact') }}?package=seo" class="btn-primary px-6 py-3 rounded-full font-semibold">Get</a>
+                    <a href="{{ route('cart.show', ['package' => 'seo']) }}" class="btn-primary px-6 py-3 rounded-full font-semibold">Get</a>
                     <a href="{{ url('/#contact') }}?package=seo&consultation=free" class="btn-outline-primary px-6 py-3 rounded-full font-semibold">Free Consultation</a>
                 </div>
             </div>
@@ -279,7 +279,7 @@
                 </div>
 
                 <div class="flex flex-wrap gap-3 mt-2">
-                    <a href="{{ url('/#contact') }}?package=ads" class="btn-primary px-6 py-3 rounded-full font-semibold">Get</a>
+                    <a href="{{ route('cart.show', ['package' => 'ads']) }}" class="btn-primary px-6 py-3 rounded-full font-semibold">Get</a>
                     <a href="{{ url('/#contact') }}?package=ads&consultation=free" class="btn-outline-primary px-6 py-3 rounded-full font-semibold">Free Consultation</a>
                 </div>
             </div>

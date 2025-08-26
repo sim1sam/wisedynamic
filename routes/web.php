@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CartController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -9,6 +10,12 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/packages', function () {
     return view('frontend.packages.index');
 })->name('packages');
+
+// Cart & Checkout
+Route::get('/cart', [CartController::class, 'show'])->name('cart.show');
+Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
+Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout.show');
+Route::post('/checkout', [CartController::class, 'place'])->name('checkout.place');
 
 // Auth pages (simple static views for now)
 Route::get('/login', function () {
