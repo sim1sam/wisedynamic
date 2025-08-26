@@ -16,21 +16,30 @@
 
 @push('scripts')
     <script>
+    document.addEventListener('DOMContentLoaded', function(){
         let slideIndex = 1;
-        const slides = document.querySelectorAll('.slide');
-        const totalSlides = slides.length;
+        const getSlides = () => document.querySelectorAll('.slider-container .slide');
+        const getDots = () => document.querySelectorAll('.absolute.bottom-4 button');
+
         function showSlide(n) {
+            const slides = getSlides();
+            const total = slides.length;
             slides.forEach(slide => slide.classList.remove('active'));
-            if (n > totalSlides) { slideIndex = 1; }
-            if (n < 1) { slideIndex = totalSlides; }
-            slides[slideIndex - 1].classList.add('active');
-            const dots = document.querySelectorAll('.absolute.bottom-4 button');
+            if (n > total) { slideIndex = 1; }
+            if (n < 1) { slideIndex = total; }
+            if (total > 0) {
+                slides[slideIndex - 1].classList.add('active');
+            }
+            const dots = getDots();
             dots.forEach((dot, index) => { dot.style.opacity = index === slideIndex - 1 ? '1' : '0.5'; });
         }
-        function currentSlide(n) { slideIndex = n; showSlide(slideIndex); }
+
+        window.currentSlide = function(n) { slideIndex = n; showSlide(slideIndex); }
         function nextSlide() { slideIndex++; showSlide(slideIndex); }
-        setInterval(nextSlide, 5000);
+
         showSlide(slideIndex);
+        setInterval(nextSlide, 5000);
+
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -38,6 +47,7 @@
                 if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
             });
         });
+
         const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => { if (entry.isIntersecting) { entry.target.style.opacity = '1'; entry.target.style.transform = 'translateY(0)'; } });
@@ -45,5 +55,6 @@
         document.querySelectorAll('.card-hover, section').forEach(el => {
             el.style.opacity = '0'; el.style.transform = 'translateY(30px)'; el.style.transition = 'opacity 0.6s ease, transform 0.6s ease'; observer.observe(el);
         });
+    });
     </script>
 @endpush

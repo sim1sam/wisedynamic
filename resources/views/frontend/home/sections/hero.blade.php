@@ -1,4 +1,8 @@
 <!-- Hero Section with Image Slider -->
+<style>
+    .slider-container .slide { display: none; }
+    .slider-container .slide.active { display: block; }
+</style>
 <section class="relative overflow-hidden mt-16">
     <div class="slider-container h-96 relative">
         @php $hasSlides = isset($slides) && $slides->count() > 0; @endphp
@@ -16,13 +20,6 @@
                                 <h1 class="text-3xl md:text-5xl font-bold mb-3 md:mb-4">{{ $s->title }}</h1>
                                 @if($s->subtitle)
                                     <p class="text-base md:text-xl mb-4 md:mb-6">{{ $s->subtitle }}</p>
-                                @endif
-                                @if(!empty($s->link_url))
-                                    <div class="mt-4">
-                                        <a href="{{ $s->link_url }}" class="inline-block bg-white text-gray-900 font-semibold px-4 py-2 rounded-md shadow hover:shadow-lg transition">
-                                            Learn More
-                                        </a>
-                                    </div>
                                 @endif
                                 @if($s->price_text)
                                     <div class="price-highlight text-xl md:text-3xl font-bold inline-block bg-gradient-to-r from-blue-600 to-purple-600 text-white px-3 md:px-4 py-1.5 md:py-2 rounded-full shadow-lg">{{ $s->price_text }}</div>
