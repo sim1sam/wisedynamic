@@ -4,6 +4,7 @@
 
 @section('content')
     @include('frontend.home.sections.hero')
+    @include('frontend.home.sections.quick-request')
     @include('frontend.home.sections.about')
     @include('frontend.home.sections.services')
     @include('frontend.home.sections.packages')
