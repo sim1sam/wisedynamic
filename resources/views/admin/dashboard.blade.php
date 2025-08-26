@@ -1,27 +1,45 @@
-@extends('layouts.app')
+@extends('layouts.admin')
+
+@section('title', 'Dashboard')
+@section('page_title', 'Dashboard')
 
 @section('content')
-<header class="theme-gradient text-white pt-28 pb-12">
-    <div class="container mx-auto px-6">
-        <h1 class="text-3xl md:text-4xl font-extrabold">Admin Dashboard</h1>
-        <p class="mt-1 text-white/90">Welcome, {{ auth()->user()->name ?? 'Admin' }}</p>
+<div class="row">
+  <div class="col-lg-4 col-12">
+    <div class="small-box bg-white shadow-sm">
+      <div class="inner">
+        <h3>{{ \App\Models\User::count() }}</h3>
+        <p>Total Users</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-users"></i>
+      </div>
+      <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
     </div>
-</header>
-
-<section class="py-10 bg-white">
-    <div class="container mx-auto px-6 grid md:grid-cols-3 gap-6">
-        <div class="bg-white rounded-2xl shadow p-6">
-            <div class="text-sm text-gray-500">Total Users</div>
-            <div class="mt-2 text-3xl font-extrabold gradient-text">{{ \App\Models\User::count() }}</div>
-        </div>
-        <div class="bg-white rounded-2xl shadow p-6">
-            <div class="text-sm text-gray-500">Admins</div>
-            <div class="mt-2 text-3xl font-extrabold gradient-text">{{ \App\Models\User::where('is_admin', true)->count() }}</div>
-        </div>
-        <div class="bg-white rounded-2xl shadow p-6">
-            <div class="text-sm text-gray-500">Environment</div>
-            <div class="mt-2 text-3xl font-extrabold gradient-text">{{ app()->environment() }}</div>
-        </div>
+  </div>
+  <div class="col-lg-4 col-12">
+    <div class="small-box bg-white shadow-sm">
+      <div class="inner">
+        <h3>{{ \App\Models\User::where('is_admin', true)->count() }}</h3>
+        <p>Admins</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-user-shield"></i>
+      </div>
+      <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
     </div>
-</section>
+  </div>
+  <div class="col-lg-4 col-12">
+    <div class="small-box bg-white shadow-sm">
+      <div class="inner">
+        <h3>{{ strtoupper(app()->environment()) }}</h3>
+        <p>Environment</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-server"></i>
+      </div>
+      <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+    </div>
+  </div>
+</div>
 @endsection
