@@ -6,6 +6,11 @@ use App\Http\Controllers\CartController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+// About page
+Route::get('/about', function () {
+    return view('frontend.about.index');
+})->name('about');
+
 // Packages page
 Route::get('/packages', function () {
     return view('frontend.packages.index');
