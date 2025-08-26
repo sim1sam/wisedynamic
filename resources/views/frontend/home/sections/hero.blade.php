@@ -7,7 +7,7 @@
                     <div class="animate-slideUp">
                         <h1 class="text-5xl font-bold mb-4">Premium Web Development</h1>
                         <p class="text-xl mb-6">At Unbeatable Prices</p>
-                        <div class="price-highlight text-3xl font-bold">Starting from BDT 20,000/-</div>
+                        <div class="price-highlight text-3xl font-bold inline-block bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-full shadow-lg">Starting from BDT 20,000/-</div>
                     </div>
                 </div>
             </div>
@@ -19,7 +19,7 @@
                     <div class="animate-slideUp">
                         <h1 class="text-5xl font-bold mb-4">Digital Marketing Excellence</h1>
                         <p class="text-xl mb-6">Boost Your Online Presence</p>
-                        <div class="price-highlight text-3xl font-bold">From BDT 12,000/- per month</div>
+                        <div class="price-highlight text-3xl font-bold inline-block bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-full shadow-lg">From BDT 12,000/- per month</div>
                     </div>
                 </div>
             </div>
@@ -31,7 +31,7 @@
                     <div class="animate-slideUp">
                         <h1 class="text-5xl font-bold mb-4">Complete IT Solutions</h1>
                         <p class="text-xl mb-6">From Startups to Enterprises</p>
-                        <div class="price-highlight text-3xl font-bold">BASIS Certified Since 2020</div>
+                        <div class="price-highlight text-3xl font-bold inline-block bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-full shadow-lg">BASIS Certified Since 2020</div>
                     </div>
                 </div>
             </div>
