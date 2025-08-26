@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuthController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -26,10 +28,17 @@ Route::post('/checkout', [CartController::class, 'place'])->name('checkout.place
 Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
+Route::post('/login', [AuthController::class, 'authenticate'])->name('login.post');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/register', function () {
     return view('auth.register');
 })->name('register');
+
+// Admin login (separate URL with dedicated design)
+Route::get('/admin/login', function () {
+    return view('auth.admin-login');
+})->name('admin.login');
 
 // Services page
 Route::get('/services', function () {
@@ -40,6 +49,11 @@ Route::get('/services', function () {
 Route::get('/contact', function () {
     return view('frontend.contact.index');
 })->name('contact');
+
+// Admin routes (protected)
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+});
 
 // Service detail pages
 Route::get('/services/{slug}', function (string $slug) {
