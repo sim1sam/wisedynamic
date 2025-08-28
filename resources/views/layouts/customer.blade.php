@@ -38,7 +38,7 @@
                 <li>
                     <a href="{{ route('account.requests.index') }}" class="link-item flex items-center px-3 py-2 rounded-md {{ request()->routeIs('account.requests.*') ? 'active' : '' }}">
                         <i class="fa-regular fa-paper-plane w-5 mr-3"></i>
-                        <span>Requests</span>
+                        <span>Add Request</span>
                     </a>
                 </li>
                 <li>
@@ -74,8 +74,8 @@
         </div>
     </aside>
 
-    <!-- Mobile backdrop -->
-    <div id="sidebar-backdrop" class="fixed inset-0 bg-black/40 z-30 md:hidden"></div>
+    <!-- Mobile backdrop (hidden by default) -->
+    <div id="sidebar-backdrop" class="fixed inset-0 bg-black/40 z-30 md:hidden hidden"></div>
 
     <!-- Main -->
     <div class="flex-1 flex flex-col min-w-0">
