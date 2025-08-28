@@ -31,7 +31,7 @@
                       <i class="fas fa-chevron-down ml-2 text-xs"></i>
                     </button>
                     <div id="user-menu-panel" class="hidden absolute right-0 mt-2 w-40 bg-white text-gray-700 rounded-md shadow-lg overflow-hidden z-20">
-                      <a href="{{ route('account') }}" class="block px-4 py-2 hover:bg-gray-50">Dashboard</a>
+                      <a href="{{ route('customer.dashboard') }}" class="block px-4 py-2 hover:bg-gray-50">Dashboard</a>
                       <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="w-full text-left px-4 py-2 hover:bg-gray-50">Logout</button>

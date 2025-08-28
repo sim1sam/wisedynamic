@@ -18,7 +18,7 @@
         </div>
     @endif
 
-    <form id="create-request-form" method="POST" action="{{ route('account.requests.store') }}" class="bg-white rounded shadow-sm p-5 space-y-4">
+    <form id="create-request-form" method="POST" action="{{ route('customer.requests.store') }}" class="bg-white rounded shadow-sm p-5 space-y-4">
         @csrf
         <div>
             <label for="title" class="block text-sm font-medium text-gray-700">Title <span class="text-red-500">*</span></label>
@@ -32,7 +32,7 @@
             <button type="submit" class="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700">
                 <i class="fa-solid fa-paper-plane mr-2"></i> Submit Request
             </button>
-            <a href="{{ route('account.requests.index') }}" class="text-gray-600 hover:text-gray-800">Cancel</a>
+            <a href="{{ route('customer.requests.index') }}" class="text-gray-600 hover:text-gray-800">Cancel</a>
         </div>
     </form>
 </div>

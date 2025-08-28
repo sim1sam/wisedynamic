@@ -66,30 +66,21 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('settings/footer', [FooterSettingController::class, 'update'])->name('settings.footer.update');
 });
 
-// Legacy redirects (old URLs -> new customer URLs)
-Route::middleware('auth')->group(function(){
-    Route::redirect('/account', '/customer');
-    Route::redirect('/account/requests', '/customer/requests');
-    Route::redirect('/account/requests/create', '/customer/requests/create');
-    // Generic passthrough for any deeper request paths (edit, etc.)
-    Route::get('/account/requests/{any}', function(string $any){
-        return redirect('/customer/requests/' . $any);
-    })->where('any', '.*');
-});
 
-// Customer account (protected)
+// Customer dashboard (protected)
 Route::middleware('auth')->group(function(){
     Route::get('/customer', function(){
-        return view('frontend.account.index');
-    })->name('account');
+        return view('frontend.customer.index');
+    })->name('customer.dashboard');
 
     // Customer Requests
-    Route::get('/customer/requests', [RequestController::class, 'index'])->name('account.requests.index');
-    Route::get('/customer/requests/create', [RequestController::class, 'create'])->name('account.requests.create');
-    Route::post('/customer/requests', [RequestController::class, 'store'])->name('account.requests.store');
-    Route::get('/customer/requests/{customerRequest}/edit', [RequestController::class, 'edit'])->name('account.requests.edit');
-    Route::put('/customer/requests/{customerRequest}', [RequestController::class, 'update'])->name('account.requests.update');
-    Route::delete('/customer/requests/{customerRequest}', [RequestController::class, 'destroy'])->name('account.requests.destroy');
+    Route::get('/customer/requests', [RequestController::class, 'index'])->name('customer.requests.index');
+    Route::get('/customer/requests/create', [RequestController::class, 'create'])->name('customer.requests.create');
+    Route::post('/customer/requests', [RequestController::class, 'store'])->name('customer.requests.store');
+    Route::get('/customer/requests/{customerRequest}', [RequestController::class, 'show'])->name('customer.requests.show');
+    Route::get('/customer/requests/{customerRequest}/edit', [RequestController::class, 'edit'])->name('customer.requests.edit');
+    Route::put('/customer/requests/{customerRequest}', [RequestController::class, 'update'])->name('customer.requests.update');
+    Route::delete('/customer/requests/{customerRequest}', [RequestController::class, 'destroy'])->name('customer.requests.destroy');
 
     // Quick Request entry: after login, redirect back to home with flag to open modal
     Route::get('/quick-request', function(){

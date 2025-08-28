@@ -30,15 +30,15 @@
         <nav class="flex-1 overflow-y-auto py-4">
             <ul class="px-3 space-y-1">
                 <li>
-                    <a href="{{ route('account') }}" class="link-item flex items-center px-3 py-2 rounded-md {{ request()->routeIs('account') ? 'active' : '' }}">
+                    <a href="{{ route('customer.dashboard') }}" class="link-item flex items-center px-3 py-2 rounded-md {{ request()->routeIs('customer.dashboard') ? 'active' : '' }}">
                         <i class="fas fa-gauge-high w-5 mr-3"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('account.requests.index') }}" class="link-item flex items-center px-3 py-2 rounded-md {{ request()->routeIs('account.requests.*') ? 'active' : '' }}">
+                    <a href="{{ route('customer.requests.index') }}" class="link-item flex items-center px-3 py-2 rounded-md {{ request()->routeIs('customer.requests.*') ? 'active' : '' }}">
                         <i class="fa-regular fa-paper-plane w-5 mr-3"></i>
-                        <span>Add Request</span>
+                        <span>Requests</span>
                     </a>
                 </li>
                 <li>

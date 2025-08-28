@@ -53,6 +53,6 @@ class AuthController extends Controller
 
         Auth::login($user);
         $request->session()->regenerate();
-        return redirect()->intended(route('account'));
+        return redirect()->intended(route('customer.dashboard'));
     }
 }

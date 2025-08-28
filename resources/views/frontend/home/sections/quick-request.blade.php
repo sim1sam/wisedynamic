@@ -49,7 +49,7 @@
                 <button id="qr-close" class="text-gray-500 hover:text-gray-700">✕</button>
             </div>
             <div class="p-6">
-                <form id="qr-form" method="POST" action="{{ route('account.requests.store') }}" class="space-y-4">
+                <form id="qr-form" method="POST" action="{{ route('customer.requests.store') }}" class="space-y-4">
                     @csrf
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Page Name</label>
@@ -131,7 +131,7 @@
   document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && !modal.classList.contains('hidden')) closeModal(); });
 
   form && form.addEventListener('submit', function(e){
-    // Build title/description for request and submit to account.requests.store
+    // Build title/description for request and submit to customer.requests.store
     e.preventDefault();
     const data = new FormData(form);
     const pageName = (data.get('page_name')||'').trim();
