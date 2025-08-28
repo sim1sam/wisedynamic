@@ -36,6 +36,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/register', function () {
     return view('auth.register');
 })->name('register');
+Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 
 // Admin login (separate URL with dedicated design)
 Route::get('/admin/login', function () {
@@ -58,6 +59,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('slides', AdminSlideController::class);
     Route::get('settings/footer', [FooterSettingController::class, 'edit'])->name('settings.footer.edit');
     Route::put('settings/footer', [FooterSettingController::class, 'update'])->name('settings.footer.update');
+});
+
+// Customer account (protected)
+Route::middleware('auth')->group(function(){
+    Route::get('/account', function(){
+        return view('frontend.account.index');
+    })->name('account');
 });
 
 // Service detail pages

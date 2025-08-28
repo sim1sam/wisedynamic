@@ -20,11 +20,24 @@
                 <a href="{{ route('contact') }}" class="font-medium {{ request()->routeIs('contact') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600' }}">Contact</a>
 
                 @guest
-                <a href="{{ route('login') }}" class="hidden md:inline-block bg-gradient-to-r from-blue-600 to-purple-600 text-white px-5 py-2.5 rounded-full font-semibold shadow hover:shadow-lg transition">Login</a>
+                  <a href="{{ route('login') }}" class="hidden md:inline-block bg-gradient-to-r from-blue-600 to-purple-600 text-white px-5 py-2.5 rounded-full font-semibold shadow hover:shadow-lg transition">Login</a>
                 @endguest
 
                 @auth
-                <a href="#" class="bg-gray-800 text-white px-4 py-2 rounded-full hover:bg-gray-900 transition">Account</a>
+                  <div class="relative group">
+                    <button class="bg-gray-800 text-white px-4 py-2 rounded-full hover:bg-gray-900 transition inline-flex items-center">
+                      <i class="far fa-user mr-2"></i>
+                      <span>{{ auth()->user()->name }}</span>
+                      <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                    </button>
+                    <div class="hidden group-hover:block absolute right-0 mt-2 w-40 bg-white text-gray-700 rounded-md shadow-lg overflow-hidden">
+                      <a href="{{ route('account') }}" class="block px-4 py-2 hover:bg-gray-50">Dashboard</a>
+                      <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="w-full text-left px-4 py-2 hover:bg-gray-50">Logout</button>
+                      </form>
+                    </div>
+                  </div>
                 @endauth
             </div>
         </div>
@@ -38,8 +51,17 @@
             <a href="{{ route('packages') }}" class="block py-2 text-gray-700 hover:text-blue-600 font-medium">Packages</a>
             <a href="{{ route('contact') }}" class="block py-2 font-medium {{ request()->routeIs('contact') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600' }}">Contact</a>
             @guest
-            <a href="{{ route('login') }}" class="inline-block bg-gradient-to-r from-blue-600 to-purple-600 text-white px-5 py-2.5 rounded-full font-semibold shadow hover:shadow-lg transition">Login</a>
+              <a href="{{ route('login') }}" class="inline-block bg-gradient-to-r from-blue-600 to-purple-600 text-white px-5 py-2.5 rounded-full font-semibold shadow hover:shadow-lg transition">Login</a>
             @endguest
+            @auth
+              <div class="flex items-center justify-between">
+                <span class="mr-3"><i class="far fa-user mr-1"></i>{{ auth()->user()->name }}</span>
+                <form method="POST" action="{{ route('logout') }}">
+                  @csrf
+                  <button type="submit" class="px-4 py-2 rounded-full bg-gray-800 text-white hover:bg-gray-900">Logout</button>
+                </form>
+              </div>
+            @endauth
         </div>
     </div>
 </nav>
