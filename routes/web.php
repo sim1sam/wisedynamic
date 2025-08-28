@@ -58,14 +58,17 @@ Route::get('/contact', function () {
 // Admin routes (protected)
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
-    Route::resource('slides', AdminSlideController::class);
-    // Admin: Customer Requests
     Route::get('requests', [AdminCustomerRequestController::class, 'index'])->name('requests.index');
+    Route::get('requests/create', [AdminCustomerRequestController::class, 'create'])->name('requests.create');
+    Route::post('requests', [AdminCustomerRequestController::class, 'store'])->name('requests.store');
     Route::patch('requests/{customerRequest}/status', [AdminCustomerRequestController::class, 'updateStatus'])->name('requests.status');
+    Route::get('requests/{customerRequest}', [AdminCustomerRequestController::class, 'show'])->name('requests.show');
+    Route::get('requests/{customerRequest}/edit', [AdminCustomerRequestController::class, 'edit'])->name('requests.edit');
+    Route::put('requests/{customerRequest}', [AdminCustomerRequestController::class, 'update'])->name('requests.update');
+    Route::resource('slides', AdminSlideController::class);
     Route::get('settings/footer', [FooterSettingController::class, 'edit'])->name('settings.footer.edit');
     Route::put('settings/footer', [FooterSettingController::class, 'update'])->name('settings.footer.update');
 });
-
 
 // Customer dashboard (protected)
 Route::middleware('auth')->group(function(){

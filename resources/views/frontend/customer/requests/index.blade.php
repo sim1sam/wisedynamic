@@ -64,7 +64,7 @@
         </div>
         <div class="flex items-center gap-2 lg:ml-auto">
             <input type="hidden" name="status" value="{{ $status }}" />
-            <input type="text" name="q" value="{{ $q }}" placeholder="Search title or description" class="w-64 rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" />
+            <input type="text" name="q" value="{{ $q }}" placeholder="Search page name, social media, or post link" class="w-64 rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" />
             <button class="px-3 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-900">Search</button>
             @if($q)
                 <a href="{{ route('customer.requests.index', ['status'=>$status]) }}" class="px-3 py-2 rounded-md bg-gray-100 hover:bg-gray-200">Clear</a>
@@ -88,8 +88,11 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="sticky top-0 px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">ID</th>
-                        <th class="sticky top-0 px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">Title</th>
-                        <th class="sticky top-0 px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">Description</th>
+                        <th class="sticky top-0 px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">Page Name</th>
+                        <th class="sticky top-0 px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">Social Media</th>
+                        <th class="sticky top-0 px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">Budget (BDT)</th>
+                        <th class="sticky top-0 px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">Days</th>
+                        <th class="sticky top-0 px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">Post Link</th>
                         <th class="sticky top-0 px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">Status</th>
                         <th class="sticky top-0 px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">Created</th>
                         <th class="sticky top-0 px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">Updated</th>
@@ -101,10 +104,17 @@
                         <tr class="odd:bg-white even:bg-gray-50 hover:bg-gray-100">
                             <td class="px-4 py-3 text-sm text-gray-600">#{{ $req->id }}</td>
                             <td class="px-4 py-3">
-                                <div class="font-medium text-gray-900">{{ $req->title }}</div>
+                                <div class="font-medium text-gray-900">{{ $req->page_name }}</div>
                             </td>
-                            <td class="px-4 py-3 text-sm text-gray-700" title="{{ $req->description }}">
-                                {{ $req->description ? \Illuminate\Support\Str::limit($req->description, 120) : '-' }}
+                            <td class="px-4 py-3 text-sm text-gray-700">{{ $req->social_media }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-700">{{ number_format((float)$req->ads_budget_bdt, 2) }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-700">{{ $req->days }}</td>
+                            <td class="px-4 py-3 text-sm text-blue-700">
+                                @if($req->post_link)
+                                    <a href="{{ $req->post_link }}" target="_blank" rel="noopener">Open</a>
+                                @else
+                                    -
+                                @endif
                             </td>
                             <td class="px-4 py-3">
                                 @php

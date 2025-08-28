@@ -12,8 +12,15 @@ class CustomerRequest extends Model
 
     protected $fillable = [
         'user_id',
+        // legacy fields
         'title',
         'description',
+        // marketing fields
+        'page_name',
+        'social_media',
+        'ads_budget_bdt',
+        'days',
+        'post_link',
         'status',
     ];
 

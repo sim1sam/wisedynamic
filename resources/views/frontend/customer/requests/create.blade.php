@@ -21,12 +21,26 @@
     <form id="create-request-form" method="POST" action="{{ route('customer.requests.store') }}" class="bg-white rounded shadow-sm p-5 space-y-4">
         @csrf
         <div>
-            <label for="title" class="block text-sm font-medium text-gray-700">Title <span class="text-red-500">*</span></label>
-            <input type="text" id="title" name="title" value="{{ old('title') }}" required class="mt-1 block w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" placeholder="e.g. Need a new landing page" />
+            <label for="page_name" class="block text-sm font-medium text-gray-700">Page Name <span class="text-red-500">*</span></label>
+            <input type="text" id="page_name" name="page_name" value="{{ old('page_name') }}" required class="mt-1 block w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" placeholder="e.g., WiseDynamic FB Page" />
         </div>
         <div>
-            <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-            <textarea id="description" name="description" rows="5" class="mt-1 block w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" placeholder="Add details to help us understand your request">{{ old('description') }}</textarea>
+            <label for="social_media" class="block text-sm font-medium text-gray-700">Social Media <span class="text-red-500">*</span></label>
+            <input type="text" id="social_media" name="social_media" value="{{ old('social_media') }}" required class="mt-1 block w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" placeholder="e.g., Facebook, Instagram, YouTube" />
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label for="ads_budget_bdt" class="block text-sm font-medium text-gray-700">Ads Budget (BDT) <span class="text-red-500">*</span></label>
+                <input type="number" step="0.01" min="0" id="ads_budget_bdt" name="ads_budget_bdt" value="{{ old('ads_budget_bdt') }}" required class="mt-1 block w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" placeholder="e.g., 5000" />
+            </div>
+            <div>
+                <label for="days" class="block text-sm font-medium text-gray-700">Days <span class="text-red-500">*</span></label>
+                <input type="number" min="1" id="days" name="days" value="{{ old('days') }}" required class="mt-1 block w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" placeholder="e.g., 7" />
+            </div>
+            <div>
+                <label for="post_link" class="block text-sm font-medium text-gray-700">Post Link</label>
+                <input type="url" id="post_link" name="post_link" value="{{ old('post_link') }}" class="mt-1 block w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" placeholder="https://..." />
+            </div>
         </div>
         <div class="flex items-center gap-3">
             <button type="submit" class="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700">

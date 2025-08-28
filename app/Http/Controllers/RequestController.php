@@ -21,8 +21,9 @@ class RequestController extends Controller
         }
         if ($q !== '') {
             $query->where(function($w) use ($q){
-                $w->where('title', 'like', "%{$q}%")
-                  ->orWhere('description', 'like', "%{$q}%");
+                $w->where('page_name', 'like', "%{$q}%")
+                  ->orWhere('social_media', 'like', "%{$q}%")
+                  ->orWhere('post_link', 'like', "%{$q}%");
             });
         }
 
@@ -47,14 +48,23 @@ class RequestController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
+            'page_name' => ['required','string','max:255'],
+            'social_media' => ['required','string','max:50'],
+            'ads_budget_bdt' => ['required','numeric','min:0'],
+            'days' => ['required','integer','min:1'],
+            'post_link' => ['nullable','url','max:2048'],
         ]);
 
         CustomerRequest::create([
             'user_id' => $request->user()->id,
-            'title' => $validated['title'],
-            'description' => $validated['description'] ?? null,
+            // keep legacy title filled with page_name for compatibility
+            'title' => $validated['page_name'],
+            'description' => null,
+            'page_name' => $validated['page_name'],
+            'social_media' => $validated['social_media'],
+            'ads_budget_bdt' => $validated['ads_budget_bdt'],
+            'days' => $validated['days'],
+            'post_link' => $validated['post_link'] ?? null,
             'status' => CustomerRequest::STATUS_PENDING,
         ]);
 
@@ -77,10 +87,21 @@ class RequestController extends Controller
     {
         if ($customerRequest->user_id !== $request->user()->id) abort(403);
         $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
+            'page_name' => ['required','string','max:255'],
+            'social_media' => ['required','string','max:50'],
+            'ads_budget_bdt' => ['required','numeric','min:0'],
+            'days' => ['required','integer','min:1'],
+            'post_link' => ['nullable','url','max:2048'],
         ]);
-        $customerRequest->update($validated);
+        $customerRequest->update([
+            'title' => $validated['page_name'],
+            'description' => null,
+            'page_name' => $validated['page_name'],
+            'social_media' => $validated['social_media'],
+            'ads_budget_bdt' => $validated['ads_budget_bdt'],
+            'days' => $validated['days'],
+            'post_link' => $validated['post_link'] ?? null,
+        ]);
         return redirect()->route('customer.requests.index')->with('success', 'Request updated.');
     }
 

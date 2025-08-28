@@ -28,15 +28,33 @@
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
     <div class="md:col-span-2 bg-white rounded-xl shadow p-6 space-y-4">
       <div>
-        <div class="text-sm text-gray-500">Title</div>
-        <div class="text-lg font-medium text-gray-900">{{ $customerRequest->title }}</div>
+        <div class="text-sm text-gray-500">Page Name</div>
+        <div class="text-lg font-medium text-gray-900">{{ $customerRequest->page_name }}</div>
       </div>
-      @if($customerRequest->description)
-      <div>
-        <div class="text-sm text-gray-500">Description</div>
-        <div class="whitespace-pre-line">{{ $customerRequest->description }}</div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <div class="text-sm text-gray-500">Social Media</div>
+          <div class="text-gray-900">{{ $customerRequest->social_media }}</div>
+        </div>
+        <div>
+          <div class="text-sm text-gray-500">Ads Budget (BDT)</div>
+          <div class="text-gray-900">{{ number_format((float)$customerRequest->ads_budget_bdt, 2) }}</div>
+        </div>
+        <div>
+          <div class="text-sm text-gray-500">Days</div>
+          <div class="text-gray-900">{{ $customerRequest->days }}</div>
+        </div>
+        <div>
+          <div class="text-sm text-gray-500">Post Link</div>
+          <div class="text-blue-700">
+            @if($customerRequest->post_link)
+              <a href="{{ $customerRequest->post_link }}" target="_blank" rel="noopener">{{ $customerRequest->post_link }}</a>
+            @else
+              -
+            @endif
+          </div>
+        </div>
       </div>
-      @endif
     </div>
 
     <aside class="bg-white rounded-xl shadow p-6 space-y-4">
