@@ -24,13 +24,13 @@
                 @endguest
 
                 @auth
-                  <div class="relative group">
-                    <button class="bg-gray-800 text-white px-4 py-2 rounded-full hover:bg-gray-900 transition inline-flex items-center">
+                  <div class="relative">
+                    <button id="user-menu-btn" aria-expanded="false" class="bg-gray-800 text-white px-4 py-2 rounded-full hover:bg-gray-900 transition inline-flex items-center">
                       <i class="far fa-user mr-2"></i>
                       <span>{{ auth()->user()->name }}</span>
                       <i class="fas fa-chevron-down ml-2 text-xs"></i>
                     </button>
-                    <div class="hidden group-hover:block absolute right-0 mt-2 w-40 bg-white text-gray-700 rounded-md shadow-lg overflow-hidden">
+                    <div id="user-menu-panel" class="hidden absolute right-0 mt-2 w-40 bg-white text-gray-700 rounded-md shadow-lg overflow-hidden z-20">
                       <a href="{{ route('account') }}" class="block px-4 py-2 hover:bg-gray-50">Dashboard</a>
                       <form method="POST" action="{{ route('logout') }}">
                         @csrf
@@ -77,6 +77,25 @@
     panel.classList.toggle('hidden');
     this.setAttribute('aria-expanded', String(!isOpen));
   });
+})();
+
+(function(){
+  const btn = document.getElementById('user-menu-btn');
+  const menu = document.getElementById('user-menu-panel');
+  if(!btn || !menu) return;
+  function openMenu(){ menu.classList.remove('hidden'); btn.setAttribute('aria-expanded','true'); }
+  function closeMenu(){ menu.classList.add('hidden'); btn.setAttribute('aria-expanded','false'); }
+  btn.addEventListener('click', function(e){
+    e.stopPropagation();
+    const isOpen = !menu.classList.contains('hidden');
+    if(isOpen) closeMenu(); else openMenu();
+  });
+  document.addEventListener('click', function(e){
+    if(!menu.classList.contains('hidden')){
+      if(!menu.contains(e.target) && e.target !== btn) closeMenu();
+    }
+  });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeMenu(); });
 })();
 </script>
 @endpush
