@@ -17,6 +17,15 @@
 @push('scripts')
     <script>
     document.addEventListener('DOMContentLoaded', function(){
+        // Auto-open Quick Request modal if qr=1 is present
+        try {
+            const url = new URL(window.location.href);
+            if (url.searchParams.get('qr') === '1') {
+                const openBtn = document.getElementById('qr-open');
+                if (openBtn) { openBtn.click(); }
+            }
+        } catch (e) {}
+
         let slideIndex = 1;
         const getSlides = () => document.querySelectorAll('.slider-container .slide');
         const getDots = () => document.querySelectorAll('.absolute.bottom-4 button');

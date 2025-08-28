@@ -3,12 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Customer Dashboard' }} - {{ config('app.name') }}</title>
-    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
+    @if (app()->environment('production'))
         @vite(['resources/css/app.css','resources/js/app.js'])
     @else
-        <!-- Fallback: Tailwind via CDN when Vite build is unavailable -->
-        <script src="https://cdn.tailwindcss.com"></script>
+        @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
+            @vite(['resources/css/app.css','resources/js/app.js'])
+        @else
+            <!-- Fallback (DEV only): Tailwind via CDN when Vite build/hot is unavailable -->
+            <script src="https://cdn.tailwindcss.com"></script>
+        @endif
     @endif
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="{{ asset('assets/css/customer-dashboard.css') }}" />
@@ -28,6 +33,12 @@
                     <a href="{{ route('account') }}" class="link-item flex items-center px-3 py-2 rounded-md {{ request()->routeIs('account') ? 'active' : '' }}">
                         <i class="fas fa-gauge-high w-5 mr-3"></i>
                         <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('account.requests.index') }}" class="link-item flex items-center px-3 py-2 rounded-md {{ request()->routeIs('account.requests.*') ? 'active' : '' }}">
+                        <i class="fa-regular fa-paper-plane w-5 mr-3"></i>
+                        <span>Requests</span>
                     </a>
                 </li>
                 <li>

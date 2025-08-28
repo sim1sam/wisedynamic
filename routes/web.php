@@ -7,6 +7,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\SlideController as AdminSlideController;
 use App\Http\Controllers\Admin\FooterSettingController;
+use App\Http\Controllers\RequestController;
+use App\Http\Controllers\Admin\CustomerRequestController as AdminCustomerRequestController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -57,6 +59,9 @@ Route::get('/contact', function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::resource('slides', AdminSlideController::class);
+    // Admin: Customer Requests
+    Route::get('requests', [AdminCustomerRequestController::class, 'index'])->name('requests.index');
+    Route::patch('requests/{customerRequest}/status', [AdminCustomerRequestController::class, 'updateStatus'])->name('requests.status');
     Route::get('settings/footer', [FooterSettingController::class, 'edit'])->name('settings.footer.edit');
     Route::put('settings/footer', [FooterSettingController::class, 'update'])->name('settings.footer.update');
 });
@@ -66,6 +71,19 @@ Route::middleware('auth')->group(function(){
     Route::get('/account', function(){
         return view('frontend.account.index');
     })->name('account');
+
+    // Customer Requests
+    Route::get('/account/requests', [RequestController::class, 'index'])->name('account.requests.index');
+    Route::get('/account/requests/create', [RequestController::class, 'create'])->name('account.requests.create');
+    Route::post('/account/requests', [RequestController::class, 'store'])->name('account.requests.store');
+    Route::get('/account/requests/{customerRequest}/edit', [RequestController::class, 'edit'])->name('account.requests.edit');
+    Route::put('/account/requests/{customerRequest}', [RequestController::class, 'update'])->name('account.requests.update');
+    Route::delete('/account/requests/{customerRequest}', [RequestController::class, 'destroy'])->name('account.requests.destroy');
+
+    // Quick Request entry: after login, redirect back to home with flag to open modal
+    Route::get('/quick-request', function(){
+        return redirect(url('/').'?qr=1#quick-request');
+    })->name('quick-request');
 });
 
 // Service detail pages

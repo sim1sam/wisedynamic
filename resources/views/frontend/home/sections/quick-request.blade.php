@@ -25,15 +25,22 @@
                     </ul>
                 </div>
                 <div class="flex md:justify-end">
-                    <button id="qr-open" class="px-8 py-3 rounded-full font-semibold bg-white text-gray-900 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition transform">
-                        Add Request
-                    </button>
+                    @guest
+                        <a href="{{ route('quick-request') }}" class="px-8 py-3 rounded-full font-semibold bg-white text-gray-900 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition transform">
+                            Add Request
+                        </a>
+                    @else
+                        <button id="qr-open" class="px-8 py-3 rounded-full font-semibold bg-white text-gray-900 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition transform">
+                            Add Request
+                        </button>
+                    @endguest
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal -->
+    <!-- Modal (auth only) -->
+    @auth
     <div id="qr-modal" class="absolute inset-0 z-[9999] hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/40 z-0" id="qr-backdrop"></div>
         <div class="relative z-10 w-full max-w-lg bg-white rounded-2xl shadow-lg overflow-hidden max-h-[80vh] overflow-y-auto">
@@ -42,7 +49,8 @@
                 <button id="qr-close" class="text-gray-500 hover:text-gray-700">✕</button>
             </div>
             <div class="p-6">
-                <form id="qr-form" class="space-y-4">
+                <form id="qr-form" method="POST" action="{{ route('account.requests.store') }}" class="space-y-4">
+                    @csrf
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Page Name</label>
                         <input type="text" name="page_name" class="w-full border rounded-lg px-4 py-2" placeholder="e.g., Wise Dynamic" required>
@@ -83,6 +91,7 @@
             </div>
         </div>
     </div>
+    @endauth
 </section>
 
 @push('scripts')
@@ -122,6 +131,7 @@
   document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && !modal.classList.contains('hidden')) closeModal(); });
 
   form && form.addEventListener('submit', function(e){
+    // Build title/description for request and submit to account.requests.store
     e.preventDefault();
     const data = new FormData(form);
     const pageName = (data.get('page_name')||'').trim();
@@ -134,17 +144,21 @@
       errorEl.textContent = 'Please fill in all fields.'; errorEl.classList.remove('hidden'); return;
     }
 
-    // Redirect to contact with context as query params
-    const params = new URLSearchParams({
-      quick: '1',
-      type: 'quick_request',
-      page: pageName,
-      social: social,
-      budget: budget,
-      days: days,
-      link: link
-    });
-    window.location.href = `${window.location.origin}/#contact?${params.toString()}`;
+    // Create hidden fields expected by account.requests.store
+    const title = `Boost ${pageName} on ${social}`;
+    const description = `Quick Request for ${pageName}\nSocial: ${social}\nBudget (BDT): ${budget}\nDays: ${days}\nPost: ${link}`;
+
+    // Append/ensure hidden inputs before submitting
+    const ensureHidden = (name, value) => {
+      let input = form.querySelector(`input[name="${name}"]`);
+      if(!input){ input = document.createElement('input'); input.type = 'hidden'; input.name = name; form.appendChild(input); }
+      input.value = value;
+    };
+    ensureHidden('title', title);
+    ensureHidden('description', description);
+
+    // Submit the form normally
+    form.submit();
   });
 })();
 </script>

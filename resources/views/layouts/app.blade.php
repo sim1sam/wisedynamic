@@ -46,6 +46,20 @@
  <body>
     {{-- Global Navigation --}}
     @include('frontend.home.sections.nav')
+    @if(session('success'))
+        <div class="container mx-auto px-6 mt-4">
+            <div class="p-3 rounded bg-green-100 text-green-700">{{ session('success') }}</div>
+        </div>
+        <div id="global-flash-success" class="fixed bottom-5 right-5 z-[10000] px-4 py-3 rounded-md bg-green-600 text-white shadow-lg">
+            {{ session('success') }}
+        </div>
+        <script>
+            setTimeout(function(){
+                var el = document.getElementById('global-flash-success');
+                if(el){ el.style.transition='opacity .4s ease'; el.style.opacity='0'; setTimeout(function(){ el.remove(); }, 400); }
+            }, 3000);
+        </script>
+    @endif
     @yield('content')
     {{-- Global Footer --}}
     @include('frontend.home.sections.footer')
