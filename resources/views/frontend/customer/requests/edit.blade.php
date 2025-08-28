@@ -35,7 +35,16 @@
 
       <div>
         <label for="social_media" class="block text-sm font-medium text-gray-700">Social Media <span class="text-red-500">*</span></label>
-        <input type="text" id="social_media" name="social_media" value="{{ old('social_media', $customerRequest->social_media) }}" required class="mt-1 block w-full rounded-md border-gray-300 focus:border-blue-600 focus:ring-blue-600" placeholder="e.g., Facebook, Instagram, YouTube" />
+        @php($current = old('social_media', $customerRequest->social_media))
+        <select id="social_media" name="social_media" required class="mt-1 block w-full rounded-md border-gray-300 focus:border-blue-600 focus:ring-blue-600">
+          <option value="">Select one</option>
+          <option value="facebook" @selected($current==='facebook')>Facebook</option>
+          <option value="instagram" @selected($current==='instagram')>Instagram</option>
+          <option value="tiktok" @selected($current==='tiktok')>TikTok</option>
+          <option value="twitter" @selected($current==='twitter')>Twitter</option>
+          <option value="linkedin" @selected($current==='linkedin')>LinkedIn</option>
+          <option value="youtube" @selected($current==='youtube')>YouTube</option>
+        </select>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">

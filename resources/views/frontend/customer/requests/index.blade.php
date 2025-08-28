@@ -20,13 +20,7 @@
                 </a>
             </div>
         </div>
-        <nav class="text-xs text-gray-500" aria-label="Breadcrumb">
-            <ol class="inline-flex items-center gap-1">
-                <li><a href="{{ route('customer.dashboard') }}" class="hover:text-gray-700">Dashboard</a></li>
-                <li class="text-gray-400">/</li>
-                <li class="text-gray-700">Requests</li>
-            </ol>
-        </nav>
+        
     </div>
 
     <!-- Stats Cards -->

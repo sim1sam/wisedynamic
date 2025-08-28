@@ -35,7 +35,7 @@ class CustomerRequestController extends Controller
         $validated = $request->validate([
             'user_id' => ['required','exists:users,id'],
             'page_name' => ['required','string','max:255'],
-            'social_media' => ['required','string','max:50'],
+            'social_media' => ['required','in:facebook,instagram,tiktok,twitter,linkedin,youtube'],
             'ads_budget_bdt' => ['required','numeric','min:0'],
             'days' => ['required','integer','min:1'],
             'post_link' => ['nullable','url','max:2048'],
@@ -72,7 +72,7 @@ class CustomerRequestController extends Controller
         $validated = $request->validate([
             'user_id' => ['required','exists:users,id'],
             'page_name' => ['required','string','max:255'],
-            'social_media' => ['required','string','max:50'],
+            'social_media' => ['required','in:facebook,instagram,tiktok,twitter,linkedin,youtube'],
             'ads_budget_bdt' => ['required','numeric','min:0'],
             'days' => ['required','integer','min:1'],
             'post_link' => ['nullable','url','max:2048'],

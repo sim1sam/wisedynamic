@@ -2,11 +2,7 @@
 @extends('layouts.customer')
 
 @section('content')
-<div class="max-w-3xl mx-auto space-y-6">
-    <div>
-        <h1 class="text-xl font-semibold mb-1">Create New Request</h1>
-        <p class="text-sm text-gray-600">Describe what you need. Our team will review and update the status.</p>
-    </div>
+<div class="-m-4 md:-m-6">
 
     @if ($errors->any())
         <div class="p-3 rounded bg-red-100 text-red-700">
@@ -18,7 +14,7 @@
         </div>
     @endif
 
-    <form id="create-request-form" method="POST" action="{{ route('customer.requests.store') }}" class="bg-white rounded shadow-sm p-5 space-y-4">
+    <form id="create-request-form" method="POST" action="{{ route('customer.requests.store') }}" class="bg-white p-5 md:p-6 space-y-4 min-h-[calc(100vh-4rem)]">
         @csrf
         <div>
             <label for="page_name" class="block text-sm font-medium text-gray-700">Page Name <span class="text-red-500">*</span></label>
@@ -26,7 +22,15 @@
         </div>
         <div>
             <label for="social_media" class="block text-sm font-medium text-gray-700">Social Media <span class="text-red-500">*</span></label>
-            <input type="text" id="social_media" name="social_media" value="{{ old('social_media') }}" required class="mt-1 block w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" placeholder="e.g., Facebook, Instagram, YouTube" />
+            <select id="social_media" name="social_media" required class="mt-1 block w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                <option value="">Select one</option>
+                <option value="facebook" @selected(old('social_media')==='facebook')>Facebook</option>
+                <option value="instagram" @selected(old('social_media')==='instagram')>Instagram</option>
+                <option value="tiktok" @selected(old('social_media')==='tiktok')>TikTok</option>
+                <option value="twitter" @selected(old('social_media')==='twitter')>Twitter</option>
+                <option value="linkedin" @selected(old('social_media')==='linkedin')>LinkedIn</option>
+                <option value="youtube" @selected(old('social_media')==='youtube')>YouTube</option>
+            </select>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>

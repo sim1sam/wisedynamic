@@ -59,18 +59,18 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">Social Media</label>
                         <select name="social_media" class="w-full border rounded-lg px-4 py-2" required>
                             <option value="">Select one</option>
-                            <option>Facebook</option>
-                            <option>Instagram</option>
-                            <option>TikTok</option>
-                            <option>LinkedIn</option>
-                            <option>Twitter/X</option>
-                            <option>Youtube</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="instagram">Instagram</option>
+                            <option value="tiktok">TikTok</option>
+                            <option value="twitter">Twitter</option>
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="youtube">YouTube</option>
                         </select>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Ads Budget (BDT)</label>
-                            <input type="number" min="0" step="1" name="ads_budget" class="w-full border rounded-lg px-4 py-2" placeholder="e.g., 5000" required>
+                            <input type="number" min="0" step="1" name="ads_budget_bdt" class="w-full border rounded-lg px-4 py-2" placeholder="e.g., 5000" required>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Days</label>
@@ -136,7 +136,7 @@
     const data = new FormData(form);
     const pageName = (data.get('page_name')||'').trim();
     const social = (data.get('social_media')||'').trim();
-    const budget = (data.get('ads_budget')||'').trim();
+    const budget = (data.get('ads_budget_bdt')||'').trim();
     const days = (data.get('days')||'').trim();
     const link = (data.get('post_link')||'').trim();
 

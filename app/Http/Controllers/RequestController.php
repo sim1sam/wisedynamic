@@ -49,7 +49,7 @@ class RequestController extends Controller
     {
         $validated = $request->validate([
             'page_name' => ['required','string','max:255'],
-            'social_media' => ['required','string','max:50'],
+            'social_media' => ['required','in:facebook,instagram,tiktok,twitter,linkedin,youtube'],
             'ads_budget_bdt' => ['required','numeric','min:0'],
             'days' => ['required','integer','min:1'],
             'post_link' => ['nullable','url','max:2048'],
@@ -88,7 +88,7 @@ class RequestController extends Controller
         if ($customerRequest->user_id !== $request->user()->id) abort(403);
         $validated = $request->validate([
             'page_name' => ['required','string','max:255'],
-            'social_media' => ['required','string','max:50'],
+            'social_media' => ['required','in:facebook,instagram,tiktok,twitter,linkedin,youtube'],
             'ads_budget_bdt' => ['required','numeric','min:0'],
             'days' => ['required','integer','min:1'],
             'post_link' => ['nullable','url','max:2048'],

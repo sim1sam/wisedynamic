@@ -36,7 +36,15 @@
 
             <div class="form-group mt-3">
                 <label for="social_media" class="font-medium">Social Media <span class="text-danger">*</span></label>
-                <input id="social_media" type="text" name="social_media" value="{{ old('social_media') }}" class="form-control" placeholder="e.g., Facebook, Instagram" required />
+                <select id="social_media" name="social_media" class="form-control" required>
+                    <option value="">-- Select Platform --</option>
+                    <option value="facebook" @selected(old('social_media')==='facebook')>Facebook</option>
+                    <option value="instagram" @selected(old('social_media')==='instagram')>Instagram</option>
+                    <option value="tiktok" @selected(old('social_media')==='tiktok')>TikTok</option>
+                    <option value="twitter" @selected(old('social_media')==='twitter')>Twitter</option>
+                    <option value="linkedin" @selected(old('social_media')==='linkedin')>LinkedIn</option>
+                    <option value="youtube" @selected(old('social_media')==='youtube')>YouTube</option>
+                </select>
             </div>
 
             <div class="form-row mt-3">

@@ -46,7 +46,16 @@
 
               <div class="form-group">
                 <label for="social_media">Social Media <span class="text-danger">*</span></label>
-                <input type="text" id="social_media" name="social_media" class="form-control" value="{{ old('social_media', $customerRequest->social_media) }}" required />
+                @php($current = old('social_media', $customerRequest->social_media))
+                <select id="social_media" name="social_media" class="form-control" required>
+                  <option value="">-- Select Platform --</option>
+                  <option value="facebook" @selected($current==='facebook')>Facebook</option>
+                  <option value="instagram" @selected($current==='instagram')>Instagram</option>
+                  <option value="tiktok" @selected($current==='tiktok')>TikTok</option>
+                  <option value="twitter" @selected($current==='twitter')>Twitter</option>
+                  <option value="linkedin" @selected($current==='linkedin')>LinkedIn</option>
+                  <option value="youtube" @selected($current==='youtube')>YouTube</option>
+                </select>
               </div>
 
               <div class="form-row">
