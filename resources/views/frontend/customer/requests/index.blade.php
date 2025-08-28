@@ -2,20 +2,31 @@
 @extends('layouts.customer')
 
 @section('content')
-<div class="max-w-6xl mx-auto space-y-6">
+<div class="w-full px-4 md:px-6 space-y-6">
     @if(session('success'))
         <div class="p-3 rounded bg-green-100 text-green-700">{{ session('success') }}</div>
     @endif
 
-    <!-- Header + CTA -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-            <h1 class="text-2xl font-bold">My Requests</h1>
-            <p class="text-sm text-gray-600">Track and manage your service requests.</p>
+    <!-- Page Header / Breadcrumbs -->
+    <div class="flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+            <div class="min-w-0">
+                <h1 class="text-2xl font-semibold tracking-tight text-gray-900">My Requests</h1>
+                <p class="text-sm text-gray-600">Track and manage your service requests</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('customer.requests.create') }}" class="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 shadow">
+                    <i class="fa-solid fa-plus mr-2"></i> New Request
+                </a>
+            </div>
         </div>
-        <a href="{{ route('customer.requests.create') }}" class="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700">
-            <i class="fa-solid fa-plus mr-2"></i> New Request
-        </a>
+        <nav class="text-xs text-gray-500" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center gap-1">
+                <li><a href="{{ route('customer.dashboard') }}" class="hover:text-gray-700">Dashboard</a></li>
+                <li class="text-gray-400">/</li>
+                <li class="text-gray-700">Requests</li>
+            </ol>
+        </nav>
     </div>
 
     <!-- Stats Cards -->
@@ -38,20 +49,20 @@
         </div>
     </div>
 
-    <!-- Filters + Search -->
-    <form method="GET" action="{{ route('customer.requests.index') }}" class="flex flex-col md:flex-row md:items-center gap-3">
+    <!-- Toolbar: Filters + Search -->
+    <form method="GET" action="{{ route('customer.requests.index') }}" class="flex flex-col lg:flex-row lg:items-center gap-3 bg-white rounded-md shadow-sm p-3">
         <div class="flex items-center gap-2 overflow-x-auto">
             @php $curr = $status; @endphp
             @php $allActive = empty($curr); @endphp
             @php $pendingActive = ($curr == 'pending'); @endphp
             @php $progressActive = ($curr == 'in_progress'); @endphp
             @php $doneActive = ($curr == 'done'); @endphp
-            <a href="{{ route('customer.requests.index', ['status'=>null,'q'=>$q]) }}" class="px-3 py-2 text-sm rounded-full {{ $allActive ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">All ({{ $counts['all'] ?? 0 }})</a>
-            <a href="{{ route('customer.requests.index', ['status'=>'pending','q'=>$q]) }}" class="px-3 py-2 text-sm rounded-full {{ $pendingActive ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">Pending ({{ $counts['pending'] ?? 0 }})</a>
-            <a href="{{ route('customer.requests.index', ['status'=>'in_progress','q'=>$q]) }}" class="px-3 py-2 text-sm rounded-full {{ $progressActive ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">In Progress ({{ $counts['in_progress'] ?? 0 }})</a>
-            <a href="{{ route('customer.requests.index', ['status'=>'done','q'=>$q]) }}" class="px-3 py-2 text-sm rounded-full {{ $doneActive ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">Done ({{ $counts['done'] ?? 0 }})</a>
+            <a href="{{ route('customer.requests.index', ['status'=>null,'q'=>$q]) }}" class="px-3 py-2 text-xs md:text-sm rounded-full border {{ $allActive ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 hover:bg-gray-50 border-gray-200' }}">All ({{ $counts['all'] ?? 0 }})</a>
+            <a href="{{ route('customer.requests.index', ['status'=>'pending','q'=>$q]) }}" class="px-3 py-2 text-xs md:text-sm rounded-full border {{ $pendingActive ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 hover:bg-gray-50 border-gray-200' }}">Pending ({{ $counts['pending'] ?? 0 }})</a>
+            <a href="{{ route('customer.requests.index', ['status'=>'in_progress','q'=>$q]) }}" class="px-3 py-2 text-xs md:text-sm rounded-full border {{ $progressActive ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 hover:bg-gray-50 border-gray-200' }}">In Progress ({{ $counts['in_progress'] ?? 0 }})</a>
+            <a href="{{ route('customer.requests.index', ['status'=>'done','q'=>$q]) }}" class="px-3 py-2 text-xs md:text-sm rounded-full border {{ $doneActive ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 hover:bg-gray-50 border-gray-200' }}">Done ({{ $counts['done'] ?? 0 }})</a>
         </div>
-        <div class="flex items-center gap-2 md:ml-auto">
+        <div class="flex items-center gap-2 lg:ml-auto">
             <input type="hidden" name="status" value="{{ $status }}" />
             <input type="text" name="q" value="{{ $q }}" placeholder="Search title or description" class="w-64 rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500" />
             <button class="px-3 py-2 rounded-md bg-gray-800 text-white hover:bg-gray-900">Search</button>
@@ -71,22 +82,23 @@
             </a>
         </div>
     @else
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-            <table class="min-w-full">
+        <div class="bg-white rounded-lg shadow">
+            <div class="overflow-x-auto">
+            <table class="min-w-full table-auto">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ID</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Title</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Description</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Created</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Updated</th>
-                        <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                        <th class="sticky top-0 px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">ID</th>
+                        <th class="sticky top-0 px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">Title</th>
+                        <th class="sticky top-0 px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">Description</th>
+                        <th class="sticky top-0 px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">Status</th>
+                        <th class="sticky top-0 px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">Created</th>
+                        <th class="sticky top-0 px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">Updated</th>
+                        <th class="sticky top-0 px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider bg-gray-50">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y">
+                <tbody class="divide-y divide-gray-100">
                     @forelse($requests as $req)
-                        <tr class="hover:bg-gray-50">
+                        <tr class="odd:bg-white even:bg-gray-50 hover:bg-gray-100">
                             <td class="px-4 py-3 text-sm text-gray-600">#{{ $req->id }}</td>
                             <td class="px-4 py-3">
                                 <div class="font-medium text-gray-900">{{ $req->title }}</div>
@@ -107,16 +119,16 @@
                             <td class="px-4 py-3 text-sm text-gray-600">{{ $req->updated_at?->format('Y-m-d H:i') }}</td>
                             <td class="px-4 py-3">
                                 <div class="flex items-center justify-end gap-2">
-                                    <a href="{{ route('customer.requests.show', $req) }}" class="inline-flex items-center px-2 py-1 text-sm rounded bg-gray-100 hover:bg-gray-200" title="View">
+                                    <a href="{{ route('customer.requests.show', $req) }}" class="inline-flex items-center px-2 py-1 text-xs md:text-sm rounded bg-gray-100 hover:bg-gray-200" title="View">
                                         <i class="fa-regular fa-eye"></i>
                                     </a>
-                                    <a href="{{ route('customer.requests.edit', $req) }}" class="inline-flex items-center px-2 py-1 text-sm rounded bg-blue-100 text-blue-700 hover:bg-blue-200" title="Edit">
+                                    <a href="{{ route('customer.requests.edit', $req) }}" class="inline-flex items-center px-2 py-1 text-xs md:text-sm rounded bg-blue-100 text-blue-700 hover:bg-blue-200" title="Edit">
                                         <i class="fa-regular fa-pen-to-square"></i>
                                     </a>
                                     <form method="POST" action="{{ route('customer.requests.destroy', $req) }}" onsubmit="return confirm('Delete this request?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="inline-flex items-center px-2 py-1 text-sm rounded bg-red-100 text-red-700 hover:bg-red-200" title="Delete">
+                                        <button type="submit" class="inline-flex items-center px-2 py-1 text-xs md:text-sm rounded bg-red-100 text-red-700 hover:bg-red-200" title="Delete">
                                             <i class="fa-regular fa-trash-can"></i>
                                         </button>
                                     </form>
@@ -125,11 +137,12 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="px-4 py-6 text-center text-gray-600">No matching requests.</td>
+                            <td colspan="7" class="px-4 py-6 text-center text-gray-600">No matching requests.</td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
+            </div>
         </div>
         <div class="mt-3">{{ $requests->links() }}</div>
     @endif
