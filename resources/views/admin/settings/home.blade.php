@@ -238,7 +238,7 @@
                     </div>
                     
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label for="contact_phone">Phone Number</label>
                                 <input type="text" name="contact_phone" id="contact_phone" class="form-control @error('contact_phone') is-invalid @enderror" 
@@ -246,9 +246,24 @@
                                 @error('contact_phone')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
+                                <small class="form-text text-muted">Format: +880 1805 081012</small>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="contact_whatsapp">WhatsApp Number</label>
+                                <input type="text" name="contact_whatsapp" id="contact_whatsapp" class="form-control @error('contact_whatsapp') is-invalid @enderror" 
+                                    value="{{ old('contact_whatsapp', $homeSetting->contact_whatsapp ?? '+8801805081012') }}">
+                                @error('contact_whatsapp')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <small class="form-text text-muted">Format: +8801805081012 (no spaces for WhatsApp)</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label for="contact_email">Email Address</label>
                                 <input type="email" name="contact_email" id="contact_email" class="form-control @error('contact_email') is-invalid @enderror" 
@@ -258,7 +273,7 @@
                                 @enderror
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label for="contact_location">Location</label>
                                 <input type="text" name="contact_location" id="contact_location" class="form-control @error('contact_location') is-invalid @enderror" 

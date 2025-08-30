@@ -76,10 +76,18 @@
                             </div>
                         </div>
                         
-                        <div class="text-center">
+                        <div class="text-center space-y-4">
                             <a href="tel:{{ str_replace(' ', '', $homeSetting->contact_phone ?? '+8801805081012') }}" class="inline-block bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-full font-bold text-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300">
                                 <i class="fas fa-phone mr-2"></i>Call Now for Free Consultation
                             </a>
+                            
+                            @if($homeSetting->contact_whatsapp ?? null)
+                            <div class="mt-3">
+                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $homeSetting->contact_whatsapp) }}?text=Hi%20Wise%20Dynamic,%20I'm%20interested%20in%20your%20services" target="_blank" class="inline-block bg-gradient-to-r from-green-500 to-green-700 text-white px-8 py-3 rounded-full font-bold text-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+                                    <i class="fab fa-whatsapp mr-2"></i>Chat on WhatsApp
+                                </a>
+                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>

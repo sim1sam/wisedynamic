@@ -66,6 +66,7 @@ class HomeSettingSeeder extends Seeder
             'contact_title' => 'Let\'s Build Something Amazing Together',
             'contact_subtitle' => 'Ready to bring your digital vision to life? Contact us today!',
             'contact_phone' => '+880 1805 081012',
+            'contact_whatsapp' => '+8801805081012',
             'contact_email' => 'sales@wisedynamic.com.bd',
             'contact_location' => 'Bangladesh'
         ]);

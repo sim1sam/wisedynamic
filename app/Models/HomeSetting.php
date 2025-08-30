@@ -21,6 +21,7 @@ class HomeSetting extends Model
         'contact_title',
         'contact_subtitle',
         'contact_phone',
+        'contact_whatsapp',
         'contact_email',
         'contact_location',
     ];

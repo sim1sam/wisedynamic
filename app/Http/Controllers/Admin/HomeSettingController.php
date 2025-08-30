@@ -32,13 +32,14 @@ class HomeSettingController extends Controller
             'why_choose_items.*.icon' => 'required|string',
             'why_choose_items.*.title' => 'required|string|max:255',
             'why_choose_items.*.text' => 'required|string',
-            'why_choose_clients_count' => 'required|integer',
+            'why_choose_clients_count' => 'required|integer|min:1',
             'why_choose_experience' => 'required|string|max:255',
             
             // Let's Build Something Amazing section
             'contact_title' => 'required|string|max:255',
             'contact_subtitle' => 'required|string',
             'contact_phone' => 'required|string|max:255',
+            'contact_whatsapp' => 'nullable|string|max:255',
             'contact_email' => 'required|email|max:255',
             'contact_location' => 'required|string|max:255',
         ]);
