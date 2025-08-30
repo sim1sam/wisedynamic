@@ -2,9 +2,9 @@
 <section id="contact" class="py-16 bg-white">
     <div class="container mx-auto px-6">
         <div class="text-center mb-12">
-            <h2 class="text-4xl font-bold mb-4 gradient-text">Let's Build Something Amazing Together</h2>
+            <h2 class="text-4xl font-bold mb-4 gradient-text">{{ $homeSetting->contact_title ?? 'Let\'s Build Something Amazing Together' }}</h2>
             <div class="w-20 h-1 gradient-bg mx-auto mb-6"></div>
-            <p class="text-xl text-gray-600">Ready to bring your digital vision to life? Contact us today!</p>
+            <p class="text-xl text-gray-600">{{ $homeSetting->contact_subtitle ?? 'Ready to bring your digital vision to life? Contact us today!' }}</p>
         </div>
         
         <div class="grid lg:grid-cols-2 gap-12 items-center">
@@ -19,7 +19,7 @@
                             </div>
                             <div>
                                 <h4 class="font-bold text-gray-800">Call Us</h4>
-                                <p class="text-gray-600">+880 1805 081012</p>
+                                <p class="text-gray-600">{{ $homeSetting->contact_phone ?? '+880 1805 081012' }}</p>
                             </div>
                         </div>
                         
@@ -29,7 +29,7 @@
                             </div>
                             <div>
                                 <h4 class="font-bold text-gray-800">Email Us</h4>
-                                <p class="text-gray-600">sales@wisedynamic.com.bd</p>
+                                <p class="text-gray-600">{{ $homeSetting->contact_email ?? 'sales@wisedynamic.com.bd' }}</p>
                             </div>
                         </div>
                         
@@ -39,7 +39,7 @@
                             </div>
                             <div>
                                 <h4 class="font-bold text-gray-800">Location</h4>
-                                <p class="text-gray-600">Bangladesh</p>
+                                <p class="text-gray-600">{{ $homeSetting->contact_location ?? 'Bangladesh' }}</p>
                             </div>
                         </div>
                     </div>
@@ -77,7 +77,7 @@
                         </div>
                         
                         <div class="text-center">
-                            <a href="tel:+8801805081012" class="inline-block bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-full font-bold text-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+                            <a href="tel:{{ str_replace(' ', '', $homeSetting->contact_phone ?? '+8801805081012') }}" class="inline-block bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-full font-bold text-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300">
                                 <i class="fas fa-phone mr-2"></i>Call Now for Free Consultation
                             </a>
                         </div>

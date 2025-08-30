@@ -16,7 +16,8 @@ class HomeController extends Controller
     public function index()
     {
         $slides = Slide::where('active', true)->orderBy('position')->get();
-        return view('frontend.home.index', compact('slides'));
+        $homeSetting = HomeSetting::first() ?? new HomeSetting();
+        return view('frontend.home.index', compact('slides', 'homeSetting'));
     }
     
     /**
