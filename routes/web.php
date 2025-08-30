@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\SlideController as AdminSlideController;
 use App\Http\Controllers\Admin\FooterSettingController;
 use App\Http\Controllers\Admin\HomeSettingController;
 use App\Http\Controllers\Admin\AboutSettingController;
+use App\Http\Controllers\Admin\ContactSettingController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\Admin\CustomerRequestController as AdminCustomerRequestController;
 
@@ -51,9 +53,8 @@ Route::get('/services', function () {
 })->name('services');
 
 // Contact page
-Route::get('/contact', function () {
-    return view('frontend.contact.index');
-})->name('contact');
+Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
+Route::post('/contact', [ContactController::class, 'submitForm'])->name('contact.submit');
 
 // Admin routes (protected)
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -73,6 +74,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('settings/home', [HomeSettingController::class, 'update'])->name('settings.home.update');
     Route::get('settings/about', [AboutSettingController::class, 'edit'])->name('settings.about.edit');
     Route::put('settings/about', [AboutSettingController::class, 'update'])->name('settings.about.update');
+    Route::get('settings/contact', [ContactSettingController::class, 'edit'])->name('settings.contact.edit');
+    Route::put('settings/contact', [ContactSettingController::class, 'update'])->name('settings.contact.update');
+    
+    // Customer Messages
+    Route::get('messages', [ContactController::class, 'index'])->name('messages.index');
+    Route::get('messages/{message}', [ContactController::class, 'show'])->name('messages.show');
+    Route::delete('messages/{message}', [ContactController::class, 'destroy'])->name('messages.destroy');
 });
 
 // Customer dashboard (protected)

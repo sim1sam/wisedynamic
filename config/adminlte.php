@@ -313,6 +313,12 @@ return [
             'active' => ['admin/dashboard*'],
         ],
         [
+            'text' => 'Customer Messages',
+            'url' => 'admin/messages',
+            'icon' => 'fas fa-fw fa-envelope',
+            'active' => ['admin/messages*'],
+        ],
+        [
             'text' => 'Website Settings',
             'icon' => 'fas fa-fw fa-cogs',
             'submenu' => [
@@ -339,6 +345,12 @@ return [
                     'route' => 'admin.settings.about.edit',
                     'icon' => 'far fa-fw fa-circle',
                     'active' => ['admin/settings/about*'],
+                ],
+                [
+                    'text' => 'Contact',
+                    'route' => 'admin.settings.contact.edit',
+                    'icon' => 'far fa-fw fa-circle',
+                    'active' => ['admin/settings/contact*'],
                 ],
             ],
         ],

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Slide;
 use App\Models\HomeSetting;
 use App\Models\AboutSetting;
+use App\Models\ContactSetting;
 
 class HomeController extends Controller
 {
@@ -25,5 +26,14 @@ class HomeController extends Controller
     {
         $aboutSetting = AboutSetting::first() ?? new AboutSetting();
         return view('frontend.about.index', compact('aboutSetting'));
+    }
+    
+    /**
+     * Display the contact page.
+     */
+    public function contact()
+    {
+        $contactSetting = ContactSetting::first() ?? new ContactSetting();
+        return view('frontend.contact.index', compact('contactSetting'));
     }
 }
