@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('adminlte::page')
 
 @section('title','Edit Slide')
 @section('page_title','Edit Slide')

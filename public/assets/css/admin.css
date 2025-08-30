@@ -1,0 +1,81 @@
+/* Admin Theme Styling */
+
+/* Theme gradient (blue → purple) for sidebar */
+.main-sidebar { 
+    background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%) !important; /* from-blue-600 to-purple-600 */
+    color: #fff;
+}
+.main-sidebar .brand-link, .main-sidebar .brand-link .brand-text { 
+    color: #fff !important; 
+}
+.main-sidebar .nav-sidebar .nav-item>.nav-link { 
+    color: rgba(255,255,255,.9); 
+}
+.main-sidebar .nav-sidebar .nav-item>.nav-link.active, 
+.main-sidebar .nav-sidebar .nav-item>.nav-link:hover { 
+    background: rgba(255,255,255,.15) !important; 
+    color: #fff !important; 
+}
+.main-header.navbar { 
+    box-shadow: 0 1px 2px rgba(0,0,0,.06); 
+}
+/* Sidebar icon color to white */
+.main-sidebar .nav-sidebar .nav-item > .nav-link .nav-icon { 
+    color: #fff !important; 
+}
+/* Navbar user icon to theme color */
+.main-header .nav-link .fa-user { 
+    color: #7c3aed; 
+}
+/* Dashboard small-box icons with gradient color */
+.small-box .icon i {
+    background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    opacity: 1 !important;
+}
+.content-header h1 { 
+    font-weight: 800; 
+}
+
+/* Card styling */
+.card {
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+.card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Button styling */
+.btn-primary {
+    background-color: #6366f1;
+    border-color: #6366f1;
+}
+.btn-primary:hover {
+    background-color: #4f46e5;
+    border-color: #4f46e5;
+}
+
+/* Form styling */
+.form-control:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+}
+
+/* Table styling */
+.table thead th {
+    border-bottom: 2px solid #e5e7eb;
+    font-weight: 600;
+}
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(249, 250, 251, 0.5);
+}
+
+/* Pagination styling */
+.pagination .page-item.active .page-link {
+    background-color: #6366f1;
+    border-color: #6366f1;
+}

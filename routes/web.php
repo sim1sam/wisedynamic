@@ -7,15 +7,14 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\SlideController as AdminSlideController;
 use App\Http\Controllers\Admin\FooterSettingController;
+use App\Http\Controllers\Admin\HomeSettingController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\Admin\CustomerRequestController as AdminCustomerRequestController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // About page
-Route::get('/about', function () {
-    return view('frontend.about.index');
-})->name('about');
+Route::get('/about', [HomeController::class, 'about'])->name('about');
 
 // Packages page
 Route::get('/packages', function () {
@@ -58,6 +57,7 @@ Route::get('/contact', function () {
 // Admin routes (protected)
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('requests', [AdminCustomerRequestController::class, 'index'])->name('requests.index');
     Route::get('requests/create', [AdminCustomerRequestController::class, 'create'])->name('requests.create');
     Route::post('requests', [AdminCustomerRequestController::class, 'store'])->name('requests.store');
@@ -68,6 +68,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('slides', AdminSlideController::class);
     Route::get('settings/footer', [FooterSettingController::class, 'edit'])->name('settings.footer.edit');
     Route::put('settings/footer', [FooterSettingController::class, 'update'])->name('settings.footer.update');
+    Route::get('settings/home', [HomeSettingController::class, 'edit'])->name('settings.home.edit');
+    Route::put('settings/home', [HomeSettingController::class, 'update'])->name('settings.home.update');
 });
 
 // Customer dashboard (protected)

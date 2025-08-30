@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('adminlte::page')
 @section('page_title','')
 @push('styles')
 <style>

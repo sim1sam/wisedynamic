@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('adminlte::page')
 
 @section('title','Footer Settings')
 @section('page_title','Footer Settings')

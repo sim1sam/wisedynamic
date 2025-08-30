@@ -3,8 +3,8 @@
 @section('content')
 <header class="theme-gradient text-white pt-28 pb-14">
     <div class="container mx-auto px-6">
-        <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight">About Wise Dynamic</h1>
-        <p class="mt-3 text-white/90 max-w-3xl">We craft high-performing digital products and growth campaigns that help businesses move faster, scale smarter, and convert better.</p>
+        <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight">{{ $homeSetting->about_title ?? 'About Wise Dynamic' }}</h1>
+        <p class="mt-3 text-white/90 max-w-3xl">{{ $homeSetting->about_subtitle ?? 'We craft high-performing digital products and growth campaigns that help businesses move faster, scale smarter, and convert better.' }}</p>
     </div>
 </header>
 
@@ -14,9 +14,24 @@
             <h2 class="text-2xl md:text-3xl font-extrabold gradient-text">Who We Are</h2>
             <p class="mt-4 text-gray-700 leading-relaxed">Wise Dynamic is a multidisciplinary team specializing in Website Development, UI/UX, and Digital Marketing. We blend strategy, design, and engineering to deliver solutions that don't just look great—they perform, scale, and drive measurable results.</p>
             <ul class="mt-6 space-y-3">
-                <li class="flex items-start gap-3"><span class="w-6 h-6 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-sm">✓</span><span>Customer-first mindset with transparent communication</span></li>
-                <li class="flex items-start gap-3"><span class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-sm">✓</span><span>Modern tech stack and data-informed decisions</span></li>
-                <li class="flex items-start gap-3"><span class="w-6 h-6 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center text-sm">✓</span><span>On-time delivery with quality assurance</span></li>
+                @if(isset($homeSetting->about_items) && is_array($homeSetting->about_items))
+                    @foreach($homeSetting->about_items as $index => $item)
+                        @php
+                            $colors = ['green', 'blue', 'purple', 'indigo', 'pink'];
+                            $color = $colors[$index % count($colors)];
+                        @endphp
+                        <li class="flex items-start gap-3">
+                            <span class="w-6 h-6 rounded-full bg-{{ $color }}-100 text-{{ $color }}-700 flex items-center justify-center text-sm">
+                                <i class="{{ $item['icon'] ?? 'fas fa-check' }} text-xs"></i>
+                            </span>
+                            <span><strong>{{ $item['title'] ?? '' }}</strong> - {{ $item['text'] ?? '' }}</span>
+                        </li>
+                    @endforeach
+                @else
+                    <li class="flex items-start gap-3"><span class="w-6 h-6 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-sm">✓</span><span>Customer-first mindset with transparent communication</span></li>
+                    <li class="flex items-start gap-3"><span class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-sm">✓</span><span>Modern tech stack and data-informed decisions</span></li>
+                    <li class="flex items-start gap-3"><span class="w-6 h-6 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center text-sm">✓</span><span>On-time delivery with quality assurance</span></li>
+                @endif
             </ul>
         </div>
         <div>
