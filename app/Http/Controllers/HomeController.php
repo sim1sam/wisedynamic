@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Slide;
 use App\Models\HomeSetting;
+use App\Models\AboutSetting;
 
 class HomeController extends Controller
 {
@@ -22,7 +23,7 @@ class HomeController extends Controller
      */
     public function about()
     {
-        $homeSetting = HomeSetting::first() ?? new HomeSetting();
-        return view('frontend.about.index', compact('homeSetting'));
+        $aboutSetting = AboutSetting::first() ?? new AboutSetting();
+        return view('frontend.about.index', compact('aboutSetting'));
     }
 }

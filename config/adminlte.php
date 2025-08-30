@@ -329,10 +329,16 @@ return [
                     'active' => ['admin/settings/footer*'],
                 ],
                 [
-                    'text' => 'About',
+                    'text' => 'Home',
                     'route' => 'admin.settings.home.edit',
                     'icon' => 'far fa-fw fa-circle',
                     'active' => ['admin/settings/home*'],
+                ],
+                [
+                    'text' => 'About',
+                    'route' => 'admin.settings.about.edit',
+                    'icon' => 'far fa-fw fa-circle',
+                    'active' => ['admin/settings/about*'],
                 ],
             ],
         ],

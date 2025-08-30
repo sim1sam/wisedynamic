@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\SlideController as AdminSlideController;
 use App\Http\Controllers\Admin\FooterSettingController;
 use App\Http\Controllers\Admin\HomeSettingController;
+use App\Http\Controllers\Admin\AboutSettingController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\Admin\CustomerRequestController as AdminCustomerRequestController;
 
@@ -70,6 +71,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('settings/footer', [FooterSettingController::class, 'update'])->name('settings.footer.update');
     Route::get('settings/home', [HomeSettingController::class, 'edit'])->name('settings.home.edit');
     Route::put('settings/home', [HomeSettingController::class, 'update'])->name('settings.home.update');
+    Route::get('settings/about', [AboutSettingController::class, 'edit'])->name('settings.about.edit');
+    Route::put('settings/about', [AboutSettingController::class, 'update'])->name('settings.about.update');
 });
 
 // Customer dashboard (protected)
