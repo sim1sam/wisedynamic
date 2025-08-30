@@ -352,6 +352,12 @@ return [
                     'icon' => 'far fa-fw fa-circle',
                     'active' => ['admin/settings/contact*'],
                 ],
+                [
+                    'text' => 'Logo & Branding',
+                    'url' => 'admin/settings/website',
+                    'icon' => 'far fa-fw fa-image',
+                    'active' => ['admin/settings/website*'],
+                ],
             ],
         ],
         [

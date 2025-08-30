@@ -3,8 +3,17 @@
     <div class="container mx-auto px-6 py-3">
         <div class="flex justify-between items-center">
             <a href="{{ route('home') }}" class="flex items-center hover:opacity-90 transition">
-                <i class="fas fa-code text-3xl gradient-text mr-3"></i>
-                <span class="text-2xl font-bold gradient-text">Wise Dynamic</span>
+                @php
+                    $websiteSetting = \App\Models\WebsiteSetting::first();
+                @endphp
+                @if($websiteSetting && $websiteSetting->site_logo)
+                    <img src="{{ asset('storage/' . $websiteSetting->site_logo) }}" alt="{{ $websiteSetting->logo_alt_text ?? 'Wise Dynamic Logo' }}" class="h-10 mr-3">
+                @else
+                    <i class="fas fa-code text-3xl gradient-text mr-3"></i>
+                @endif
+                @if(!$websiteSetting || $websiteSetting->show_site_name_with_logo)
+                    <span class="text-2xl font-bold gradient-text">{{ $websiteSetting->site_name ?? 'Wise Dynamic' }}</span>
+                @endif
             </a>
             <!-- Mobile toggle -->
             <button id="nav-toggle" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" aria-expanded="false" aria-controls="nav-menu">

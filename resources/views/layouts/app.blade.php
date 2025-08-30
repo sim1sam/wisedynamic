@@ -4,6 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ config('app.name', 'wisedynamic') }}</title>
+    @php
+        $websiteSetting = \App\Models\WebsiteSetting::first();
+    @endphp
+    @if($websiteSetting && $websiteSetting->site_favicon)
+        <link rel="icon" href="{{ asset('storage/' . $websiteSetting->site_favicon) }}" type="image/x-icon">
+        <link rel="shortcut icon" href="{{ asset('storage/' . $websiteSetting->site_favicon) }}" type="image/x-icon">
+    @endif
 
     {{-- App CSS/JS (optional). Use Vite only if manifest exists to avoid errors before Node/npm setup --}}
     @if (file_exists(public_path('build/manifest.json')))

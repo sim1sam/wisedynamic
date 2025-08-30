@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\FooterSettingController;
 use App\Http\Controllers\Admin\HomeSettingController;
 use App\Http\Controllers\Admin\AboutSettingController;
 use App\Http\Controllers\Admin\ContactSettingController;
+use App\Http\Controllers\Admin\WebsiteSettingController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\Admin\CustomerRequestController as AdminCustomerRequestController;
@@ -76,6 +77,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('settings/about', [AboutSettingController::class, 'update'])->name('settings.about.update');
     Route::get('settings/contact', [ContactSettingController::class, 'edit'])->name('settings.contact.edit');
     Route::put('settings/contact', [ContactSettingController::class, 'update'])->name('settings.contact.update');
+    Route::get('settings/website', [WebsiteSettingController::class, 'edit'])->name('settings.website');
+    Route::put('settings/website', [WebsiteSettingController::class, 'update'])->name('settings.website.update');
     
     // Customer Messages
     Route::get('messages', [ContactController::class, 'index'])->name('messages.index');
