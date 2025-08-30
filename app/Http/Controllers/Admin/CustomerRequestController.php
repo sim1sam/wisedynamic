@@ -26,7 +26,7 @@ class CustomerRequestController extends Controller
 
     public function create()
     {
-        $users = User::orderBy('name')->get(['id','name','email']);
+        $users = User::where('is_admin', false)->orderBy('name')->get(['id','name','email']);
         return view('admin.requests.create', compact('users'));
     }
 
@@ -63,7 +63,7 @@ class CustomerRequestController extends Controller
 
     public function edit(CustomerRequest $customerRequest)
     {
-        $users = User::orderBy('name')->get(['id','name','email']);
+        $users = User::where('is_admin', false)->orderBy('name')->get(['id','name','email']);
         return view('admin.requests.edit', compact('customerRequest','users'));
     }
 

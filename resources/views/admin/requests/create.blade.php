@@ -1,8 +1,15 @@
 @extends('layouts.admin')
+@section('page_title','')
+@push('styles')
+<style>
+  /* Fullscreen create page: hide header and remove container padding for this page only */
+  .content-header { display: none; }
+  .content > .container-fluid { padding-left: 0; padding-right: 0; }
+</style>
+@endpush
 
 @section('content')
-<div class="container mx-auto p-4">
-    <h1 class="text-2xl font-semibold mb-4">Add Request</h1>
+<div class="p-0">
 
     @if ($errors->any())
         <div class="mb-4 p-3 rounded bg-red-100 text-red-700">
@@ -14,8 +21,8 @@
         </div>
     @endif
 
-    <div class="bg-white rounded shadow p-4">
-        <form method="POST" action="{{ route('admin.requests.store') }}">
+    <div class="bg-white p-4" style="min-height: calc(100vh - 120px);">
+        <form method="POST" action="{{ route('admin.requests.store') }}" class="container-fluid">
             @csrf
             <div class="form-group">
                 <label for="user_id" class="font-medium">Assign to User</label>
