@@ -8,71 +8,27 @@
         </div>
         
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <a href="{{ route('services', ['category' => 'Website Development']) }}" class="block">
-            <div class="bg-white p-8 rounded-lg shadow-lg card-hover">
-                <div class="w-16 h-16 service-icon rounded-full mb-6 flex items-center justify-center">
-                    <i class="fas fa-laptop-code text-white text-2xl"></i>
+            <!-- Service Categories Section -->
+            @forelse($categories as $category)
+            <a href="{{ route('services.category', $category->slug) }}" class="block">
+                <div class="bg-white p-8 rounded-lg shadow-lg card-hover">
+                    <div class="w-16 h-16 service-icon rounded-full mb-6 flex items-center justify-center">
+                        <i class="{{ $category->icon ?? 'fas fa-folder' }} text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">{{ $category->name }}</h3>
+                    <p class="text-gray-600 mb-4">{{ Str::limit($category->description, 100) }}</p>
+                    <div class="mt-4 text-blue-600 font-semibold flex items-center">
+                        <span>View Services</span>
+                        <i class="fas fa-arrow-right ml-2"></i>
+                    </div>
                 </div>
-                <h3 class="text-xl font-bold mb-3">Website Development</h3>
-                <p class="text-gray-600 mb-4">Responsive, SEO-optimized websites from WordPress to custom PHP solutions</p>
-                <div class="price-highlight text-lg font-bold">From BDT 20,000/-</div>
-            </div>
             </a>
-            
-            <a href="{{ route('services', ['category' => 'Web App & E-commerce']) }}" class="block">
-            <div class="bg-white p-8 rounded-lg shadow-lg card-hover">
-                <div class="w-16 h-16 service-icon rounded-full mb-6 flex items-center justify-center">
-                    <i class="fas fa-globe text-white text-2xl"></i>
-                </div>
-                <h3 class="text-xl font-bold mb-3">Web App & E-commerce</h3>
-                <p class="text-gray-600 mb-4">Full-featured online stores and web applications</p>
-                <div class="price-highlight text-lg font-bold">From BDT 50,000/-</div>
+            @empty
+            <!-- Fallback content if no services are found -->
+            <div class="col-span-3 text-center py-8">
+                <p class="text-gray-500">No services available at the moment. Please check back later.</p>
             </div>
-            </a>
-            
-            <a href="{{ route('services', ['category' => 'Payment Gateway']) }}" class="block">
-            <div class="bg-white p-8 rounded-lg shadow-lg card-hover">
-                <div class="w-16 h-16 service-icon rounded-full mb-6 flex items-center justify-center">
-                    <i class="fas fa-credit-card text-white text-2xl"></i>
-                </div>
-                <h3 class="text-xl font-bold mb-3">Payment Gateway</h3>
-                <p class="text-gray-600 mb-4">SSL partnership for secure online payments</p>
-                <div class="price-highlight text-lg font-bold">Best SSL Deals</div>
-            </div>
-            </a>
-            
-            <a href="{{ route('services', ['category' => 'Digital Marketing']) }}" class="block">
-            <div class="bg-white p-8 rounded-lg shadow-lg card-hover">
-                <div class="w-16 h-16 service-icon rounded-full mb-6 flex items-center justify-center">
-                    <i class="fas fa-bullhorn text-white text-2xl"></i>
-                </div>
-                <h3 class="text-xl font-bold mb-3">Digital Marketing</h3>
-                <p class="text-gray-600 mb-4">SEO, Social Media, and Google Ads management</p>
-                <div class="price-highlight text-lg font-bold">From BDT 12,000/month</div>
-            </div>
-            </a>
-            
-            <a href="{{ route('services', ['category' => 'Background Music']) }}" class="block">
-            <div class="bg-white p-8 rounded-lg shadow-lg card-hover">
-                <div class="w-16 h-16 service-icon rounded-full mb-6 flex items-center justify-center">
-                    <i class="fas fa-music text-white text-2xl"></i>
-                </div>
-                <h3 class="text-xl font-bold mb-3">Background Music</h3>
-                <p class="text-gray-600 mb-4">Custom copyright-free music for your brand</p>
-                <div class="price-highlight text-lg font-bold">From BDT 5,000/-</div>
-            </div>
-            </a>
-            
-            <a href="{{ route('services', ['category' => 'Website Management']) }}" class="block">
-            <div class="bg-white p-8 rounded-lg shadow-lg card-hover">
-                <div class="w-16 h-16 service-icon rounded-full mb-6 flex items-center justify-center">
-                    <i class="fas fa-cogs text-white text-2xl"></i>
-                </div>
-                <h3 class="text-xl font-bold mb-3">Website Management</h3>
-                <p class="text-gray-600 mb-4">Ongoing support and content management</p>
-                <div class="price-highlight text-lg font-bold">From BDT 5,000/month</div>
-            </div>
-            </a>
+            @endforelse
         </div>
     </div>
 </section>

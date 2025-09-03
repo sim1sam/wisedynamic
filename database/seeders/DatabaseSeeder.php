@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
             SlideSeeder::class,
             AboutPageSeeder::class,
             ContactPageSeeder::class,
+            ServiceCategorySeeder::class,
+            ServiceSeeder::class,
         ]);
     }
 }

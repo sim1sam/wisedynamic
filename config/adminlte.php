@@ -319,6 +319,24 @@ return [
             'active' => ['admin/messages*'],
         ],
         [
+            'text' => 'Services',
+            'icon' => 'fas fa-fw fa-cogs',
+            'submenu' => [
+                [
+                    'text' => 'Service Categories',
+                    'url' => 'admin/service-categories',
+                    'icon' => 'fas fa-fw fa-list',
+                    'active' => ['admin/service-categories*'],
+                ],
+                [
+                    'text' => 'All Services',
+                    'url' => 'admin/services',
+                    'icon' => 'fas fa-fw fa-tools',
+                    'active' => ['admin/services*'],
+                ],
+            ],
+        ],
+        [
             'text' => 'Website Settings',
             'icon' => 'fas fa-fw fa-cogs',
             'submenu' => [

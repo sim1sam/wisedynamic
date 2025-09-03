@@ -24,7 +24,7 @@
             <div id="nav-menu" class="hidden md:flex items-center space-x-6">
                 <a href="{{ route('home') }}" class="font-medium {{ request()->routeIs('home') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600' }}">Home</a>
                 <a href="{{ route('about') }}" class="font-medium {{ request()->routeIs('about') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600' }}">About</a>
-                <a href="{{ route('services') }}" class="font-medium {{ request()->routeIs('services') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600' }}">Services</a>
+                <a href="{{ route('services.index') }}" class="font-medium {{ request()->routeIs('services.index') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600' }}">Services</a>
                 <a href="{{ route('packages') }}" class="text-gray-700 hover:text-blue-600 font-medium">Packages</a>
                 <a href="{{ route('contact') }}" class="font-medium {{ request()->routeIs('contact') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600' }}">Contact</a>
 
@@ -56,7 +56,7 @@
         <div class="container mx-auto px-6 py-3 space-y-2">
             <a href="{{ route('home') }}" class="block py-2 font-medium {{ request()->routeIs('home') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600' }}">Home</a>
             <a href="{{ route('about') }}" class="block py-2 font-medium {{ request()->routeIs('about') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600' }}">About</a>
-            <a href="{{ route('services') }}" class="block py-2 font-medium {{ request()->routeIs('services') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600' }}">Services</a>
+            <a href="{{ route('services.index') }}" class="block py-2 font-medium {{ request()->routeIs('services.index') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600' }}">Services</a>
             <a href="{{ route('packages') }}" class="block py-2 text-gray-700 hover:text-blue-600 font-medium">Packages</a>
             <a href="{{ route('contact') }}" class="block py-2 font-medium {{ request()->routeIs('contact') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600' }}">Contact</a>
             @guest

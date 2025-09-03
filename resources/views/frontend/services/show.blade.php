@@ -5,11 +5,11 @@
 <header class="theme-gradient text-white pt-28 pb-16">
     <div class="container mx-auto px-6">
         <div class="max-w-4xl">
-            <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">{{ $title }}</h1>
-            <p class="mt-4 text-white/90 text-lg">{{ $subtitle }}</p>
+            <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">{{ $service->title }}</h1>
+            <p class="mt-4 text-white/90 text-lg">{{ $service->short_description }}</p>
             <div class="mt-8 flex flex-wrap gap-4">
-                <a href="#services" class="btn-primary px-6 py-3 rounded-full font-semibold shadow">Learn More</a>
-                <a href="{{ url('/#contact') }}?service={{ urlencode($title) }}" class="bg-white text-gray-900 px-6 py-3 rounded-full font-semibold hover:opacity-90">Apply Now</a>
+                <a href="#details" class="btn-primary px-6 py-3 rounded-full font-semibold shadow">Learn More</a>
+                <a href="{{ url('/#contact') }}?service={{ urlencode($service->title) }}" class="bg-white text-gray-900 px-6 py-3 rounded-full font-semibold hover:opacity-90">Apply Now</a>
             </div>
         </div>
     </div>
@@ -20,53 +20,48 @@
         <!-- Main layout with sidebar aligned and with proper gaps -->
         <div class="lg:grid lg:grid-cols-[1fr,24rem] lg:gap-6">
             <!-- Left: image and content -->
-            <div class="space-y-8">
+            <div class="space-y-8" id="details">
                 <!-- Visual -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-4 lg:mr-3">
-                    @if(!empty($image))
-                        <img src="{{ $image }}" alt="{{ $title }}" class="w-full h-64 md:h-80 object-cover">
+                    @if($service->image)
+                        <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->title }}" class="w-full h-64 md:h-80 object-cover">
                     @else
                         <div class="w-full h-64 md:h-80 theme-gradient"></div>
                     @endif
                 </div>
 
-                <!-- Expertise -->
+                <!-- Service Description -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h2 class="text-lg font-bold text-blue-700 mb-3">Our Expertise</h2>
+                    <h2 class="text-lg font-bold text-blue-700 mb-3">About This Service</h2>
                     <div class="h-0.5 w-14 bg-blue-600 mb-4"></div>
-                    <p class="text-gray-700 leading-relaxed">{{ $expertise }}</p>
+                    <div class="text-gray-700 leading-relaxed">
+                        {!! $service->description !!}
+                    </div>
                 </div>
-
-                <!-- Core Features -->
+                
+                <!-- Category -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h3 class="text-lg font-bold text-blue-700 mb-3">Core Features</h3>
+                    <h3 class="text-lg font-bold text-blue-700 mb-3">Service Category</h3>
                     <div class="h-0.5 w-14 bg-blue-600 mb-4"></div>
-                    <ul class="text-gray-700 space-y-2">
-                        @foreach($features as $item)
-                            <li class="flex items-start"><i class="fas fa-check mt-1 mr-3 text-blue-600"></i><span>{{ $item }}</span></li>
-                        @endforeach
-                    </ul>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full service-icon flex items-center justify-center">
+                            <i class="{{ $service->category->icon ?? 'fas fa-folder' }} text-white"></i>
+                        </div>
+                        <span class="text-gray-700">{{ $service->category->name }}</span>
+                    </div>
                 </div>
-
-                <!-- Client Benefits -->
+                
+                <!-- Pricing -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h3 class="text-lg font-bold text-blue-700 mb-3">Client Benefits</h3>
+                    <h3 class="text-lg font-bold text-blue-700 mb-3">Pricing</h3>
                     <div class="h-0.5 w-14 bg-blue-600 mb-4"></div>
-                    <ul class="text-gray-700 space-y-2">
-                        @foreach($benefits as $item)
-                            <li class="flex items-start"><i class="fas fa-check mt-1 mr-3 text-blue-600"></i><span>{{ $item }}</span></li>
-                        @endforeach
-                    </ul>
-                </div>
-
-                <!-- Technologies -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h3 class="text-lg font-bold text-blue-700 mb-3">Technologies We Use</h3>
-                    <div class="h-0.5 w-14 bg-blue-600 mb-4"></div>
-                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                        @foreach($technologies as $tech)
-                            <div class="bg-gray-50 border border-gray-200 rounded-md px-3 py-2 text-sm">{{ $tech }}</div>
-                        @endforeach
+                    <div class="text-gray-700">
+                        @if($service->price)
+                            <div class="text-2xl font-bold mb-2">BDT {{ number_format($service->price) }}{{ $service->price_unit ? '/'.$service->price_unit : '' }}</div>
+                        @else
+                            <div class="text-2xl font-bold mb-2">Contact for pricing</div>
+                        @endif
+                        <p>Please contact us for a detailed quote tailored to your specific requirements.</p>
                     </div>
                 </div>
 
@@ -78,8 +73,9 @@
                 </div>
             </div>
 
-            <!-- Right: Sidebar CTA -->
-            <aside class="mt-8 lg:mt-0 lg:sticky lg:top-24 lg:self-start">
+            <!-- Right: Sidebar CTA and Related Services -->
+            <aside class="mt-8 lg:mt-0 lg:sticky lg:top-24 lg:self-start space-y-6">
+                <!-- CTA Box -->
                 <div class="theme-gradient text-white rounded-xl shadow-lg p-6 min-h-80 flex flex-col justify-between lg:w-full">
                     <h3 class="text-lg font-bold mb-1">Start Your Project</h3>
                     <p class="text-white/90 mb-4">Let's turn your vision into a real, high‑performing solution tailored for growth.</p>
@@ -90,13 +86,29 @@
                         <li class="flex"><i class="fas fa-check text-white mr-3 mt-1"></i><span>Lightning‑fast delivery timelines</span></li>
                         <li class="flex"><i class="fas fa-check text-white mr-3 mt-1"></i><span>24/7 technical & customer support</span></li>
                         <li class="flex"><i class="fas fa-check text-white mr-3 mt-1"></i><span>Long‑term maintenance options</span></li>
-                        <li class="flex"><i class="fas fa-check text-white mr-3 mt-1"></i><span>Solutions that scale with you</span></li>
-                        <li class="flex"><i class="fas fa-check text-white mr-3 mt-1"></i><span>100% transparency and ownership</span></li>
                     </ul>
 
-                    <a href="{{ url('/#contact') }}?service={{ urlencode($title) }}" class="block w-full text-center px-5 py-3 rounded-full mt-2 mb-3 bg-white text-gray-900 font-semibold hover:opacity-90">Apply Now</a>
-                    <a href="#" class="block text-center w-full border border-white/60 rounded-full py-3 text-white hover:bg-white/10">View Portfolio</a>
+                    <a href="{{ url('/#contact') }}?service={{ urlencode($service->title) }}" class="block w-full text-center px-5 py-3 rounded-full mt-2 mb-3 bg-white text-gray-900 font-semibold hover:opacity-90">Apply Now</a>
+                    <a href="{{ route('services.index') }}" class="block text-center w-full border border-white/60 rounded-full py-3 text-white hover:bg-white/10">View All Services</a>
                 </div>
+                
+                <!-- Related Services -->
+                @if($relatedServices->count() > 0)
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="text-lg font-bold text-blue-700 mb-3">Related Services</h3>
+                    <div class="h-0.5 w-14 bg-blue-600 mb-4"></div>
+                    
+                    <div class="space-y-4">
+                        @foreach($relatedServices as $relatedService)
+                        <div class="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                            <h4 class="font-semibold mb-1">{{ $relatedService->title }}</h4>
+                            <p class="text-sm text-gray-600 mb-2">{{ Str::limit($relatedService->short_description, 80) }}</p>
+                            <a href="{{ route('services.show', $relatedService->slug) }}" class="text-blue-600 text-sm font-medium hover:underline">Learn more →</a>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
             </aside>
         </div>
     </div>

@@ -22,172 +22,50 @@
             <h2 class="text-4xl font-bold mb-4 gradient-text">Our Services</h2>
             <div class="section-divider mb-6"></div>
             <p class="text-xl text-gray-600">Clear features, upfront pricing, and fast apply.</p>
-            <?php $category = strtolower(request('category', '')); ?>
-            @if($category !== '')
-                <p class="mt-2 text-sm text-gray-500">Category: <span class="font-semibold text-gray-700">{{ request('category') }}</span></p>
+            @if($activeCategory)
+                <p class="mt-2 text-sm text-gray-500">Category: <span class="font-semibold text-gray-700">{{ $activeCategory->name }}</span></p>
             @endif
+        </div>
+        
+        <!-- Category Filter -->
+        <div class="flex flex-wrap justify-center gap-3 mb-10">
+            <a href="{{ route('services.index') }}" class="px-4 py-2 rounded-full text-sm {{ !$activeCategory ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">All Categories</a>
+            @foreach($categories as $category)
+                <a href="{{ route('services.category', $category->slug) }}" class="px-4 py-2 rounded-full text-sm {{ $activeCategory && $activeCategory->id == $category->id ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">{{ $category->name }}</a>
+            @endforeach
         </div>
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
-            <!-- 1. Website Development -->
-            @if($category === '' || $category === 'website development')
+            @forelse($services as $service)
             <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 card-hover hover:shadow-2xl hover:-translate-y-1 transition-all">
                 <div class="w-16 h-16 service-icon rounded-full mb-5 flex items-center justify-center">
-                    <i class="fas fa-laptop-code text-white text-2xl"></i>
+                    <i class="{{ $service->category->icon ?? 'fas fa-cogs' }} text-white text-2xl"></i>
                 </div>
-                <h3 class="text-2xl font-bold mb-2">Website Development</h3>
-                <p class="text-gray-600 mb-4">Responsive, SEO‑ready websites on WordPress, Laravel, or custom stacks.</p>
-                <ul class="text-gray-700 space-y-1.5 mb-6 text-sm">
-                    <li><i class="fas fa-check text-blue-600 mr-2"></i>Corporate, Portfolio, eCommerce</li>
-                    <li><i class="fas fa-check text-blue-600 mr-2"></i>Fast performance</li>
-                    <li><i class="fas fa-check text-blue-600 mr-2"></i>Hosting & maintenance</li>
-                </ul>
+                <h3 class="text-2xl font-bold mb-2">{{ $service->title }}</h3>
+                <p class="text-gray-600 mb-4">{{ $service->short_description }}</p>
                 <div class="flex items-center justify-between pt-4 border-t">
-                    <span class="font-bold text-gray-900">BDT 499+</span>
-                    <a href="{{ route('services.show', 'website-development') }}" class="btn-primary px-5 py-2 rounded-full">Apply</a>
+                    <span class="font-bold text-gray-900">
+                        @if($service->price)
+                            BDT {{ number_format($service->price) }}{{ $service->price_unit ? '/'.$service->price_unit : '' }}
+                        @else
+                            Contact for pricing
+                        @endif
+                    </span>
+                    <a href="{{ route('services.show', $service->slug) }}" class="btn-primary px-5 py-2 rounded-full">Apply</a>
                 </div>
             </div>
-            @endif
-
-            <!-- 2. App Development -->
-            @if($category === '' || $category === 'app development')
-            <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 card-hover hover:shadow-2xl hover:-translate-y-1 transition-all">
-                <div class="w-16 h-16 service-icon rounded-full mb-5 flex items-center justify-center">
-                    <i class="fas fa-mobile-alt text-white text-2xl"></i>
-                </div>
-                <h3 class="text-2xl font-bold mb-2">App Development</h3>
-                <p class="text-gray-600 mb-4">Android, iOS, and cross‑platform apps with secure APIs.</p>
-                <ul class="text-gray-700 space-y-1.5 mb-6 text-sm">
-                    <li><i class="fas fa-check text-blue-600 mr-2"></i>Native & Flutter</li>
-                    <li><i class="fas fa-check text-blue-600 mr-2"></i>API integration</li>
-                    <li><i class="fas fa-check text-blue-600 mr-2"></i>Store deployment</li>
-                </ul>
-                <div class="flex items-center justify-between pt-4 border-t">
-                    <span class="font-bold text-gray-900">BDT 1499</span>
-                    <a href="{{ route('services.show', 'app-development') }}" class="btn-primary px-5 py-2 rounded-full">Apply</a>
-                </div>
+            @empty
+            <div class="col-span-3 text-center py-12">
+                <i class="fas fa-search text-gray-400 text-4xl mb-4"></i>
+                <h3 class="text-xl font-semibold mb-2">No services found</h3>
+                <p class="text-gray-600">We couldn't find any services matching your criteria.</p>
             </div>
-            @endif
-
-            <!-- 3. UI/UX & Branding -->
-            @if($category === '' || $category === 'ui/ux & branding' || $category === 'ui/ux & branding' || $category === 'uiux & branding' || $category === 'uiux and branding')
-            <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 card-hover hover:shadow-2xl hover:-translate-y-1 transition-all">
-                <div class="w-16 h-16 service-icon rounded-full mb-5 flex items-center justify-center">
-                    <i class="fas fa-pencil-ruler text-white text-2xl"></i>
-                </div>
-                <h3 class="text-2xl font-bold mb-2">UI/UX & Branding</h3>
-                <p class="text-gray-600 mb-4">Design systems, wireframes, logos, and brand identity.</p>
-                <ul class="text-gray-700 space-y-1.5 mb-6 text-sm">
-                    <li><i class="fas fa-check text-blue-600 mr-2"></i>Wireframes & prototypes</li>
-                    <li><i class="fas fa-check text-blue-600 mr-2"></i>Logos & guidelines</li>
-                    <li><i class="fas fa-check text-blue-600 mr-2"></i>Accessibility focus</li>
-                </ul>
-                <div class="flex items-center justify-between pt-4 border-t">
-                    <span class="font-bold text-gray-900">BDT 299</span>
-                    <a href="{{ route('services.show', 'ui-ux-branding') }}" class="btn-primary px-5 py-2 rounded-full">Apply</a>
-                </div>
-            </div>
-            @endif
-
-            <!-- 4. Digital Marketing -->
-            @if($category === '' || $category === 'digital marketing')
-            <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 card-hover hover:shadow-2xl hover:-translate-y-1 transition-all">
-                <div class="w-16 h-16 service-icon rounded-full mb-5 flex items-center justify-center">
-                    <i class="fas fa-bullhorn text-white text-2xl"></i>
-                </div>
-                <h3 class="text-2xl font-bold mb-2">Digital Marketing</h3>
-                <p class="text-gray-600 mb-4">SEO, social media, and PPC campaigns to grow conversions.</p>
-                <ul class="text-gray-700 space-y-1.5 mb-6 text-sm">
-                    <li><i class="fas fa-check text-blue-600 mr-2"></i>SMM, SEO, PPC</li>
-                    <li><i class="fas fa-check text-blue-600 mr-2"></i>Content & creatives</li>
-                    <li><i class="fas fa-check text-blue-600 mr-2"></i>Analytics reporting</li>
-                </ul>
-                <div class="flex items-center justify-between pt-4 border-t">
-                    <span class="font-bold text-gray-900">BDT 199/mo</span>
-                    <a href="{{ route('services.show', 'digital-marketing') }}" class="btn-primary px-5 py-2 rounded-full">Apply</a>
-                </div>
-            </div>
-            @endif
-
-            <!-- 5. eCommerce Solutions -->
-            @if($category === '' || $category === 'ecommerce solutions' || $category === 'e-commerce solutions' || $category === 'web app & e-commerce' || $category === 'payment gateway')
-            <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 card-hover hover:shadow-2xl hover:-translate-y-1 transition-all">
-                <div class="w-16 h-16 service-icon rounded-full mb-5 flex items-center justify-center">
-                    <i class="fas fa-store text-white text-2xl"></i>
-                </div>
-                <h3 class="text-2xl font-bold mb-2">eCommerce Solutions</h3>
-                <p class="text-gray-600 mb-4">WooCommerce, Shopify setups, and custom carts.</p>
-                <ul class="text-gray-700 space-y-1.5 mb-6 text-sm">
-                    <li><i class="fas fa-check text-blue-600 mr-2"></i>Store setup & theming</li>
-                    <li><i class="fas fa-check text-blue-600 mr-2"></i>Payments & shipping</li>
-                    <li><i class="fas fa-check text-blue-600 mr-2"></i>Growth & retention</li>
-                </ul>
-                <div class="flex items-center justify-between pt-4 border-t">
-                    <span class="font-bold text-gray-900">BDT 349+</span>
-                    <a href="{{ route('services.show', 'ecommerce-solutions') }}" class="btn-primary px-5 py-2 rounded-full">Apply</a>
-                </div>
-            </div>
-            @endif
-
-            <!-- 6. Maintenance & Support -->
-            @if($category === '' || $category === 'maintenance & support' || $category === 'website management')
-            <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 card-hover hover:shadow-2xl hover:-translate-y-1 transition-all">
-                <div class="w-16 h-16 service-icon rounded-full mb-5 flex items-center justify-center">
-                    <i class="fas fa-life-ring text-white text-2xl"></i>
-                </div>
-                <h3 class="text-2xl font-bold mb-2">Maintenance & Support</h3>
-                <p class="text-gray-600 mb-4">Backups, updates, security, and performance tuning.</p>
-                <ul class="text-gray-700 space-y-1.5 mb-6 text-sm">
-                    <li><i class="fas fa-check text-blue-600 mr-2"></i>Backups & monitoring</li>
-                    <li><i class="fas fa-check text-blue-600 mr-2"></i>Updates & fixes</li>
-                    <li><i class="fas fa-check text-blue-600 mr-2"></i>Performance tweaks</li>
-                </ul>
-                <div class="flex items-center justify-between pt-4 border-t">
-                    <span class="font-bold text-gray-900">BDT 49/mo</span>
-                    <a href="{{ route('services.show', 'maintenance-support') }}" class="btn-primary px-5 py-2 rounded-full">Apply</a>
-                </div>
-            </div>
-            @endif
-
-            <!-- 7. Custom Development -->
-            @if($category === '' || $category === 'custom development' || $category === 'background music')
-            <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 card-hover hover:shadow-2xl hover:-translate-y-1 transition-all">
-                <div class="w-16 h-16 service-icon rounded-full mb-5 flex items-center justify-center">
-                    <i class="fas fa-cubes text-white text-2xl"></i>
-                </div>
-                <h3 class="text-2xl font-bold mb-2">Custom Development</h3>
-                <p class="text-gray-600 mb-4">APIs, dashboards, integrations, and automation.</p>
-                <ul class="text-gray-700 space-y-1.5 mb-6 text-sm">
-                    <li><i class="fas fa-check text-blue-600 mr-2"></i>REST/GraphQL APIs</li>
-                    <li><i class="fas fa-check text-blue-600 mr-2"></i>Dashboards</li>
-                    <li><i class="fas fa-check text-blue-600 mr-2"></i>3rd‑party integrations</li>
-                </ul>
-                <div class="flex items-center justify-between pt-4 border-t">
-                    <span class="font-bold text-gray-900">BDT 299+</span>
-                    <a href="{{ route('services.show', 'custom-development') }}" class="btn-primary px-5 py-2 rounded-full">Apply</a>
-                </div>
-            </div>
-            @endif
-
-            <!-- 8. Security Hardening -->
-            @if($category === '' || $category === 'security hardening')
-            <div class="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 card-hover hover:shadow-2xl hover:-translate-y-1 transition-all">
-                <div class="w-16 h-16 service-icon rounded-full mb-5 flex items-center justify-center">
-                    <i class="fas fa-shield-alt text-white text-2xl"></i>
-                </div>
-                <h3 class="text-2xl font-bold mb-2">Security Hardening</h3>
-                <p class="text-gray-600 mb-4">Firewall rules, malware scans, and best‑practice hardening.</p>
-                <ul class="text-gray-700 space-y-1.5 mb-6 text-sm">
-                    <li><i class="fas fa-check text-blue-600 mr-2"></i>Firewall & WAF config</li>
-                    <li><i class="fas fa-check text-blue-600 mr-2"></i>Malware scans</li>
-                    <li><i class="fas fa-check text-blue-600 mr-2"></i>Hardening checklist</li>
-                </ul>
-                <div class="flex items-center justify-between pt-4 border-t">
-                    <span class="font-bold text-gray-900">BDT 199</span>
-                    <a href="{{ route('services.show', 'security-hardening') }}" class="btn-primary px-5 py-2 rounded-full">Apply</a>
-                </div>
-            </div>
-            @endif
+            @endforelse
+        </div>
+        
+        <!-- Pagination -->
+        <div class="mt-12">
+            {{ $services->links() }}
         </div>
     </div>
 </section>
