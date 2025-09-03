@@ -38,7 +38,7 @@ class ServiceCategoryController extends Controller
                 'name' => 'required|string|max:255',
                 'icon' => 'required|string|max:255',
                 'description' => 'required|string',
-                'status' => 'boolean',
+                // Removed boolean validation for status
             ]);
 
             $validated['slug'] = Str::slug($validated['name']);
@@ -87,7 +87,7 @@ class ServiceCategoryController extends Controller
                 'name' => 'required|string|max:255',
                 'icon' => 'required|string|max:255',
                 'description' => 'required|string',
-                'status' => 'boolean',
+                // Removed boolean validation for status
             ]);
 
             $validated['slug'] = Str::slug($validated['name']);
