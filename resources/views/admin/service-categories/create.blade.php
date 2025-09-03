@@ -9,7 +9,7 @@
 @section('content')
     <div class="card">
         <div class="card-body">
-            <form action="{{ route('service-categories.store') }}" method="POST">
+            <form action="/admin/service-categories" method="POST" id="categoryForm">
                 @csrf
                 
                 <div class="form-group">
@@ -51,7 +51,7 @@
                 
                 <div class="form-group">
                     <a href="{{ route('service-categories.index') }}" class="btn btn-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-primary">Create Category</button>
+                    <button type="button" id="submitBtn" class="btn btn-primary">Create Category</button>
                 </div>
             </form>
         </div>
@@ -65,6 +65,24 @@
             $('#icon').on('input', function() {
                 const iconClass = $(this).val();
                 $('#icon-preview').attr('class', iconClass);
+            });
+            
+            // Add click handler to submit button
+            $('#submitBtn').on('click', function(e) {
+                console.log('Submit button clicked');
+                // Prevent any default action
+                e.preventDefault();
+                
+                // Log form data for debugging
+                console.log('Form data:', {
+                    name: $('#name').val(),
+                    icon: $('#icon').val(),
+                    description: $('#description').val(),
+                    status: $('#status').is(':checked')
+                });
+                
+                // Manually submit the form
+                document.getElementById('categoryForm').submit();
             });
         });
     </script>

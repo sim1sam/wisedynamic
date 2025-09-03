@@ -9,7 +9,7 @@
 @section('content')
     <div class="card">
         <div class="card-body">
-            <form action="{{ route('services.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="/admin/services" method="POST" enctype="multipart/form-data" id="serviceForm">
                 @csrf
                 
                 <div class="row">
@@ -112,7 +112,7 @@
                 
                 <div class="form-group">
                     <a href="{{ route('services.index') }}" class="btn btn-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-primary">Create Service</button>
+                    <button type="button" id="submitBtn" class="btn btn-primary">Create Service</button>
                 </div>
             </form>
         </div>
@@ -134,6 +134,24 @@
             $('input[type="file"]').change(function(e){
                 var fileName = e.target.files[0].name;
                 $(this).next('.custom-file-label').html(fileName);
+            });
+            
+            // Add click handler to submit button
+            $('#submitBtn').on('click', function(e) {
+                console.log('Submit button clicked');
+                // Prevent any default action
+                e.preventDefault();
+                
+                // Log form data for debugging
+                console.log('Form data:', {
+                    title: $('#title').val(),
+                    category: $('#service_category_id').val(),
+                    status: $('#status').is(':checked'),
+                    featured: $('#featured').is(':checked')
+                });
+                
+                // Manually submit the form
+                document.getElementById('serviceForm').submit();
             });
         });
     </script>
