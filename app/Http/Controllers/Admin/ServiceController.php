@@ -165,7 +165,7 @@ class ServiceController extends Controller
      */
     public function show(Service $service)
     {
-        return view('admin.services.show', compact('service'));
+        return redirect()->route('admin.services.edit', $service);
     }
 
     /**
