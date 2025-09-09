@@ -337,6 +337,36 @@ return [
             ],
         ],
         [
+            'text' => 'Packages',
+            'icon' => 'fas fa-fw fa-box',
+            'submenu' => [
+                [
+                    'text' => 'Package Categories',
+                    'url' => 'admin/package-categories',
+                    'icon' => 'fas fa-fw fa-list',
+                    'active' => ['admin/package-categories*'],
+                ],
+                [
+                    'text' => 'Website Development',
+                    'url' => 'admin/packages/website-development',
+                    'icon' => 'fas fa-fw fa-laptop-code',
+                    'active' => ['admin/packages/website-development*'],
+                ],
+                [
+                    'text' => 'Digital Marketing',
+                    'url' => 'admin/packages/digital-marketing',
+                    'icon' => 'fas fa-fw fa-bullhorn',
+                    'active' => ['admin/packages/digital-marketing*'],
+                ],
+                [
+                    'text' => 'All Packages',
+                    'url' => 'admin/packages',
+                    'icon' => 'fas fa-fw fa-boxes',
+                    'active' => ['admin/packages*'],
+                ],
+            ],
+        ],
+        [
             'text' => 'Website Settings',
             'icon' => 'fas fa-fw fa-cogs',
             'submenu' => [

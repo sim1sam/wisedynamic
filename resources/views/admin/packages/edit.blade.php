@@ -1,15 +1,15 @@
 @extends('adminlte::page')
 
-@section('title', 'Edit Service')
+@section('title', 'Edit Package')
 
 @section('content_header')
-    <h1>Edit Service</h1>
+    <h1>Edit Package</h1>
 @stop
 
 @section('content')
     <div class="card">
         <div class="card-body">
-            <form action="{{ route('admin.services.update', ['service' => $service]) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('packages.update', ['package' => $package]) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 
@@ -17,7 +17,7 @@
                     <div class="col-md-8">
                         <div class="form-group">
                             <label for="title">Title <span class="text-danger">*</span></label>
-                            <input type="text" name="title" id="title" class="form-control @error('title') is-invalid @enderror" value="{{ old('title', $service->title) }}" required>
+                            <input type="text" name="title" id="title" class="form-control @error('title') is-invalid @enderror" value="{{ old('title', $package->title) }}" required>
                             @error('title')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -25,8 +25,8 @@
                         
                         <div class="form-group">
                             <label for="short_description">Short Description <span class="text-danger">*</span></label>
-                            <textarea name="short_description" id="short_description" rows="3" class="form-control @error('short_description') is-invalid @enderror" required>{{ old('short_description', $service->short_description) }}</textarea>
-                            <small class="form-text text-muted">Brief summary that appears in service listings (max 200 characters recommended)</small>
+                            <textarea name="short_description" id="short_description" rows="3" class="form-control @error('short_description') is-invalid @enderror" required>{{ old('short_description', $package->short_description) }}</textarea>
+                            <small class="form-text text-muted">Brief summary that appears in package listings (max 200 characters recommended)</small>
                             @error('short_description')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -34,7 +34,7 @@
                         
                         <div class="form-group">
                             <label for="description">Full Description <span class="text-danger">*</span></label>
-                            <textarea name="description" id="description" rows="10" class="form-control @error('description') is-invalid @enderror" required>{{ old('description', $service->description) }}</textarea>
+                            <textarea name="description" id="description" rows="10" class="form-control @error('description') is-invalid @enderror" required>{{ old('description', $package->description) }}</textarea>
                             @error('description')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -43,16 +43,16 @@
                     
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="service_category_id">Category <span class="text-danger">*</span></label>
-                            <select name="service_category_id" id="service_category_id" class="form-control @error('service_category_id') is-invalid @enderror" required>
+                            <label for="package_category_id">Category <span class="text-danger">*</span></label>
+                            <select name="package_category_id" id="package_category_id" class="form-control @error('package_category_id') is-invalid @enderror" required>
                                 <option value="">Select Category</option>
                                 @foreach($categories as $category)
-                                    <option value="{{ $category->id }}" {{ (old('service_category_id', $service->service_category_id) == $category->id) ? 'selected' : '' }}>
+                                    <option value="{{ $category->id }}" {{ (old('package_category_id', $package->package_category_id) == $category->id) ? 'selected' : '' }}>
                                         {{ $category->name }}
                                     </option>
                                 @endforeach
                             </select>
-                            @error('service_category_id')
+                            @error('package_category_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
@@ -63,7 +63,7 @@
                                 <div class="input-group-prepend">
                                     <span class="input-group-text">BDT</span>
                                 </div>
-                                <input type="number" name="price" id="price" class="form-control @error('price') is-invalid @enderror" value="{{ old('price', $service->price) }}">
+                                <input type="number" name="price" id="price" class="form-control @error('price') is-invalid @enderror" value="{{ old('price', $package->price) }}" step="0.01">
                             </div>
                             <small class="form-text text-muted">Leave empty for "Contact for pricing"</small>
                             @error('price')
@@ -73,18 +73,18 @@
                         
                         <div class="form-group">
                             <label for="price_unit">Price Unit</label>
-                            <input type="text" name="price_unit" id="price_unit" class="form-control @error('price_unit') is-invalid @enderror" value="{{ old('price_unit', $service->price_unit) }}" placeholder="e.g., hour, project, month">
-                            <small class="form-text text-muted">Optional unit for the price (e.g., per hour, per project)</small>
+                            <input type="text" name="price_unit" id="price_unit" class="form-control @error('price_unit') is-invalid @enderror" value="{{ old('price_unit', $package->price_unit) }}" placeholder="e.g., monthly, one-time">
+                            <small class="form-text text-muted">Optional unit for the price (e.g., monthly, one-time)</small>
                             @error('price_unit')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         
                         <div class="form-group">
-                            <label for="image">Service Image</label>
-                            @if($service->image)
+                            <label for="image">Package Image</label>
+                            @if($package->image)
                                 <div class="mb-2">
-                                    <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->title }}" class="img-thumbnail" style="max-height: 150px;">
+                                    <img src="{{ asset('storage/' . $package->image) }}" alt="{{ $package->title }}" class="img-thumbnail" style="max-height: 150px;">
                                 </div>
                             @endif
                             <div class="input-group">
@@ -101,24 +101,24 @@
                         
                         <div class="form-group">
                             <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" id="status" name="status" {{ $service->status ? 'checked' : '' }}>
+                                <input type="checkbox" class="custom-control-input" id="status" name="status" {{ $package->status ? 'checked' : '' }}>
                                 <label class="custom-control-label" for="status">Active</label>
                             </div>
                         </div>
                         
                         <div class="form-group">
                             <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" id="featured" name="featured" {{ $service->featured ? 'checked' : '' }}>
+                                <input type="checkbox" class="custom-control-input" id="featured" name="featured" {{ $package->featured ? 'checked' : '' }}>
                                 <label class="custom-control-label" for="featured">Featured</label>
                             </div>
-                            <small class="form-text text-muted">Featured services appear prominently on the homepage</small>
+                            <small class="form-text text-muted">Featured packages appear prominently on the homepage</small>
                         </div>
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <a href="{{ route('admin.services.index') }}" class="btn btn-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-primary">Update Service</button>
+                    <a href="{{ route('packages.index') }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Update Package</button>
                 </div>
             </form>
         </div>

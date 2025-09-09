@@ -72,7 +72,7 @@ class ServiceController extends Controller
 
         Service::create($validated);
 
-        return redirect()->route('services.index')
+        return redirect()->route('admin.services.index')
             ->with('success', 'Service created successfully.');
     }
 
@@ -145,7 +145,7 @@ class ServiceController extends Controller
             
             \Log::info('Service updated successfully', ['service_id' => $service->id]);
 
-            return redirect()->route('services.index')
+            return redirect()->route('admin.services.index')
                 ->with('success', 'Service updated successfully.');
         } catch (\Exception $e) {
             \Log::error('Error updating service', [
@@ -161,6 +161,14 @@ class ServiceController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     */
+    public function show(Service $service)
+    {
+        return view('admin.services.show', compact('service'));
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(Service $service)
@@ -172,7 +180,7 @@ class ServiceController extends Controller
 
         $service->delete();
 
-        return redirect()->route('services.index')
+        return redirect()->route('admin.services.index')
             ->with('success', 'Service deleted successfully.');
     }
 }

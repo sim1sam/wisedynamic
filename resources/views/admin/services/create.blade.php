@@ -111,7 +111,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <a href="{{ route('services.index') }}" class="btn btn-secondary">Cancel</a>
+                    <a href="{{ route('admin.services.index') }}" class="btn btn-secondary">Cancel</a>
                     <button type="button" id="submitBtn" class="btn btn-primary">Create Service</button>
                 </div>
             </form>

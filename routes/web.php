@@ -93,7 +93,21 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::resource('service-categories', \App\Http\Controllers\Admin\ServiceCategoryController::class);
     
     // Services Management
-    Route::resource('services', \App\Http\Controllers\Admin\ServiceController::class);
+    Route::resource('services', \App\Http\Controllers\Admin\ServiceController::class)->names('admin.services');
+    
+    // Package Categories Management
+    Route::resource('package-categories', \App\Http\Controllers\Admin\PackageCategoryController::class);
+    
+    // Packages Management
+    Route::resource('packages', \App\Http\Controllers\Admin\PackageController::class);
+    
+    // Website Development Packages
+    Route::get('packages/website-development', [\App\Http\Controllers\Admin\PackageController::class, 'websiteDevelopment'])
+        ->name('packages.website-development');
+    
+    // Digital Marketing Packages
+    Route::get('packages/digital-marketing', [\App\Http\Controllers\Admin\PackageController::class, 'digitalMarketing'])
+        ->name('packages.digital-marketing');
 });
 
 // Customer dashboard (protected)

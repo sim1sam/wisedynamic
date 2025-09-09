@@ -1,11 +1,11 @@
 @extends('adminlte::page')
 
-@section('title', 'Services')
+@section('title', 'Package Categories')
 
 @section('content_header')
     <div class="d-flex justify-content-between">
-        <h1>Services</h1>
-        <a href="{{ route('admin.services.create') }}" class="btn btn-primary">Add New Service</a>
+        <h1>Package Categories</h1>
+        <a href="{{ route('package-categories.create') }}" class="btn btn-primary">Add New Category</a>
     </div>
 @stop
 
@@ -23,50 +23,35 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Title</th>
-                        <th>Category</th>
-                        <th>Price</th>
+                        <th>Name</th>
+                        <th>Icon</th>
+                        <th>Slug</th>
                         <th>Status</th>
-                        <th>Featured</th>
+                        <th>Packages</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($services as $service)
+                    @forelse($categories as $category)
                         <tr>
-                            <td>{{ $service->id }}</td>
-                            <td>{{ $service->title }}</td>
-                            <td>{{ $service->category->name ?? 'N/A' }}</td>
+                            <td>{{ $category->id }}</td>
+                            <td>{{ $category->name }}</td>
+                            <td><i class="{{ $category->icon }}"></i> {{ $category->icon }}</td>
+                            <td>{{ $category->slug }}</td>
                             <td>
-                                @if($service->price)
-                                    BDT {{ number_format($service->price) }}{{ $service->price_unit ? '/'.$service->price_unit : '' }}
-                                @else
-                                    Contact for pricing
-                                @endif
-                            </td>
-                            <td>
-                                @if($service->status)
+                                @if($category->status)
                                     <span class="badge badge-success">Active</span>
                                 @else
                                     <span class="badge badge-secondary">Inactive</span>
                                 @endif
                             </td>
-                            <td>
-                                @if($service->featured)
-                                    <span class="badge badge-info">Featured</span>
-                                @else
-                                    <span class="badge badge-light">No</span>
-                                @endif
-                            </td>
+                            <td>{{ $category->packages->count() }}</td>
                             <td>
                                 <div class="btn-group">
-                                    <a href="{{ route('admin.services.show', $service) }}" class="btn btn-sm btn-success">
-                                        <i class="fas fa-eye"></i> View
-                                    </a>
-                                    <a href="{{ route('admin.services.edit', ['service' => $service]) }}" class="btn btn-sm btn-info">
+                                    <a href="{{ route('package-categories.edit', ['package_category' => $category]) }}" class="btn btn-sm btn-info">
                                         <i class="fas fa-edit"></i> Edit
                                     </a>
-                                    <form action="{{ route('admin.services.destroy', ['service' => $service]) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this service?');" class="d-inline">
+                                    <form action="{{ route('package-categories.destroy', ['package_category' => $category]) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this category?');" class="d-inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-danger">
@@ -78,7 +63,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center">No services found.</td>
+                            <td colspan="7" class="text-center">No package categories found.</td>
                         </tr>
                     @endforelse
                 </tbody>
