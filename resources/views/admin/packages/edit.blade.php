@@ -9,7 +9,7 @@
 @section('content')
     <div class="card">
         <div class="card-body">
-            <form action="{{ route('packages.update', ['package' => $package]) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.packages.update', ['package' => $package]) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 
@@ -117,7 +117,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <a href="{{ route('packages.index') }}" class="btn btn-secondary">Cancel</a>
+                    <a href="{{ route('admin.packages.index') }}" class="btn btn-secondary">Cancel</a>
                     <button type="submit" class="btn btn-primary">Update Package</button>
                 </div>
             </form>

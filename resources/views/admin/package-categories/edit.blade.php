@@ -9,7 +9,7 @@
 @section('content')
     <div class="card">
         <div class="card-body">
-            <form action="{{ route('package-categories.update', ['package_category' => $packageCategory]) }}" method="POST">
+            <form action="{{ route('admin.package-categories.update', ['package_category' => $packageCategory]) }}" method="POST">
                 @csrf
                 @method('PUT')
                 
@@ -51,7 +51,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <a href="{{ route('package-categories.index') }}" class="btn btn-secondary">Cancel</a>
+                    <a href="{{ route('admin.package-categories.index') }}" class="btn btn-secondary">Cancel</a>
                     <button type="submit" class="btn btn-primary">Update Category</button>
                 </div>
             </form>

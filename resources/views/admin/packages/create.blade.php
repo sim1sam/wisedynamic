@@ -9,7 +9,7 @@
 @section('content')
     <div class="card">
         <div class="card-body">
-            <form action="/admin/packages" method="POST" enctype="multipart/form-data" id="packageForm">
+            <form action="{{ route('admin.packages.store') }}" method="POST" enctype="multipart/form-data" id="packageForm">
                 @csrf
                 
                 <div class="row">
@@ -111,7 +111,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <a href="{{ route('packages.index') }}" class="btn btn-secondary">Cancel</a>
+                    <a href="{{ route('admin.packages.index') }}" class="btn btn-secondary">Cancel</a>
                     <button type="button" id="submitBtn" class="btn btn-primary">Create Package</button>
                 </div>
             </form>

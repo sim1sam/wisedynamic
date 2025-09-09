@@ -9,6 +9,8 @@ use App\Models\AboutSetting;
 use App\Models\ContactSetting;
 use App\Models\Service;
 use App\Models\ServiceCategory;
+use App\Models\Package;
+use App\Models\PackageCategory;
 
 class HomeController extends Controller
 {
@@ -49,5 +51,37 @@ class HomeController extends Controller
     {
         $contactSetting = ContactSetting::first() ?? new ContactSetting();
         return view('frontend.contact.index', compact('contactSetting'));
+    }
+    
+    /**
+     * Display the packages page.
+     */
+    public function packages()
+    {
+        // Get website development category
+        $webDevCategory = PackageCategory::where('name', 'Website Development')->first();
+        
+        // Get digital marketing category
+        $marketingCategory = PackageCategory::where('name', 'Digital Marketing')->first();
+        
+        // Get active packages for each category
+        $webDevPackages = [];
+        $marketingPackages = [];
+        
+        if ($webDevCategory) {
+            $webDevPackages = Package::where('package_category_id', $webDevCategory->id)
+                ->where('status', true)
+                ->orderBy('price')
+                ->get();
+        }
+        
+        if ($marketingCategory) {
+            $marketingPackages = Package::where('package_category_id', $marketingCategory->id)
+                ->where('status', true)
+                ->orderBy('price')
+                ->get();
+        }
+        
+        return view('frontend.packages.index', compact('webDevPackages', 'marketingPackages'));
     }
 }

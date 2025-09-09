@@ -190,7 +190,7 @@ class PackageController extends Controller
             $category = PackageCategory::where('name', 'Website Development')->first();
             
             if (!$category) {
-                return redirect()->route('packages.index')
+                return redirect()->route('admin.packages.index')
                     ->with('error', 'Website Development category not found.');
             }
             
@@ -205,7 +205,7 @@ class PackageController extends Controller
                 'error' => $e->getMessage()
             ]);
             
-            return redirect()->route('packages.index')
+            return redirect()->route('admin.packages.index')
                 ->with('error', 'Failed to load Website Development packages: ' . $e->getMessage());
         }
     }
@@ -220,7 +220,7 @@ class PackageController extends Controller
             $category = PackageCategory::where('name', 'Digital Marketing')->first();
             
             if (!$category) {
-                return redirect()->route('packages.index')
+                return redirect()->route('admin.packages.index')
                     ->with('error', 'Digital Marketing category not found.');
             }
             
@@ -235,7 +235,7 @@ class PackageController extends Controller
                 'error' => $e->getMessage()
             ]);
             
-            return redirect()->route('packages.index')
+            return redirect()->route('admin.packages.index')
                 ->with('error', 'Failed to load Digital Marketing packages: ' . $e->getMessage());
         }
     }

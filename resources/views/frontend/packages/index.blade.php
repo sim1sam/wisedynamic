@@ -24,190 +24,83 @@
             <p class="text-xl text-gray-600">Choose the perfect package for your business needs</p>
         </div>
         
-        <div class="grid lg:grid-cols-4 gap-6">
-            <!-- Startup Package -->
-            <div class="bg-gradient-to-b from-blue-50 to-white p-8 rounded-lg shadow-lg card-hover border-2 border-transparent hover:border-blue-200">
-                <div class="text-center mb-6">
-                    <h3 class="text-2xl font-bold mb-2">Startup</h3>
-                    <div class="price-highlight text-3xl font-bold mb-2">BDT 20,000/-</div>
-                    <p class="text-gray-600">Perfect for Portfolio</p>
-                </div>
+        <div class="grid lg:grid-cols-{{ count($webDevPackages) > 0 ? min(count($webDevPackages), 4) : 4 }} gap-6">
+            @forelse($webDevPackages as $index => $package)
+                @php
+                    // Define different color schemes for packages
+                    $colorSchemes = [
+                        ['from-blue-50', 'hover:border-blue-200', ''],
+                        ['from-purple-50', 'border-purple-200', 'bg-purple-500'],
+                        ['from-green-50', 'hover:border-green-200', ''],
+                        ['from-yellow-50', 'hover:border-yellow-200', 'bg-yellow-500']
+                    ];
+                    
+                    $currentScheme = $colorSchemes[$index % count($colorSchemes)];
+                    $featured = $package->featured;
+                    
+                    // Parse description for features
+                    $description = $package->description;
+                    $features = explode("\n", $description);
+                @endphp
                 
-                <div class="space-y-3 mb-6">
-                    <div class="flex items-center">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        <span>WordPress Technology</span>
+                <div class="bg-gradient-to-b {{ $currentScheme[0] }} to-white p-8 rounded-lg shadow-lg card-hover border-2 border-transparent {{ $featured ? $currentScheme[1] : 'hover:'.$currentScheme[1] }}">
+                    <div class="text-center mb-6">
+                        @if($featured || $index === 1)
+                            <div class="{{ $currentScheme[2] ? $currentScheme[2] : 'bg-blue-500' }} text-white px-3 py-1 rounded-full text-sm mb-2 inline-block">{{ $index === 3 ? 'Enterprise' : 'Popular' }}</div>
+                        @endif
+                        <h3 class="text-2xl font-bold mb-2">{{ $package->title }}</h3>
+                        <div class="price-highlight text-{{ $index === 3 ? '2xl' : '3xl' }} font-bold mb-2">
+                            @if($index === 3)
+                                From BDT {{ number_format($package->price) }}/-
+                            @else
+                                BDT {{ number_format($package->price) }}/-
+                            @endif
+                        </div>
+                        <p class="text-gray-600">{{ $package->short_description }}</p>
                     </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        <span>Responsive Design</span>
+                    
+                    <div class="space-y-3 mb-6">
+                        @foreach($features as $feature)
+                            @if(trim($feature) != '')
+                                <div class="flex items-center">
+                                    @if(strpos(strtolower($feature), 'delivery') !== false)
+                                        <i class="fas fa-clock text-orange-500 mr-2"></i>
+                                    @else
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                    @endif
+                                    <span>{{ trim($feature) }}</span>
+                                </div>
+                            @endif
+                        @endforeach
                     </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        <span>Basic SEO</span>
+                    
+                    <div class="text-sm text-gray-600 mb-4">
+                        @if($index === 3)
+                            <p class="font-semibold text-center">Contact for Custom Quote</p>
+                        @else
+                            @if($index === 0)
+                                <p>Payment Gateway Setup: <span class="font-semibold">BDT 22,500/-</span></p>
+                                <p>Integration: <span class="font-semibold">BDT 5,000/-</span></p>
+                            @elseif($index === 1)
+                                <p>Payment Gateway Setup: <span class="font-semibold">BDT 20,000/-</span></p>
+                                <p>Integration: <span class="font-semibold">BDT 4,000/-</span></p>
+                            @elseif($index === 2)
+                                <p>Payment Gateway Setup: <span class="font-semibold">BDT 17,500/-</span></p>
+                            @endif
+                        @endif
                     </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        <span>Free Domain (1st Year)</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        <span>Free 1GB Hosting</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-clock text-orange-500 mr-2"></i>
-                        <span>3-7 Days Delivery</span>
-                    </div>
-                </div>
-                
-                <div class="text-sm text-gray-600 mb-4">
-                    <p>Payment Gateway Setup: <span class="font-semibold">BDT 22,500/-</span></p>
-                    <p>Integration: <span class="font-semibold">BDT 5,000/-</span></p>
-                </div>
-                <div class="flex flex-wrap gap-3 mt-4">
-                    <a href="{{ route('cart.show', ['package' => 'startup']) }}" class="btn-primary px-6 py-3 rounded-full font-semibold">Get</a>
-                    <a href="{{ url('/#contact') }}?package=startup&consultation=free" class="btn-outline-primary px-6 py-3 rounded-full font-semibold">Free Consultation</a>
-                </div>
-            </div>
-
-            <!-- Streamline Package -->
-            <div class="bg-gradient-to-b from-purple-50 to-white p-8 rounded-lg shadow-lg card-hover border-2 border-purple-200">
-                <div class="text-center mb-6">
-                    <div class="bg-purple-500 text-white px-3 py-1 rounded-full text-sm mb-2 inline-block">Popular</div>
-                    <h3 class="text-2xl font-bold mb-2">Streamline</h3>
-                    <div class="price-highlight text-3xl font-bold mb-2">BDT 50,000/-</div>
-                    <p class="text-gray-600">Best for E-Commerce</p>
-                </div>
-                
-                <div class="space-y-3 mb-6">
-                    <div class="flex items-center">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        <span>PHP Technology</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        <span>Responsive Design</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        <span>Basic SEO</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        <span>Free Domain (1st Year)</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        <span>Free 3GB Hosting</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-clock text-orange-500 mr-2"></i>
-                        <span>15-20 Days Delivery</span>
+                    <div class="flex flex-wrap gap-3 mt-4">
+                        <a href="{{ route('cart.show', ['package' => $package->slug]) }}" class="btn-primary px-6 py-3 rounded-full font-semibold">Get</a>
+                        <a href="{{ url('/#contact') }}?package={{ $package->slug }}&consultation=free" class="btn-outline-primary px-6 py-3 rounded-full font-semibold">Free Consultation</a>
                     </div>
                 </div>
-                
-                <div class="text-sm text-gray-600 mb-4">
-                    <p>Payment Gateway Setup: <span class="font-semibold">BDT 20,000/-</span></p>
-                    <p>Integration: <span class="font-semibold">BDT 4,000/-</span></p>
+            @empty
+                <!-- Fallback if no packages are found -->
+                <div class="col-span-4 text-center py-10">
+                    <p class="text-xl text-gray-600">No website development packages available at the moment.</p>
+                    <p class="mt-4">Please check back later or <a href="{{ url('/contact') }}" class="text-primary hover:underline">contact us</a> for custom solutions.</p>
                 </div>
-                <div class="flex flex-wrap gap-3 mt-4">
-                    <a href="{{ route('cart.show', ['package' => 'streamline']) }}" class="btn-primary px-6 py-3 rounded-full font-semibold">Get</a>
-                    <a href="{{ url('/#contact') }}?package=streamline&consultation=free" class="btn-outline-primary px-6 py-3 rounded-full font-semibold">Free Consultation</a>
-                </div>
-            </div>
-
-            <!-- Scale Package -->
-            <div class="bg-gradient-to-b from-green-50 to-white p-8 rounded-lg shadow-lg card-hover border-2 border-transparent hover:border-green-200">
-                <div class="text-center mb-6">
-                    <h3 class="text-2xl font-bold mb-2">Scale</h3>
-                    <div class="price-highlight text-3xl font-bold mb-2">BDT 80,000/-</div>
-                    <p class="text-gray-600">Advanced E-Commerce</p>
-                </div>
-                
-                <div class="space-y-3 mb-6">
-                    <div class="flex items-center">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        <span>PHP Technology</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        <span>Responsive Design</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        <span>Advanced SEO</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        <span>Free Domain (1st Year)</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        <span>Free 5GB Hosting</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        <span>Free Payment Integration</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-clock text-orange-500 mr-2"></i>
-                        <span>25-30 Days Delivery</span>
-                    </div>
-                </div>
-                
-                <div class="text-sm text-gray-600 mb-4">
-                    <p>Payment Gateway Setup: <span class="font-semibold">BDT 17,500/-</span></p>
-                </div>
-                <div class="flex flex-wrap gap-3 mt-4">
-                    <a href="{{ route('cart.show', ['package' => 'scale']) }}" class="btn-primary px-6 py-3 rounded-full font-semibold">Get</a>
-                    <a href="{{ url('/#contact') }}?package=scale&consultation=free" class="btn-outline-primary px-6 py-3 rounded-full font-semibold">Free Consultation</a>
-                </div>
-            </div>
-
-            <!-- Stable Package -->
-            <div class="bg-gradient-to-b from-yellow-50 to-white p-8 rounded-lg shadow-lg card-hover border-2 border-transparent hover:border-yellow-200">
-                <div class="text-center mb-6">
-                    <div class="bg-yellow-500 text-white px-3 py-1 rounded-full text-sm mb-2 inline-block">Enterprise</div>
-                    <h3 class="text-2xl font-bold mb-2">Stable</h3>
-                    <div class="price-highlight text-2xl font-bold mb-2">From BDT 200,000/-</div>
-                    <p class="text-gray-600">Custom Requirements</p>
-                </div>
-                
-                <div class="space-y-3 mb-6">
-                    <div class="flex items-center">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        <span>Custom Technology</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        <span>Responsive Design</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        <span>Advanced SEO</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        <span>Custom Features</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        <span>Scalable Architecture</span>
-                    </div>
-                    <div class="flex items-center">
-                        <i class="fas fa-check text-green-500 mr-2"></i>
-                        <span>Premium Support</span>
-                    </div>
-                </div>
-                
-                <div class="text-sm text-gray-600 mb-4">
-                    <p class="font-semibold text-center">Contact for Custom Quote</p>
-                </div>
-                <div class="flex flex-wrap gap-3 mt-4">
-                    <a href="{{ route('cart.show', ['package' => 'stable']) }}" class="btn-primary px-6 py-3 rounded-full font-semibold">Get</a>
-                    <a href="{{ url('/#contact') }}?package=stable&consultation=free" class="btn-outline-primary px-6 py-3 rounded-full font-semibold">Free Consultation</a>
-                </div>
-            </div>
+            @endforelse
         </div>
     </div>
 </section>
@@ -221,68 +114,56 @@
             <p class="text-xl text-gray-600">Select the perfect package that fits your business requirements and budget</p>
         </div>
         
-        <div class="grid lg:grid-cols-3 gap-6">
-            <!-- Social Media Marketing -->
-            <div class="bg-gradient-to-b from-blue-50 to-white p-8 rounded-lg shadow-lg card-hover border-2 border-transparent hover:border-blue-200">
-                <div class="text-center mb-6">
-                    <h3 class="text-2xl font-bold mb-2">Social Media Marketing</h3>
-                    <div class="price-highlight text-2xl font-bold mb-2">BDT 12,000/- <span class="text-base font-semibold">Per Month</span></div>
-                </div>
+        <div class="grid lg:grid-cols-{{ count($marketingPackages) > 0 ? min(count($marketingPackages), 3) : 3 }} gap-6">
+            @forelse($marketingPackages as $index => $package)
+                @php
+                    // Define different color schemes for packages
+                    $colorSchemes = [
+                        ['from-blue-50', 'hover:border-blue-200', ''],
+                        ['from-purple-50', 'border-purple-200', 'bg-purple-500'],
+                        ['from-yellow-50', 'hover:border-yellow-200', '']
+                    ];
+                    
+                    $currentScheme = $colorSchemes[$index % count($colorSchemes)];
+                    $featured = $package->featured;
+                    
+                    // Parse description for features
+                    $description = $package->description;
+                    $features = explode("\n", $description);
+                @endphp
+                
+                <div class="bg-gradient-to-b {{ $currentScheme[0] }} to-white p-8 rounded-lg shadow-lg card-hover border-2 {{ $featured || $index === 1 ? $currentScheme[1] : 'border-transparent hover:'.$currentScheme[1] }}">
+                    <div class="text-center mb-6">
+                        @if($featured || $index === 1)
+                            <div class="{{ $currentScheme[2] ? $currentScheme[2] : 'bg-blue-500' }} text-white px-3 py-1 rounded-full text-sm mb-2 inline-block">{{ $index === 1 ? 'Recommended' : 'Popular' }}</div>
+                        @endif
+                        <h3 class="text-2xl font-bold mb-2">{{ $package->title }}</h3>
+                        <div class="price-highlight text-2xl font-bold mb-2">BDT {{ number_format($package->price) }}/- <span class="text-base font-semibold">{{ $package->price_unit }}</span></div>
+                    </div>
 
-                <div class="space-y-3 mb-6">
-                    <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>12 branded content designs</span></div>
-                    <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Facebook/Instagram Ads setup</span></div>
-                    <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Page setup & audience targeting</span></div>
-                    <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Weekly performance report</span></div>
-                </div>
+                    <div class="space-y-3 mb-6">
+                        @foreach($features as $feature)
+                            @if(trim($feature) != '')
+                                <div class="flex items-center">
+                                    <i class="fas fa-check text-green-500 mr-2"></i>
+                                    <span>{{ trim($feature) }}</span>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
 
-                <div class="flex flex-wrap gap-3 mt-2">
-                    <a href="{{ route('cart.show', ['package' => 'social']) }}" class="btn-primary px-6 py-3 rounded-full font-semibold">Get</a>
-                    <a href="{{ url('/#contact') }}?package=social&consultation=free" class="btn-outline-primary px-6 py-3 rounded-full font-semibold">Free Consultation</a>
+                    <div class="flex flex-wrap gap-3 mt-2">
+                        <a href="{{ route('cart.show', ['package' => $package->slug]) }}" class="btn-primary px-6 py-3 rounded-full font-semibold">Get</a>
+                        <a href="{{ url('/#contact') }}?package={{ $package->slug }}&consultation=free" class="btn-outline-primary px-6 py-3 rounded-full font-semibold">Free Consultation</a>
+                    </div>
                 </div>
-            </div>
-
-            <!-- SEO Growth Plan (Recommended) -->
-            <div class="bg-gradient-to-b from-purple-50 to-white p-8 rounded-lg shadow-lg card-hover border-2 border-purple-200">
-                <div class="text-center mb-6">
-                    <div class="bg-purple-500 text-white px-3 py-1 rounded-full text-sm mb-2 inline-block">Recommended</div>
-                    <h3 class="text-2xl font-bold mb-2">SEO Growth Plan</h3>
-                    <div class="price-highlight text-2xl font-bold mb-2">BDT 18,000/- <span class="text-base font-semibold">Per Month</span></div>
+            @empty
+                <!-- Fallback if no packages are found -->
+                <div class="col-span-3 text-center py-10">
+                    <p class="text-xl text-gray-600">No digital marketing packages available at the moment.</p>
+                    <p class="mt-4">Please check back later or <a href="{{ url('/contact') }}" class="text-primary hover:underline">contact us</a> for custom solutions.</p>
                 </div>
-
-                <div class="space-y-3 mb-6">
-                    <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Full website SEO audit</span></div>
-                    <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Keyword research + competitor analysis</span></div>
-                    <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>On-page + Technical SEO</span></div>
-                    <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Google Console & Sitemap setup</span></div>
-                    <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Monthly rank tracking</span></div>
-                </div>
-
-                <div class="flex flex-wrap gap-3 mt-2">
-                    <a href="{{ route('cart.show', ['package' => 'seo']) }}" class="btn-primary px-6 py-3 rounded-full font-semibold">Get</a>
-                    <a href="{{ url('/#contact') }}?package=seo&consultation=free" class="btn-outline-primary px-6 py-3 rounded-full font-semibold">Free Consultation</a>
-                </div>
-            </div>
-
-            <!-- Google Ads Campaign -->
-            <div class="bg-gradient-to-b from-yellow-50 to-white p-8 rounded-lg shadow-lg card-hover border-2 border-transparent hover:border-yellow-200">
-                <div class="text-center mb-6">
-                    <h3 class="text-2xl font-bold mb-2">Google Ads Campaign</h3>
-                    <div class="price-highlight text-2xl font-bold mb-2">BDT 15,000/- <span class="text-base font-semibold">Per Month</span></div>
-                </div>
-
-                <div class="space-y-3 mb-6">
-                    <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Google Ads account setup</span></div>
-                    <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Up to 3 campaign sets</span></div>
-                    <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Conversion & traffic targeting</span></div>
-                    <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>A/B testing + ROI reporting</span></div>
-                </div>
-
-                <div class="flex flex-wrap gap-3 mt-2">
-                    <a href="{{ route('cart.show', ['package' => 'ads']) }}" class="btn-primary px-6 py-3 rounded-full font-semibold">Get</a>
-                    <a href="{{ url('/#contact') }}?package=ads&consultation=free" class="btn-outline-primary px-6 py-3 rounded-full font-semibold">Free Consultation</a>
-                </div>
-            </div>
+            @endforelse
         </div>
         
         <!-- Additional Info Section -->

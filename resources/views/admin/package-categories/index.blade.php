@@ -5,7 +5,7 @@
 @section('content_header')
     <div class="d-flex justify-content-between">
         <h1>Package Categories</h1>
-        <a href="{{ route('package-categories.create') }}" class="btn btn-primary">Add New Category</a>
+        <a href="{{ route('admin.package-categories.create') }}" class="btn btn-primary">Add New Category</a>
     </div>
 @stop
 
@@ -48,10 +48,10 @@
                             <td>{{ $category->packages->count() }}</td>
                             <td>
                                 <div class="btn-group">
-                                    <a href="{{ route('package-categories.edit', ['package_category' => $category]) }}" class="btn btn-sm btn-info">
+                                    <a href="{{ route('admin.package-categories.edit', ['package_category' => $category]) }}" class="btn btn-sm btn-info">
                                         <i class="fas fa-edit"></i> Edit
                                     </a>
-                                    <form action="{{ route('package-categories.destroy', ['package_category' => $category]) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this category?');" class="d-inline">
+                                    <form action="{{ route('admin.package-categories.destroy', ['package_category' => $category]) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this category?');" class="d-inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-danger">

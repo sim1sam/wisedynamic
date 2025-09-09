@@ -21,9 +21,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 
 // Packages page
-Route::get('/packages', function () {
-    return view('frontend.packages.index');
-})->name('packages');
+Route::get('/packages', [HomeController::class, 'packages'])->name('packages');
 
 // Cart & Checkout
 Route::get('/cart', [CartController::class, 'show'])->name('cart.show');
@@ -96,18 +94,18 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::resource('services', \App\Http\Controllers\Admin\ServiceController::class)->names('admin.services');
     
     // Package Categories Management
-    Route::resource('package-categories', \App\Http\Controllers\Admin\PackageCategoryController::class);
-    
-    // Packages Management
-    Route::resource('packages', \App\Http\Controllers\Admin\PackageController::class);
+    Route::resource('package-categories', \App\Http\Controllers\Admin\PackageCategoryController::class)->names('admin.package-categories');
     
     // Website Development Packages
     Route::get('packages/website-development', [\App\Http\Controllers\Admin\PackageController::class, 'websiteDevelopment'])
-        ->name('packages.website-development');
+        ->name('admin.packages.website-development');
     
     // Digital Marketing Packages
     Route::get('packages/digital-marketing', [\App\Http\Controllers\Admin\PackageController::class, 'digitalMarketing'])
-        ->name('packages.digital-marketing');
+        ->name('admin.packages.digital-marketing');
+    
+    // Packages Management
+    Route::resource('packages', \App\Http\Controllers\Admin\PackageController::class)->names('admin.packages');
 });
 
 // Customer dashboard (protected)

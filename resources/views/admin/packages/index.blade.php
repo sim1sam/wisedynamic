@@ -5,7 +5,7 @@
 @section('content_header')
     <div class="d-flex justify-content-between">
         <h1>Packages</h1>
-        <a href="{{ route('packages.create') }}" class="btn btn-primary">Add New Package</a>
+        <a href="{{ route('admin.packages.create') }}" class="btn btn-primary">Add New Package</a>
     </div>
 @stop
 
@@ -60,10 +60,10 @@
                             </td>
                             <td>
                                 <div class="btn-group">
-                                    <a href="{{ route('packages.edit', ['package' => $package]) }}" class="btn btn-sm btn-info">
+                                    <a href="{{ route('admin.packages.edit', ['package' => $package]) }}" class="btn btn-sm btn-info">
                                         <i class="fas fa-edit"></i> Edit
                                     </a>
-                                    <form action="{{ route('packages.destroy', ['package' => $package]) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this package?');" class="d-inline">
+                                    <form action="{{ route('admin.packages.destroy', ['package' => $package]) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this package?');" class="d-inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-danger">
