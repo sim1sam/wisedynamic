@@ -31,8 +31,20 @@ class HomeController extends Controller
             ->with('category')
             ->take(6)
             ->get();
+            
+        // Get website development packages for homepage
+        $webDevCategory = PackageCategory::where('name', 'Website Development')->first();
+        $webDevPackages = [];
         
-        return view('frontend.home.index', compact('slides', 'homeSetting', 'categories', 'featuredServices'));
+        if ($webDevCategory) {
+            $webDevPackages = Package::where('package_category_id', $webDevCategory->id)
+                ->where('status', true)
+                ->orderBy('price')
+                ->take(4) // Limit to 4 packages for homepage display
+                ->get();
+        }
+        
+        return view('frontend.home.index', compact('slides', 'homeSetting', 'categories', 'featuredServices', 'webDevPackages'));
     }
     
     /**
