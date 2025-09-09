@@ -61,19 +61,19 @@
                     <div class="grid md:grid-cols-2 gap-4 mt-3">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Full name</label>
-                            <input type="text" name="full_name" class="w-full border rounded-lg px-4 py-2" value="{{ old('full_name', $customer['full_name'] ?? '') }}" required>
+                            <input type="text" name="full_name" class="w-full border rounded-lg px-4 py-2" value="{{ old('full_name') }}" required>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Company (optional)</label>
-                            <input type="text" name="company" class="w-full border rounded-lg px-4 py-2" value="{{ old('company', $customer['company'] ?? '') }}">
+                            <input type="text" name="company" class="w-full border rounded-lg px-4 py-2" value="{{ old('company') }}">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                            <input type="email" name="email" class="w-full border rounded-lg px-4 py-2" value="{{ old('email', $customer['email'] ?? '') }}" required>
+                            <input type="email" name="email" class="w-full border rounded-lg px-4 py-2" value="{{ old('email') }}" required>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                            <input type="text" name="phone" class="w-full border rounded-lg px-4 py-2" value="{{ old('phone', $customer['phone'] ?? '') }}" required>
+                            <input type="text" name="phone" class="w-full border rounded-lg px-4 py-2" value="{{ old('phone') }}" required>
                         </div>
                     </div>
 
@@ -82,27 +82,27 @@
                         <div class="grid md:grid-cols-2 gap-4 mt-3">
                             <div class="md:col-span-2">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Address line 1</label>
-                                <input type="text" name="address_line1" class="w-full border rounded-lg px-4 py-2" value="{{ old('address_line1', $billing['address_line1'] ?? '') }}" required>
+                                <input type="text" name="address_line1" class="w-full border rounded-lg px-4 py-2" value="{{ old('address_line1') }}" required>
                             </div>
                             <div class="md:col-span-2">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Address line 2 (optional)</label>
-                                <input type="text" name="address_line2" class="w-full border rounded-lg px-4 py-2" value="{{ old('address_line2', $billing['address_line2'] ?? '') }}">
+                                <input type="text" name="address_line2" class="w-full border rounded-lg px-4 py-2" value="{{ old('address_line2') }}">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
-                                <input type="text" name="city" class="w-full border rounded-lg px-4 py-2" value="{{ old('city', $billing['city'] ?? '') }}" required>
+                                <input type="text" name="city" class="w-full border rounded-lg px-4 py-2" value="{{ old('city') }}" required>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">State / Province</label>
-                                <input type="text" name="state" class="w-full border rounded-lg px-4 py-2" value="{{ old('state', $billing['state'] ?? '') }}">
+                                <input type="text" name="state" class="w-full border rounded-lg px-4 py-2" value="{{ old('state') }}">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Postal code</label>
-                                <input type="text" name="postal_code" class="w-full border rounded-lg px-4 py-2" value="{{ old('postal_code', $billing['postal_code'] ?? '') }}" required>
+                                <input type="text" name="postal_code" class="w-full border rounded-lg px-4 py-2" value="{{ old('postal_code') }}" required>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
-                                <input type="text" name="country" class="w-full border rounded-lg px-4 py-2" value="{{ old('country', $billing['country'] ?? '') }}" required>
+                                <input type="text" name="country" class="w-full border rounded-lg px-4 py-2" value="{{ old('country') }}" required>
                             </div>
                         </div>
                     </div>
