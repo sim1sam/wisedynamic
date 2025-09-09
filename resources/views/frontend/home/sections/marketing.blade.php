@@ -7,83 +7,52 @@
             <p class="text-xl text-gray-600">Boost your online presence with our comprehensive marketing solutions</p>
         </div>
         
-        <div class="grid lg:grid-cols-3 gap-8">
-            <div class="bg-white p-8 rounded-lg shadow-lg card-hover">
-                <h3 class="text-2xl font-bold mb-4 text-center">Social Media Marketing</h3>
-                <div class="price-highlight text-3xl font-bold text-center mb-6">BDT 12,000/- <span class="text-base font-normal text-gray-600">Per Month</span></div>
+        <div class="grid lg:grid-cols-{{ count($marketingPackages) > 0 ? min(count($marketingPackages), 3) : 3 }} gap-8">
+            @forelse($marketingPackages as $index => $package)
+                @php
+                    // Define different color schemes for packages
+                    $colorSchemes = [
+                        ['', ''],
+                        ['border-2 border-purple-200', 'bg-purple-500'],
+                        ['', '']
+                    ];
+                    
+                    $currentScheme = $colorSchemes[$index % count($colorSchemes)];
+                    $featured = $package->featured;
+                    
+                    // Parse description for features
+                    $description = $package->description;
+                    $features = explode("\n", $description);
+                @endphp
                 
-                <div class="space-y-3 mb-6">
-                    <div class="flex items-start">
-                        <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
-                        <span>12 branded content designs</span>
-                    </div>
-                    <div class="flex items-start">
-                        <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
-                        <span>Facebook/Instagram Ads setup</span>
-                    </div>
-                    <div class="flex items-start">
-                        <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
-                        <span>Page setup & audience targeting</span>
-                    </div>
-                    <div class="flex items-start">
-                        <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
-                        <span>Weekly performance report</span>
+                <div class="bg-white p-8 rounded-lg shadow-lg card-hover {{ $featured ? $currentScheme[0] : '' }}">
+                    @if($featured || $index === 1)
+                        <div class="{{ $currentScheme[1] ? $currentScheme[1] : 'bg-blue-500' }} text-white px-3 py-1 rounded-full text-sm mb-4 inline-block">{{ $index === 1 ? 'Recommended' : 'Popular' }}</div>
+                    @endif
+                    <h3 class="text-2xl font-bold mb-4 text-center">{{ $package->title }}</h3>
+                    <div class="price-highlight text-3xl font-bold text-center mb-6">BDT {{ number_format($package->price) }}/- <span class="text-base font-normal text-gray-600">{{ $package->price_unit }}</span></div>
+                    
+                    <div class="space-y-3 mb-6">
+                        @foreach($features as $feature)
+                            @if(trim($feature) != '')
+                                <div class="flex items-start">
+                                    <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
+                                    <span>{{ trim($feature) }}</span>
+                                </div>
+                            @endif
+                        @endforeach
                     </div>
                 </div>
-            </div>
-            
-            <div class="bg-white p-8 rounded-lg shadow-lg card-hover border-2 border-purple-200">
-                <div class="bg-purple-500 text-white px-3 py-1 rounded-full text-sm mb-4 inline-block">Recommended</div>
-                <h3 class="text-2xl font-bold mb-4 text-center">SEO Growth Plan</h3>
-                <div class="price-highlight text-3xl font-bold text-center mb-6">BDT 18,000/- <span class="text-base font-normal text-gray-600">Per Month</span></div>
-                
-                <div class="space-y-3 mb-6">
-                    <div class="flex items-start">
-                        <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
-                        <span>Full website SEO audit</span>
-                    </div>
-                    <div class="flex items-start">
-                        <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
-                        <span>Keyword research + competitor analysis</span>
-                    </div>
-                    <div class="flex items-start">
-                        <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
-                        <span>On-page + Technical SEO</span>
-                    </div>
-                    <div class="flex items-start">
-                        <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
-                        <span>Google Console & Sitemap setup</span>
-                    </div>
-                    <div class="flex items-start">
-                        <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
-                        <span>Monthly rank tracking</span>
-                    </div>
+            @empty
+                <!-- Fallback if no packages are found -->
+                <div class="col-span-3 text-center py-10">
+                    <p class="text-xl text-gray-600">No digital marketing packages available at the moment.</p>
                 </div>
-            </div>
-            
-            <div class="bg-white p-8 rounded-lg shadow-lg card-hover">
-                <h3 class="text-2xl font-bold mb-4 text-center">Google Ads Campaign</h3>
-                <div class="price-highlight text-3xl font-bold text-center mb-6">BDT 15,000/- <span class="text-base font-normal text-gray-600">Per Month</span></div>
-                
-                <div class="space-y-3 mb-6">
-                    <div class="flex items-start">
-                        <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
-                        <span>Google Ads account setup</span>
-                    </div>
-                    <div class="flex items-start">
-                        <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
-                        <span>Up to 3 campaign sets</span>
-                    </div>
-                    <div class="flex items-start">
-                        <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
-                        <span>Conversion & traffic targeting</span>
-                    </div>
-                    <div class="flex items-start">
-                        <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
-                        <span>A/B testing + ROI reporting</span>
-                    </div>
-                </div>
-            </div>
+            @endforelse
+        </div>
+        
+        <div class="text-center mt-8">
+            <a href="{{ route('packages') }}" class="btn-primary px-8 py-3 rounded-full font-semibold">View All Packages</a>
         </div>
     </div>
 </section>

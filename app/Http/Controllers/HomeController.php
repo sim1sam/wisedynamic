@@ -44,7 +44,19 @@ class HomeController extends Controller
                 ->get();
         }
         
-        return view('frontend.home.index', compact('slides', 'homeSetting', 'categories', 'featuredServices', 'webDevPackages'));
+        // Get digital marketing packages for homepage
+        $marketingCategory = PackageCategory::where('name', 'Digital Marketing')->first();
+        $marketingPackages = [];
+        
+        if ($marketingCategory) {
+            $marketingPackages = Package::where('package_category_id', $marketingCategory->id)
+                ->where('status', true)
+                ->orderBy('price')
+                ->take(3) // Limit to 3 packages for homepage display
+                ->get();
+        }
+        
+        return view('frontend.home.index', compact('slides', 'homeSetting', 'categories', 'featuredServices', 'webDevPackages', 'marketingPackages'));
     }
     
     /**
