@@ -364,6 +364,12 @@ return [
                     'icon' => 'fas fa-fw fa-boxes',
                     'active' => ['admin/packages*'],
                 ],
+                [
+                    'text' => 'Package Orders',
+                    'url' => 'admin/package-orders',
+                    'icon' => 'fas fa-fw fa-shopping-cart',
+                    'active' => ['admin/package-orders*'],
+                ],
             ],
         ],
         [

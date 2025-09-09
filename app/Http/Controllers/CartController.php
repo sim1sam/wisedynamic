@@ -116,9 +116,55 @@ class CartController extends Controller
         if (!$cart || !$customer || !$billing) {
             return redirect()->route('cart.show');
         }
-
-        // Here we would persist the order and optionally take payment
-
+        
+        // Get package details if available
+        $package = null;
+        $packageName = $cart['package_key'];
+        $amount = $cart['amount'];
+        
+        // Try to find the package in the database
+        $dbPackage = \App\Models\Package::where('slug', $cart['package_key'])->first();
+        if ($dbPackage) {
+            $package = $dbPackage;
+            $packageName = $dbPackage->title;
+            $amount = $dbPackage->price;
+        }
+        
+        // Create the package order
+        $order = \App\Models\PackageOrder::create([
+            'package_id' => $package ? $package->id : null,
+            'package_name' => $packageName,
+            'amount' => $amount,
+            
+            // Customer information
+            'full_name' => $customer['full_name'],
+            'email' => $customer['email'],
+            'phone' => $customer['phone'],
+            'company' => $customer['company'] ?? null,
+            
+            // Billing information
+            'address_line1' => $billing['address_line1'],
+            'address_line2' => $billing['address_line2'] ?? null,
+            'city' => $billing['city'],
+            'state' => $billing['state'] ?? null,
+            'postal_code' => $billing['postal_code'],
+            'country' => $billing['country'],
+            
+            // Project details
+            'website_name' => $cart['website_name'] ?? null,
+            'website_type' => $cart['website_type'] ?? null,
+            'page_count' => $cart['page_count'] ?? null,
+            'page_url' => $cart['page_url'] ?? null,
+            'ad_budget' => $cart['ad_budget'] ?? null,
+            'notes' => $cart['notes'] ?? null,
+            
+            // Set initial status
+            'status' => 'pending',
+        ]);
+        
+        // Clear the cart session
+        session()->forget(['cart', 'customer', 'billing']);
+        
         return redirect(url('/#contact') . '?package=' . urlencode($cart['package_key']) . '&order=placed')
             ->with('success', 'Order placed. We will contact you shortly.');
     }

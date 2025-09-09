@@ -106,6 +106,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     
     // Packages Management
     Route::resource('packages', \App\Http\Controllers\Admin\PackageController::class)->names('admin.packages');
+    
+    // Package Orders Management
+    Route::get('package-orders', [\App\Http\Controllers\Admin\PackageOrderController::class, 'index'])
+        ->name('admin.package-orders.index');
+    Route::get('package-orders/{packageOrder}', [\App\Http\Controllers\Admin\PackageOrderController::class, 'show'])
+        ->name('admin.package-orders.show');
+    Route::patch('package-orders/{packageOrder}/status', [\App\Http\Controllers\Admin\PackageOrderController::class, 'updateStatus'])
+        ->name('admin.package-orders.update-status');
 });
 
 // Customer dashboard (protected)
