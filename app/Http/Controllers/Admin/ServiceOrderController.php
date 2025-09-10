@@ -232,6 +232,7 @@ class ServiceOrderController extends Controller
             // Create transaction record
             $transaction = new Transaction([
                 'transaction_number' => Transaction::generateTransactionNumber(),
+                'package_order_id' => null, // Explicitly set to null
                 'service_order_id' => $serviceOrder->id,
                 'amount' => $paymentAmount,
                 'payment_method' => $paymentMethod,
