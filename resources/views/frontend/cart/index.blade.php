@@ -25,7 +25,8 @@
                 @endif
                 <form action="{{ route('cart.store') }}" method="POST" class="space-y-6">
                     @csrf
-                    <input type="hidden" name="package_key" value="{{ $selected['key'] ?? request('package') }}">
+                    <input type="hidden" name="item_type" value="{{ $selected['type'] ?? 'package' }}">
+                    <input type="hidden" name="item_key" value="{{ $selected['key'] ?? request('package') ?? request('service') }}">
                     <input type="hidden" name="amount" value="{{ intval($selected['amount'] ?? ($catalog[request('package')]['amount'] ?? 0)) }}">
 
                     @if(($packageType ?? null) === 'marketing' || (isset($selected['key']) && in_array($selected['key'], ['social', 'seo', 'ads'])))

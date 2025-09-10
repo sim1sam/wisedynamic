@@ -9,7 +9,7 @@
             <p class="mt-4 text-white/90 text-lg">{{ $service->short_description }}</p>
             <div class="mt-8 flex flex-wrap gap-4">
                 <a href="#details" class="btn-primary px-6 py-3 rounded-full font-semibold shadow">Learn More</a>
-                <a href="{{ url('/#contact') }}?service={{ urlencode($service->title) }}" class="bg-white text-gray-900 px-6 py-3 rounded-full font-semibold hover:opacity-90">Apply Now</a>
+                <a href="{{ route('cart.show', ['service' => $service->slug]) }}" class="bg-white text-gray-900 px-6 py-3 rounded-full font-semibold hover:opacity-90">Apply Now</a>
             </div>
         </div>
     </div>
@@ -88,7 +88,7 @@
                         <li class="flex"><i class="fas fa-check text-white mr-3 mt-1"></i><span>Long‑term maintenance options</span></li>
                     </ul>
 
-                    <a href="{{ url('/#contact') }}?service={{ urlencode($service->title) }}" class="block w-full text-center px-5 py-3 rounded-full mt-2 mb-3 bg-white text-gray-900 font-semibold hover:opacity-90">Apply Now</a>
+                    <a href="{{ route('cart.show', ['service' => $service->slug]) }}" class="block w-full text-center px-5 py-3 rounded-full mt-2 mb-3 bg-white text-gray-900 font-semibold hover:opacity-90">Apply Now</a>
                     <a href="{{ route('services.index') }}" class="block text-center w-full border border-white/60 rounded-full py-3 text-white hover:bg-white/10">View All Services</a>
                 </div>
                 

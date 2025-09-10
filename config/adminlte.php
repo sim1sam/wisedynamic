@@ -334,6 +334,12 @@ return [
                     'icon' => 'fas fa-fw fa-tools',
                     'active' => ['admin/services*'],
                 ],
+                [
+                    'text' => 'Service Orders',
+                    'url' => 'admin/service-orders',
+                    'icon' => 'fas fa-fw fa-shopping-cart',
+                    'active' => ['admin/service-orders*'],
+                ],
             ],
         ],
         [

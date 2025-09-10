@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->string('transaction_number')->unique();
-            $table->foreignId('package_order_id')->constrained('package_orders')->onDelete('cascade');
+            $table->foreignId('package_order_id')->nullable()->constrained('package_orders')->nullOnDelete();
+            $table->foreignId('service_order_id')->nullable()->constrained('service_orders')->nullOnDelete();
             $table->decimal('amount', 10, 2);
             $table->string('payment_method')->default('manual');
             $table->string('status')->default('completed');

@@ -124,6 +124,24 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         ->name('admin.package-orders.process-payment');
     Route::post('package-orders/{packageOrder}/complete', [\App\Http\Controllers\Admin\PackageOrderController::class, 'markCompleted'])
         ->name('admin.package-orders.complete');
+    
+    // Service Orders Management
+    Route::get('service-orders', [\App\Http\Controllers\Admin\ServiceOrderController::class, 'index'])
+        ->name('admin.service-orders.index');
+    Route::get('service-orders/{serviceOrder}', [\App\Http\Controllers\Admin\ServiceOrderController::class, 'show'])
+        ->name('admin.service-orders.show');
+    Route::get('service-orders/{serviceOrder}/edit', [\App\Http\Controllers\Admin\ServiceOrderController::class, 'edit'])
+        ->name('admin.service-orders.edit');
+    Route::put('service-orders/{serviceOrder}', [\App\Http\Controllers\Admin\ServiceOrderController::class, 'update'])
+        ->name('admin.service-orders.update');
+    Route::patch('service-orders/{serviceOrder}/status', [\App\Http\Controllers\Admin\ServiceOrderController::class, 'updateStatus'])
+        ->name('admin.service-orders.update-status');
+    Route::post('service-orders/{serviceOrder}/accept', [\App\Http\Controllers\Admin\ServiceOrderController::class, 'accept'])
+        ->name('admin.service-orders.accept');
+    Route::post('service-orders/{serviceOrder}/payment', [\App\Http\Controllers\Admin\ServiceOrderController::class, 'processPayment'])
+        ->name('admin.service-orders.process-payment');
+    Route::post('service-orders/{serviceOrder}/complete', [\App\Http\Controllers\Admin\ServiceOrderController::class, 'markCompleted'])
+        ->name('admin.service-orders.complete');
 });
 
 // Customer dashboard (protected)
@@ -139,6 +157,11 @@ Route::middleware('auth')->group(function(){
     Route::get('/customer/orders', [\App\Http\Controllers\Customer\OrderController::class, 'index'])->name('customer.orders.index');
     Route::get('/customer/orders/{order}', [\App\Http\Controllers\Customer\OrderController::class, 'show'])->name('customer.orders.show');
     Route::post('/customer/orders/{order}/payment', [\App\Http\Controllers\Customer\OrderController::class, 'processPayment'])->name('customer.orders.process-payment');
+    
+    // Customer Service Orders
+    Route::get('/customer/service-orders', [\App\Http\Controllers\Customer\ServiceOrderController::class, 'index'])->name('customer.service-orders.index');
+    Route::get('/customer/service-orders/{serviceOrder}', [\App\Http\Controllers\Customer\ServiceOrderController::class, 'show'])->name('customer.service-orders.show');
+    Route::post('/customer/service-orders/{serviceOrder}/payment', [\App\Http\Controllers\Customer\ServiceOrderController::class, 'processPayment'])->name('customer.service-orders.process-payment');
     Route::get('/customer/requests/create', [RequestController::class, 'create'])->name('customer.requests.create');
     Route::post('/customer/requests', [RequestController::class, 'store'])->name('customer.requests.store');
     Route::get('/customer/requests/{customerRequest}', [RequestController::class, 'show'])->name('customer.requests.show');

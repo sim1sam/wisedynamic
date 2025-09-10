@@ -6,20 +6,39 @@ use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
-    // Show the cart page and prefill based on selected package
+    // Show the cart page and prefill based on selected package or service
     public function show(Request $request)
     {
         $packageSlug = $request->query('package');
+        $serviceSlug = $request->query('service');
         
-        // Try to get the package from the database first
+        // Initialize variables
         $dbPackage = null;
+        $dbService = null;
         $selected = null;
+        $itemType = null;
         $packageType = null;
         
-        if ($packageSlug) {
+        // Check for service first
+        if ($serviceSlug) {
+            $dbService = \App\Models\Service::where('slug', $serviceSlug)->where('status', true)->first();
+            
+            if ($dbService) {
+                $itemType = 'service';
+                $selected = [
+                    'key' => $dbService->slug,
+                    'title' => $dbService->title,
+                    'amount' => intval($dbService->price),
+                    'type' => 'service'
+                ];
+            }
+        }
+        // If no service, check for package
+        elseif ($packageSlug) {
             $dbPackage = \App\Models\Package::where('slug', $packageSlug)->where('status', true)->first();
             
             if ($dbPackage) {
+                $itemType = 'package';
                 // Get package category to determine type
                 $category = $dbPackage->category;
                 $packageType = $category && $category->name === 'Digital Marketing' ? 'marketing' : 'website';
@@ -28,6 +47,7 @@ class CartController extends Controller
                     'key' => $dbPackage->slug,
                     'title' => $dbPackage->title,
                     'amount' => intval($dbPackage->price),
+                    'type' => 'package'
                 ];
             }
         }
@@ -48,7 +68,8 @@ class CartController extends Controller
             ];
             
             if (isset($catalog[$packageSlug])) {
-                $selected = array_merge($catalog[$packageSlug], ['key' => $packageSlug]);
+                $itemType = 'package';
+                $selected = array_merge($catalog[$packageSlug], ['key' => $packageSlug, 'type' => 'package']);
                 $packageType = in_array($packageSlug, ['social','seo','ads']) ? 'marketing' : 'website';
             }
         }
@@ -78,9 +99,10 @@ class CartController extends Controller
     // Accept cart form, store to session, go to checkout
     public function store(Request $request)
     {
-        // Cart (package and project/marketing details)
+        // Cart (package/service and project details)
         $cart = $request->validate([
-            'package_key'   => 'required|string',
+            'item_type'     => 'required|string|in:package,service',
+            'item_key'      => 'required|string',
             'website_name'  => 'nullable|string|max:255',
             'website_type'  => 'nullable|string|max:255',
             'page_count'    => 'nullable|integer|min:1',
@@ -135,6 +157,11 @@ class CartController extends Controller
         if (!$cart) {
             return redirect()->route('cart.show');
         }
+        
+        // Ensure item_type is always defined
+        if (!isset($cart['item_type'])) {
+            $cart['item_type'] = 'package';
+        }
 
         return view('frontend.checkout.index', [
             'cart' => $cart,
@@ -153,55 +180,105 @@ class CartController extends Controller
             return redirect()->route('cart.show');
         }
         
-        // Get package details if available
-        $package = null;
-        $packageName = $cart['package_key'];
+        // Check if this is a package or service order
+        $itemType = $cart['item_type'] ?? 'package';
+        $itemKey = $cart['item_key'];
         $amount = $cart['amount'];
         
-        // Try to find the package in the database
-        $dbPackage = \App\Models\Package::where('slug', $cart['package_key'])->first();
-        if ($dbPackage) {
-            $package = $dbPackage;
-            $packageName = $dbPackage->title;
-            $amount = $dbPackage->price;
+        if ($itemType === 'package') {
+            // Handle package order
+            $package = null;
+            $packageName = $itemKey;
+            
+            // Try to find the package in the database
+            $dbPackage = \App\Models\Package::where('slug', $itemKey)->first();
+            if ($dbPackage) {
+                $package = $dbPackage;
+                $packageName = $dbPackage->title;
+                $amount = $dbPackage->price;
+            }
+            
+            // Create the package order
+            $order = \App\Models\PackageOrder::create([
+                'package_id' => $package ? $package->id : null,
+                'package_name' => $packageName,
+                'amount' => $amount,
+                
+                // Customer information
+                'full_name' => $customer['full_name'],
+                'email' => $customer['email'],
+                'phone' => $customer['phone'],
+                'company' => $customer['company'] ?? null,
+                
+                // Billing information
+                'address_line1' => $billing['address_line1'],
+                'address_line2' => $billing['address_line2'] ?? null,
+                'city' => $billing['city'],
+                'state' => $billing['state'] ?? null,
+                'postal_code' => $billing['postal_code'],
+                'country' => $billing['country'],
+                
+                // Project details
+                'website_name' => $cart['website_name'] ?? null,
+                'website_type' => $cart['website_type'] ?? null,
+                'page_count' => $cart['page_count'] ?? null,
+                'notes' => $cart['notes'] ?? null,
+                
+                // Set initial status
+                'status' => 'pending',
+            ]);
+            
+            $redirectParam = 'package=' . urlencode($itemKey);
+        } else {
+            // Handle service order
+            $service = null;
+            $serviceName = $itemKey;
+            
+            // Try to find the service in the database
+            $dbService = \App\Models\Service::where('slug', $itemKey)->first();
+            if ($dbService) {
+                $service = $dbService;
+                $serviceName = $dbService->title;
+                $amount = $dbService->price;
+            }
+            
+            // Create the service order
+            $order = \App\Models\ServiceOrder::create([
+                'service_id' => $service ? $service->id : null,
+                'service_name' => $serviceName,
+                'amount' => $amount,
+                
+                // Customer information
+                'full_name' => $customer['full_name'],
+                'email' => $customer['email'],
+                'phone' => $customer['phone'],
+                'company' => $customer['company'] ?? null,
+                
+                // Billing information
+                'address_line1' => $billing['address_line1'],
+                'address_line2' => $billing['address_line2'] ?? null,
+                'city' => $billing['city'],
+                'state' => $billing['state'] ?? null,
+                'postal_code' => $billing['postal_code'],
+                'country' => $billing['country'],
+                
+                // Project details
+                'project_name' => $cart['website_name'] ?? null,
+                'project_type' => $cart['website_type'] ?? null,
+                'requirements' => $cart['notes'] ?? null,
+                'notes' => null,
+                
+                // Set initial status
+                'status' => 'pending',
+            ]);
+            
+            $redirectParam = 'service=' . urlencode($itemKey);
         }
-        
-        // Create the package order
-        $order = \App\Models\PackageOrder::create([
-            'package_id' => $package ? $package->id : null,
-            'package_name' => $packageName,
-            'amount' => $amount,
-            
-            // Customer information
-            'full_name' => $customer['full_name'],
-            'email' => $customer['email'],
-            'phone' => $customer['phone'],
-            'company' => $customer['company'] ?? null,
-            
-            // Billing information
-            'address_line1' => $billing['address_line1'],
-            'address_line2' => $billing['address_line2'] ?? null,
-            'city' => $billing['city'],
-            'state' => $billing['state'] ?? null,
-            'postal_code' => $billing['postal_code'],
-            'country' => $billing['country'],
-            
-            // Project details
-            'website_name' => $cart['website_name'] ?? null,
-            'website_type' => $cart['website_type'] ?? null,
-            'page_count' => $cart['page_count'] ?? null,
-            'page_url' => $cart['page_url'] ?? null,
-            'ad_budget' => $cart['ad_budget'] ?? null,
-            'notes' => $cart['notes'] ?? null,
-            
-            // Set initial status
-            'status' => 'pending',
-        ]);
         
         // Clear the cart session
         session()->forget(['cart', 'customer', 'billing']);
         
-        return redirect(url('/#contact') . '?package=' . urlencode($cart['package_key']) . '&order=placed')
+        return redirect(url('/#contact') . '?' . $redirectParam . '&order=placed')
             ->with('success', 'Order placed. We will contact you shortly.');
     }
 }

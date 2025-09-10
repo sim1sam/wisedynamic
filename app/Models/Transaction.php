@@ -18,6 +18,7 @@ class Transaction extends Model
     protected $fillable = [
         'transaction_number',
         'package_order_id',
+        'service_order_id',
         'amount',
         'payment_method',
         'status',
@@ -30,6 +31,14 @@ class Transaction extends Model
     public function packageOrder()
     {
         return $this->belongsTo(PackageOrder::class);
+    }
+    
+    /**
+     * Get the service order associated with this transaction.
+     */
+    public function serviceOrder()
+    {
+        return $this->belongsTo(ServiceOrder::class);
     }
     
     /**

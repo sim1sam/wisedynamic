@@ -14,7 +14,8 @@
     <ul class="space-y-2 list-disc list-inside text-blue-700">
       <li><a href="{{ route('home') }}" class="hover:underline">Back to Home</a></li>
       <li><a href="{{ route('packages') }}" class="hover:underline">Browse Packages</a></li>
-      <li><a href="{{ route('customer.orders.index') }}" class="hover:underline">My Orders</a></li>
+      <li><a href="{{ route('customer.orders.index') }}" class="hover:underline">My Package Orders</a></li>
+      <li><a href="{{ route('customer.service-orders.index') }}" class="hover:underline">My Service Orders</a></li>
       <li><a href="{{ route('contact') }}" class="hover:underline">Contact Support</a></li>
     </ul>
   </div>

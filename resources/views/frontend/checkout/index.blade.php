@@ -14,11 +14,18 @@
         <div class="lg:col-span-2">
             <div class="bg-white rounded-lg shadow p-6">
                 <h2 class="text-xl font-semibold mb-4">Review Details</h2>
-                @php($cart = $cart ?? [])
+                @php
+                    $cart = $cart ?? [];
+                    // Ensure these variables are always defined
+                    $itemType = $cart['item_type'] ?? 'package';
+                    $itemKey = $cart['item_key'] ?? '';
+                    $isService = $itemType === 'service';
+                    $isMarketing = in_array($itemKey, ['social','seo','ads']);
+                @endphp
                 <div class="grid md:grid-cols-2 gap-6">
                     <div>
-                        <div class="text-sm text-gray-600">Package</div>
-                        <div class="text-gray-900 font-medium">{{ ucfirst($cart['package_key'] ?? '—') }}</div>
+                        <div class="text-sm text-gray-600">{{ ($cart['item_type'] ?? 'package') === 'service' ? 'Service' : 'Package' }}</div>
+                        <div class="text-gray-900 font-medium">{{ ucfirst($cart['item_key'] ?? '—') }}</div>
                     </div>
                     <div>
                         <div class="text-sm text-gray-600">Total</div>
@@ -27,19 +34,21 @@
                 </div>
 
                 <hr class="my-6">
-                <h3 class="text-lg font-semibold mb-2">Project/Marketing Info</h3>
-                @php($isMarketing = in_array($cart['package_key'] ?? '', ['social','seo','ads']))
+                
+                <h3 class="text-lg font-semibold mb-2">{{ $isService ? 'Service Details' : ($isMarketing ? 'Marketing Info' : 'Project Details') }}</h3>
                 <div class="grid md:grid-cols-2 gap-4 text-sm text-gray-700">
-                    @if($isMarketing)
+                    @if($isService)
+                        <div>{{ $isMarketing ? 'Business/Page' : 'Project Name' }}: <span class="text-gray-900">{{ $cart['website_name'] ?? '—' }}</span></div>
+                        <div>Type: <span class="text-gray-900">{{ $cart['website_type'] ?? '—' }}</span></div>
+                    @elseif($isMarketing)
                         <div>Business/Page: <span class="text-gray-900">{{ $cart['website_name'] ?? '—' }}</span></div>
-                        <div>Page URL: <span class="text-gray-900">{{ $cart['page_url'] ?? '—' }}</span></div>
-                        <div>Ad Budget: <span class="text-gray-900">{{ isset($cart['ad_budget']) ? ('BDT ' . number_format((int)$cart['ad_budget']) . '/-') : '—' }}</span></div>
+                        <div>Type: <span class="text-gray-900">{{ $cart['website_type'] ?? '—' }}</span></div>
                     @else
                         <div>Website/Business: <span class="text-gray-900">{{ $cart['website_name'] ?? '—' }}</span></div>
                         <div>Type: <span class="text-gray-900">{{ $cart['website_type'] ?? '—' }}</span></div>
                         <div>Pages: <span class="text-gray-900">{{ $cart['page_count'] ?? '—' }}</span></div>
                     @endif
-                    <div class="md:col-span-2">Notes: <span class="text-gray-900 whitespace-pre-line">{{ $cart['notes'] ?? '—' }}</span></div>
+                    <div class="md:col-span-2">{{ $isService ? 'Requirements' : 'Notes' }}: <span class="text-gray-900 whitespace-pre-line">{{ $cart['notes'] ?? '—' }}</span></div>
                 </div>
 
                 <hr class="my-6">
@@ -63,7 +72,11 @@
                 </div>
 
                 <div class="flex gap-3 mt-6">
-                    <a href="{{ route('cart.show', ['package' => $cart['package_key'] ?? null]) }}" class="btn-outline-primary px-6 py-3 rounded-full font-semibold">Back to Edit</a>
+                    @if(($cart['item_type'] ?? 'package') === 'service')
+                        <a href="{{ route('cart.show', ['service' => $cart['item_key'] ?? null]) }}" class="btn-outline-primary px-6 py-3 rounded-full font-semibold">Back to Edit</a>
+                    @else
+                        <a href="{{ route('cart.show', ['package' => $cart['item_key'] ?? null]) }}" class="btn-outline-primary px-6 py-3 rounded-full font-semibold">Back to Edit</a>
+                    @endif
                 </div>
             </div>
         </div>
