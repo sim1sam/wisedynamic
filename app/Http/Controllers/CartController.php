@@ -9,9 +9,51 @@ class CartController extends Controller
     // Show the cart page and prefill based on selected package
     public function show(Request $request)
     {
-        $package = $request->query('package');
+        $packageSlug = $request->query('package');
+        
+        // Try to get the package from the database first
+        $dbPackage = null;
+        $selected = null;
+        $packageType = null;
+        
+        if ($packageSlug) {
+            $dbPackage = \App\Models\Package::where('slug', $packageSlug)->where('status', true)->first();
+            
+            if ($dbPackage) {
+                // Get package category to determine type
+                $category = $dbPackage->category;
+                $packageType = $category && $category->name === 'Digital Marketing' ? 'marketing' : 'website';
+                
+                $selected = [
+                    'key' => $dbPackage->slug,
+                    'title' => $dbPackage->title,
+                    'amount' => intval($dbPackage->price),
+                ];
+            }
+        }
+        
+        // Fallback to static catalog if package not found in database
+        if (!$selected && $packageSlug) {
+            // Static package catalog as fallback
+            $catalog = [
+                // Website packages
+                'startup'   => ['title' => 'Startup (Website)', 'amount' => 20000],
+                'streamline'=> ['title' => 'Streamline (Website)', 'amount' => 50000],
+                'scale'     => ['title' => 'Scale (Website)', 'amount' => 80000],
+                'stable'    => ['title' => 'Stable (Website)', 'amount' => 200000],
+                // Marketing packages
+                'social'    => ['title' => 'Social Media Marketing', 'amount' => 12000],
+                'seo'       => ['title' => 'SEO Growth Plan', 'amount' => 18000],
+                'ads'       => ['title' => 'Google Ads Campaign', 'amount' => 15000],
+            ];
+            
+            if (isset($catalog[$packageSlug])) {
+                $selected = array_merge($catalog[$packageSlug], ['key' => $packageSlug]);
+                $packageType = in_array($packageSlug, ['social','seo','ads']) ? 'marketing' : 'website';
+            }
+        }
 
-        // Static package catalog (for now)
+        // Define the catalog for the view (needed for the fallback in the view)
         $catalog = [
             // Website packages
             'startup'   => ['title' => 'Startup (Website)', 'amount' => 20000],
@@ -23,13 +65,7 @@ class CartController extends Controller
             'seo'       => ['title' => 'SEO Growth Plan', 'amount' => 18000],
             'ads'       => ['title' => 'Google Ads Campaign', 'amount' => 15000],
         ];
-
-        $selected = $package && isset($catalog[$package]) ? array_merge($catalog[$package], ['key' => $package]) : null;
-        $packageType = null;
-        if ($selected) {
-            $packageType = in_array($selected['key'], ['social','seo','ads']) ? 'marketing' : 'website';
-        }
-
+        
         return view('frontend.cart.index', [
             'selected' => $selected,
             'catalog'  => $catalog,
@@ -49,11 +85,11 @@ class CartController extends Controller
             'website_type'  => 'nullable|string|max:255',
             'page_count'    => 'nullable|integer|min:1',
             'notes'         => 'nullable|string|max:2000',
-            'amount'        => 'required|integer|min:0',
-            // Marketing specific
-            'page_url'      => 'nullable|url|max:255',
-            'ad_budget'     => 'nullable|integer|min:0',
+            'amount'        => 'required|numeric',
         ]);
+        
+        // Convert amount to integer
+        $cart['amount'] = intval($cart['amount']);
 
         // Customer & billing details now collected on cart page
         $validated = $request->validate([

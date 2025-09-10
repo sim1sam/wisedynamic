@@ -25,21 +25,17 @@
                 @endif
                 <form action="{{ route('cart.store') }}" method="POST" class="space-y-6">
                     @csrf
-                    <input type="hidden" name="package_key" value="{{ $selected['key'] ?? '' }}">
-                    <input type="hidden" name="amount" value="{{ $selected['amount'] ?? 0 }}">
+                    <input type="hidden" name="package_key" value="{{ $selected['key'] ?? request('package') }}">
+                    <input type="hidden" name="amount" value="{{ intval($selected['amount'] ?? ($catalog[request('package')]['amount'] ?? 0)) }}">
 
-                    @if(($packageType ?? null) === 'marketing')
+                    @if(($packageType ?? null) === 'marketing' || (isset($selected['key']) && in_array($selected['key'], ['social', 'seo', 'ads'])))
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Business/Page Name</label>
                             <input type="text" name="website_name" class="w-full border rounded-lg px-4 py-2" placeholder="e.g., Wise Dynamic" value="{{ old('website_name') }}">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Page URL</label>
-                            <input type="url" name="page_url" class="w-full border rounded-lg px-4 py-2" placeholder="e.g., https://facebook.com/yourpage" value="{{ old('page_url') }}">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Monthly Ad Budget (BDT)</label>
-                            <input type="number" min="0" name="ad_budget" class="w-full border rounded-lg px-4 py-2" placeholder="e.g., 15000" value="{{ old('ad_budget') }}">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Marketing Type</label>
+                            <input type="text" name="website_type" class="w-full border rounded-lg px-4 py-2" placeholder="e.g., Social Media, SEO, Google Ads" value="{{ old('website_type') }}">
                         </div>
                     @else
                         <div>
