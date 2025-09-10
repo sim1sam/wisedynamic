@@ -112,8 +112,18 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         ->name('admin.package-orders.index');
     Route::get('package-orders/{packageOrder}', [\App\Http\Controllers\Admin\PackageOrderController::class, 'show'])
         ->name('admin.package-orders.show');
+    Route::get('package-orders/{packageOrder}/edit', [\App\Http\Controllers\Admin\PackageOrderController::class, 'edit'])
+        ->name('admin.package-orders.edit');
+    Route::put('package-orders/{packageOrder}', [\App\Http\Controllers\Admin\PackageOrderController::class, 'update'])
+        ->name('admin.package-orders.update');
     Route::patch('package-orders/{packageOrder}/status', [\App\Http\Controllers\Admin\PackageOrderController::class, 'updateStatus'])
         ->name('admin.package-orders.update-status');
+    Route::post('package-orders/{packageOrder}/accept', [\App\Http\Controllers\Admin\PackageOrderController::class, 'accept'])
+        ->name('admin.package-orders.accept');
+    Route::post('package-orders/{packageOrder}/payment', [\App\Http\Controllers\Admin\PackageOrderController::class, 'processPayment'])
+        ->name('admin.package-orders.process-payment');
+    Route::post('package-orders/{packageOrder}/complete', [\App\Http\Controllers\Admin\PackageOrderController::class, 'markCompleted'])
+        ->name('admin.package-orders.complete');
 });
 
 // Customer dashboard (protected)
@@ -124,6 +134,11 @@ Route::middleware('auth')->group(function(){
 
     // Customer Requests
     Route::get('/customer/requests', [RequestController::class, 'index'])->name('customer.requests.index');
+    
+    // Customer Orders
+    Route::get('/customer/orders', [\App\Http\Controllers\Customer\OrderController::class, 'index'])->name('customer.orders.index');
+    Route::get('/customer/orders/{order}', [\App\Http\Controllers\Customer\OrderController::class, 'show'])->name('customer.orders.show');
+    Route::post('/customer/orders/{order}/payment', [\App\Http\Controllers\Customer\OrderController::class, 'processPayment'])->name('customer.orders.process-payment');
     Route::get('/customer/requests/create', [RequestController::class, 'create'])->name('customer.requests.create');
     Route::post('/customer/requests', [RequestController::class, 'store'])->name('customer.requests.store');
     Route::get('/customer/requests/{customerRequest}', [RequestController::class, 'show'])->name('customer.requests.show');

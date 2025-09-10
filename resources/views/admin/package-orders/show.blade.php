@@ -5,9 +5,14 @@
 @section('content_header')
     <div class="d-flex justify-content-between">
         <h1>Package Order #{{ $order->id }}</h1>
-        <a href="{{ route('admin.package-orders.index') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Back to Orders
-        </a>
+        <div>
+            <a href="{{ route('admin.package-orders.edit', $order) }}" class="btn btn-info mr-2">
+                <i class="fas fa-edit"></i> Edit Order
+            </a>
+            <a href="{{ route('admin.package-orders.index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Orders
+            </a>
+        </div>
     </div>
 @stop
 
@@ -45,19 +50,102 @@
                                 <tr>
                                     <th>Status</th>
                                     <td>
-                                        <form action="{{ route('admin.package-orders.update-status', $order) }}" method="POST" class="d-flex align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <form action="{{ route('admin.package-orders.update-status', $order) }}" method="POST" class="d-flex align-items-center mr-2">
+                                                @csrf
+                                                @method('PATCH')
+                                                <select name="status" class="form-control form-control-sm mr-2">
+                                                    <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Pending</option>
+                                                    <option value="processing" {{ $order->status === 'processing' ? 'selected' : '' }}>Processing</option>
+                                                    <option value="completed" {{ $order->status === 'completed' ? 'selected' : '' }}>Completed</option>
+                                                    <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                                                </select>
+                                                <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                                            </form>
+                                            
+                                            @if($order->status === 'pending')
+                                            <form action="{{ route('admin.package-orders.accept', $order) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-success">
+                                                    <i class="fas fa-check"></i> Accept Order
+                                                </button>
+                                            </form>
+                                            @endif
+                                            
+                                            @if($order->status === 'processing')
+                                            <form action="{{ route('admin.package-orders.complete', $order) }}" method="POST" class="ml-2">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-success">
+                                                    <i class="fas fa-check-double"></i> Mark Completed
+                                                </button>
+                                            </form>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <th>Payment Status</th>
+                                    <td>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <p class="mb-1"><strong>Total Amount:</strong> BDT {{ number_format($order->amount) }}</p>
+                                                <p class="mb-1"><strong>Paid Amount:</strong> BDT {{ number_format($order->paid_amount ?? 0) }}</p>
+                                                <p class="mb-1"><strong>Due Amount:</strong> BDT {{ number_format($order->due_amount ?? $order->amount) }}</p>
+                                                <p class="mb-1">
+                                                    <strong>Payment Status:</strong>
+                                                    @if(($order->paid_amount ?? 0) <= 0)
+                                                        <span class="badge badge-danger">Not Paid</span>
+                                                    @elseif(($order->due_amount ?? $order->amount) <= 0)
+                                                        <span class="badge badge-success">Fully Paid</span>
+                                                    @else
+                                                        <span class="badge badge-warning">Partially Paid</span>
+                                                    @endif
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                                @if($order->status === 'processing')
+                                <tr>
+                                    <th>Process Payment</th>
+                                    <td>
+                                        <form action="{{ route('admin.package-orders.process-payment', $order) }}" method="POST">
                                             @csrf
-                                            @method('PATCH')
-                                            <select name="status" class="form-control form-control-sm mr-2">
-                                                <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Pending</option>
-                                                <option value="processing" {{ $order->status === 'processing' ? 'selected' : '' }}>Processing</option>
-                                                <option value="completed" {{ $order->status === 'completed' ? 'selected' : '' }}>Completed</option>
-                                                <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                                            </select>
-                                            <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                                            <div class="form-group mb-2">
+                                                <label for="payment_amount">Payment Amount</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">BDT</span>
+                                                    </div>
+                                                    <input type="number" id="payment_amount" name="payment_amount" class="form-control" value="{{ $order->due_amount }}" min="1" max="{{ $order->due_amount }}" required>
+                                                </div>
+                                                <small class="text-muted">Enter any amount up to the full due amount</small>
+                                            </div>
+                                            
+                                            <div class="form-group mb-2">
+                                                <label for="payment_method">Payment Method</label>
+                                                <select id="payment_method" name="payment_method" class="form-control">
+                                                    <option value="cash">Cash</option>
+                                                    <option value="bank_transfer">Bank Transfer</option>
+                                                    <option value="card">Credit/Debit Card</option>
+                                                    <option value="mobile_banking">Mobile Banking</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="form-group mb-2">
+                                                <label for="notes">Notes</label>
+                                                <textarea id="notes" name="notes" class="form-control" rows="2"></textarea>
+                                            </div>
+                                            
+                                            <button type="submit" class="btn btn-success">
+                                                <i class="fas fa-money-bill-wave"></i> Process Payment
+                                            </button>
                                         </form>
                                     </td>
                                 </tr>
+                                @endif
                             </table>
                         </div>
                         <div class="col-md-6">
@@ -123,22 +211,57 @@
                                     <td>{{ $order->page_count }}</td>
                                 </tr>
                                 @endif
-                                @if($order->page_url)
-                                <tr>
-                                    <th>Page URL</th>
-                                    <td>{{ $order->page_url }}</td>
-                                </tr>
-                                @endif
-                                @if($order->ad_budget)
-                                <tr>
-                                    <th>Ad Budget</th>
-                                    <td>BDT {{ number_format($order->ad_budget) }}</td>
-                                </tr>
-                                @endif
                             </table>
                         </div>
                     </div>
 
+                    <!-- Transactions -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h5>Transaction History</h5>
+                            @if(count($transactions) > 0)
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Transaction #</th>
+                                                <th>Date</th>
+                                                <th>Amount</th>
+                                                <th>Method</th>
+                                                <th>Notes</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($transactions as $transaction)
+                                                <tr>
+                                                    <td>{{ $transaction->transaction_number }}</td>
+                                                    <td>{{ $transaction->created_at->format('M d, Y h:i A') }}</td>
+                                                    <td>BDT {{ number_format($transaction->amount) }}</td>
+                                                    <td>
+                                                        <span class="badge badge-info">{{ ucfirst($transaction->payment_method) }}</span>
+                                                    </td>
+                                                    <td>{{ $transaction->notes }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th colspan="2" class="text-right">Total Paid:</th>
+                                                <th colspan="3">BDT {{ number_format($order->paid_amount ?? 0) }}</th>
+                                            </tr>
+                                            <tr>
+                                                <th colspan="2" class="text-right">Remaining:</th>
+                                                <th colspan="3">BDT {{ number_format($order->due_amount ?? $order->amount) }}</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            @else
+                                <p class="text-muted">No transactions have been recorded yet.</p>
+                            @endif
+                        </div>
+                    </div>
+                    
                     @if($order->notes)
                     <div class="row mt-4">
                         <div class="col-12">

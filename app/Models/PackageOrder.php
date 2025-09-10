@@ -28,9 +28,17 @@ class PackageOrder extends Model
         'website_type',
         'page_count',
         'page_url',
-        'ad_budget',
         'notes',
         'status',
+        'paid_amount',
+        'due_amount',
+        'total_installments',
+        'current_installment',
+        'payment_history',
+    ];
+    
+    protected $casts = [
+        'payment_history' => 'array',
     ];
     
     /**
@@ -39,5 +47,13 @@ class PackageOrder extends Model
     public function package()
     {
         return $this->belongsTo(Package::class);
+    }
+    
+    /**
+     * Get the transactions for this package order.
+     */
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
     }
 }
