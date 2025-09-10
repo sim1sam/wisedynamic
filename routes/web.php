@@ -142,6 +142,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         ->name('admin.service-orders.process-payment');
     Route::post('service-orders/{serviceOrder}/complete', [\App\Http\Controllers\Admin\ServiceOrderController::class, 'markCompleted'])
         ->name('admin.service-orders.complete');
+        
+    // Transactions Management
+    Route::get('transactions', [\App\Http\Controllers\Admin\TransactionController::class, 'index'])
+        ->name('admin.transactions.index');
+    Route::get('transactions/{transaction}', [\App\Http\Controllers\Admin\TransactionController::class, 'show'])
+        ->name('admin.transactions.show');
 });
 
 // Customer dashboard (protected)

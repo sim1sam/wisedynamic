@@ -319,6 +319,12 @@ return [
             'active' => ['admin/messages*'],
         ],
         [
+            'text' => 'Transactions',
+            'url' => 'admin/transactions',
+            'icon' => 'fas fa-fw fa-money-bill-wave',
+            'active' => ['admin/transactions*'],
+        ],
+        [
             'text' => 'Services',
             'icon' => 'fas fa-fw fa-cogs',
             'submenu' => [
