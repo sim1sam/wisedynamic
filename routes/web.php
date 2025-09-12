@@ -145,9 +145,22 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         
     // Transactions Management
     Route::get('transactions', [\App\Http\Controllers\Admin\TransactionController::class, 'index'])
-        ->name('admin.transactions.index');
+        ->name('transactions.index');
     Route::get('transactions/{transaction}', [\App\Http\Controllers\Admin\TransactionController::class, 'show'])
-        ->name('admin.transactions.show');
+        ->name('transactions.show');
+        
+    // Customer Management
+    Route::resource('customers', \App\Http\Controllers\Admin\CustomerController::class)->names([
+        'index' => 'admin.customers.index',
+        'create' => 'admin.customers.create',
+        'store' => 'admin.customers.store',
+        'show' => 'admin.customers.show',
+        'edit' => 'admin.customers.edit',
+        'update' => 'admin.customers.update',
+        'destroy' => 'admin.customers.destroy',
+    ]);
+    Route::patch('customers/{customer}/status', [\App\Http\Controllers\Admin\CustomerController::class, 'updateStatus'])
+        ->name('admin.customers.update-status');
 });
 
 // Customer dashboard (protected)

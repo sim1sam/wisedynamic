@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\PackageOrder;
+use App\Models\ServiceOrder;
 
 class User extends Authenticatable
 {
@@ -21,6 +23,14 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'status',
+        'phone',
+        'address',
+        'city',
+        'state',
+        'postal_code',
+        'country',
     ];
 
     /**
@@ -45,5 +55,21 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_admin' => 'boolean',
         ];
+    }
+    
+    /**
+     * Get the package orders for the user.
+     */
+    public function packageOrders()
+    {
+        return $this->hasMany(PackageOrder::class, 'email', 'email');
+    }
+    
+    /**
+     * Get the service orders for the user.
+     */
+    public function serviceOrders()
+    {
+        return $this->hasMany(ServiceOrder::class, 'email', 'email');
     }
 }

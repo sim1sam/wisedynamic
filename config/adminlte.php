@@ -431,6 +431,12 @@ return [
             'icon' => 'fas fa-fw fa-users',
             'submenu' => [
                 [
+                    'text' => 'Customers',
+                    'url' => 'admin/customers',
+                    'icon' => 'fas fa-fw fa-user',
+                    'active' => ['admin/customers*'],
+                ],
+                [
                     'text' => 'All Users',
                     'url' => 'admin/users',
                     'icon' => 'far fa-fw fa-circle',
