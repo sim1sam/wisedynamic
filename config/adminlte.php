@@ -437,6 +437,12 @@ return [
                     'active' => ['admin/customers*'],
                 ],
                 [
+                    'text' => 'Customer Requests',
+                    'url' => 'admin/requests',
+                    'icon' => 'fas fa-fw fa-clipboard-list',
+                    'active' => ['admin/requests*'],
+                ],
+                [
                     'text' => 'All Users',
                     'url' => 'admin/users',
                     'icon' => 'far fa-fw fa-circle',
