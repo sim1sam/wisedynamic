@@ -23,6 +23,15 @@
                         </div>
                         
                         <div class="form-group">
+                            <label for="slug">Slug</label>
+                            <input type="text" name="slug" id="slug" class="form-control @error('slug') is-invalid @enderror" value="{{ old('slug') }}">
+                            <small class="form-text text-muted">Leave empty to auto-generate from title. Use only lowercase letters, numbers, and hyphens.</small>
+                            @error('slug')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        
+                        <div class="form-group">
                             <label for="short_description">Short Description <span class="text-danger">*</span></label>
                             <textarea name="short_description" id="short_description" rows="3" class="form-control @error('short_description') is-invalid @enderror" required>{{ old('short_description') }}</textarea>
                             <small class="form-text text-muted">Brief summary that appears in service listings (max 200 characters recommended)</small>
@@ -130,6 +139,26 @@
                     console.error(error);
                 });
                 
+            // Auto-generate slug from title
+            $('#title').on('keyup change', function() {
+                // Only auto-generate if slug field is empty or hasn't been manually edited
+                if ($('#slug').data('manually-edited') !== true) {
+                    const title = $(this).val();
+                    const slug = title.toLowerCase()
+                        .replace(/[^\w\s-]/g, '') // Remove special characters
+                        .replace(/\s+/g, '-')     // Replace spaces with hyphens
+                        .replace(/-+/g, '-')      // Replace multiple hyphens with single hyphen
+                        .trim();                 // Trim whitespace
+                    
+                    $('#slug').val(slug);
+                }
+            });
+            
+            // Mark slug as manually edited when user types in it
+            $('#slug').on('keyup', function() {
+                $(this).data('manually-edited', true);
+            });
+            
             // Update file input label with selected filename
             $('input[type="file"]').change(function(e){
                 var fileName = e.target.files[0].name;
