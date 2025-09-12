@@ -92,8 +92,73 @@
             </div>
           </form>
         </div>
+        
+        <div class="card">
+          <div class="card-header bg-primary">
+            <h3 class="card-title">Convert to Service Order</h3>
+          </div>
+          <form method="POST" action="{{ route('admin.requests.convert', $customerRequest) }}">
+            @csrf
+            <div class="card-body">
+              <div class="form-group">
+                <label for="service_id">Select Service</label>
+                <!-- Debug info: {{ $services->count() }} services found -->
+                <select name="service_id" id="service_id" class="form-control @error('service_id') is-invalid @enderror" required>
+                  <option value="">-- Select a Service --</option>
+                  @forelse($services as $service)
+                    <option value="{{ $service->id }}" data-price="{{ $service->price }}">{{ $service->title }} - {{ number_format($service->price, 2) }} {{ $service->price_unit ?? '$' }}</option>
+                  @empty
+                    <option value="" disabled>No services available</option>
+                  @endforelse
+                </select>
+                <small class="text-muted">Total services: {{ $services->count() }}</small>
+                @error('service_id')
+                  <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+              </div>
+              
+              <div class="form-group">
+                <label for="amount">Order Amount</label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">$</span>
+                  </div>
+                  <input type="number" name="amount" id="amount" class="form-control @error('amount') is-invalid @enderror" value="{{ old('amount', $customerRequest->ads_budget_bdt) }}" step="0.01" min="0" required>
+                </div>
+                @error('amount')
+                  <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+                <small class="form-text text-muted">Default is set to the customer's budget amount.</small>
+              </div>
+            </div>
+            <div class="card-footer text-right">
+              <button type="submit" class="btn btn-primary">Convert to Service Order</button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
 </section>
+@endsection
+
+@section('js')
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get the service select and amount input elements
+    const serviceSelect = document.getElementById('service_id');
+    const amountInput = document.getElementById('amount');
+    
+    // Add event listener to update amount when service is selected
+    serviceSelect.addEventListener('change', function() {
+      const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
+      if (selectedOption.value) {
+        const price = parseFloat(selectedOption.getAttribute('data-price'));
+        if (!isNaN(price)) {
+          amountInput.value = price.toFixed(2);
+        }
+      }
+    });
+  });
+</script>
 @endsection

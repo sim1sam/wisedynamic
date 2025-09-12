@@ -66,6 +66,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('requests/{customerRequest}', [AdminCustomerRequestController::class, 'show'])->name('requests.show');
     Route::get('requests/{customerRequest}/edit', [AdminCustomerRequestController::class, 'edit'])->name('requests.edit');
     Route::put('requests/{customerRequest}', [AdminCustomerRequestController::class, 'update'])->name('requests.update');
+    Route::post('requests/{customerRequest}/convert', [AdminCustomerRequestController::class, 'convertToServiceOrder'])->name('requests.convert');
     Route::resource('slides', AdminSlideController::class);
     Route::get('settings/footer', [FooterSettingController::class, 'edit'])->name('settings.footer.edit');
     Route::put('settings/footer', [FooterSettingController::class, 'update'])->name('settings.footer.update');
