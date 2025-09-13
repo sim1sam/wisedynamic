@@ -93,6 +93,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     
     // Services Management
     Route::resource('services', \App\Http\Controllers\Admin\ServiceController::class)->names('admin.services');
+    // Add custom slug-based routes for services
+    Route::get('services/s/{slug}', [\App\Http\Controllers\Admin\ServiceController::class, 'showBySlug'])->name('admin.services.slug');
     
     // Package Categories Management
     Route::resource('package-categories', \App\Http\Controllers\Admin\PackageCategoryController::class)->names('admin.package-categories');

@@ -167,6 +167,18 @@ class ServiceController extends Controller
     {
         return redirect()->route('admin.services.edit', $service);
     }
+    
+    /**
+     * Display the specified service by slug.
+     *
+     * @param  string  $slug
+     * @return \Illuminate\Http\Response
+     */
+    public function showBySlug($slug)
+    {
+        $service = Service::where('slug', $slug)->firstOrFail();
+        return view('admin.services.show', compact('service'));
+    }
 
     /**
      * Remove the specified resource from storage.

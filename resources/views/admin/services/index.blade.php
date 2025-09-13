@@ -60,7 +60,7 @@
                             </td>
                             <td>
                                 <div class="btn-group">
-                                    <a href="{{ route('admin.services.show', $service) }}" class="btn btn-sm btn-success">
+                                    <a href="{{ route('admin.services.slug', $service->slug) }}" class="btn btn-sm btn-success">
                                         <i class="fas fa-eye"></i> View
                                     </a>
                                     <a href="{{ route('admin.services.edit', ['service' => $service]) }}" class="btn btn-sm btn-info">
