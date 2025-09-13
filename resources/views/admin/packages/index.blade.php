@@ -60,6 +60,9 @@
                             </td>
                             <td>
                                 <div class="btn-group">
+                                    <a href="{{ route('admin.packages.slug', $package->slug) }}" class="btn btn-sm btn-success">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
                                     <a href="{{ route('admin.packages.edit', ['package' => $package]) }}" class="btn btn-sm btn-info">
                                         <i class="fas fa-edit"></i> Edit
                                     </a>

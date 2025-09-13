@@ -108,4 +108,28 @@ class HomeController extends Controller
         
         return view('frontend.packages.index', compact('webDevPackages', 'marketingPackages'));
     }
+    
+    /**
+     * Display individual package details by slug.
+     *
+     * @param string $slug
+     * @return \Illuminate\Http\Response
+     */
+    public function showPackage($slug)
+    {
+        // Find the package by slug
+        $package = Package::where('slug', $slug)
+            ->where('status', true)
+            ->with('category')
+            ->firstOrFail();
+        
+        // Get related packages in the same category
+        $relatedPackages = Package::where('package_category_id', $package->package_category_id)
+            ->where('id', '!=', $package->id)
+            ->where('status', true)
+            ->take(3)
+            ->get();
+        
+        return view('frontend.packages.show', compact('package', 'relatedPackages'));
+    }
 }

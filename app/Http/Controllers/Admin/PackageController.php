@@ -65,7 +65,7 @@ class PackageController extends Controller
             
             Log::info('Package created', ['package_id' => $package->id]);
 
-            return redirect()->route('packages.index')
+            return redirect()->route('admin.packages.index')
                 ->with('success', 'Package created successfully.');
         } catch (\Exception $e) {
             Log::error('Error creating package', [
@@ -84,7 +84,29 @@ class PackageController extends Controller
      */
     public function show(Package $package)
     {
-        return redirect()->route('packages.edit', $package);
+        return redirect()->route('admin.packages.edit', $package);
+    }
+    
+    /**
+     * Display the specified package by slug.
+     *
+     * @param  string  $slug
+     * @return \Illuminate\Http\Response
+     */
+    public function showBySlug($slug)
+    {
+        try {
+            $package = Package::where('slug', $slug)->firstOrFail();
+            return view('admin.packages.show', compact('package'));
+        } catch (\Exception $e) {
+            Log::error('Error finding package by slug', [
+                'slug' => $slug,
+                'error' => $e->getMessage()
+            ]);
+            
+            return redirect()->route('admin.packages.index')
+                ->with('error', 'Package not found: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -139,7 +161,7 @@ class PackageController extends Controller
             
             Log::info('Package updated', ['package_id' => $package->id]);
 
-            return redirect()->route('packages.index')
+            return redirect()->route('admin.packages.index')
                 ->with('success', 'Package updated successfully.');
         } catch (\Exception $e) {
             Log::error('Error updating package', [
@@ -167,15 +189,15 @@ class PackageController extends Controller
             
             $package->delete();
             
-            return redirect()->route('packages.index')
-                ->with('success', 'Package deleted successfully.');
+            return redirect()->route('admin.packages.index')
+                ->with('success', 'Package deleted successfully');
         } catch (\Exception $e) {
             Log::error('Error deleting package', [
                 'error' => $e->getMessage(),
                 'package_id' => $package->id
             ]);
             
-            return redirect()->route('packages.index')
+            return redirect()->route('admin.packages.index')
                 ->with('error', 'Failed to delete package: ' . $e->getMessage());
         }
     }

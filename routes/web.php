@@ -22,6 +22,7 @@ Route::get('/about', [HomeController::class, 'about'])->name('about');
 
 // Packages page
 Route::get('/packages', [HomeController::class, 'packages'])->name('packages');
+Route::get('/packages/{slug}', [HomeController::class, 'showPackage'])->name('packages.show');
 
 // Cart & Checkout
 Route::get('/cart', [CartController::class, 'show'])->name('cart.show');
@@ -109,6 +110,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     
     // Packages Management
     Route::resource('packages', \App\Http\Controllers\Admin\PackageController::class)->names('admin.packages');
+    // Add custom slug-based routes for packages
+    Route::get('packages/p/{slug}', [\App\Http\Controllers\Admin\PackageController::class, 'showBySlug'])->name('admin.packages.slug');
     
     // Package Orders Management
     Route::get('package-orders', [\App\Http\Controllers\Admin\PackageOrderController::class, 'index'])

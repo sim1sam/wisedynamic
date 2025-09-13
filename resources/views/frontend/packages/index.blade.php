@@ -90,8 +90,9 @@
                         @endif
                     </div>
                     <div class="flex flex-wrap gap-3 mt-4">
-                        <a href="{{ route('cart.show', ['package' => $package->slug]) }}" class="btn-primary px-6 py-3 rounded-full font-semibold">Get</a>
-                        <a href="{{ url('/#contact') }}?package={{ $package->slug }}&consultation=free" class="btn-outline-primary px-6 py-3 rounded-full font-semibold">Free Consultation</a>
+                        <a href="{{ route('packages.show', $package->slug) }}" class="btn-primary px-6 py-3 rounded-full font-semibold">View Details</a>
+                        <a href="{{ route('cart.show', ['package' => $package->slug]) }}" class="btn-outline-primary px-6 py-3 rounded-full font-semibold">Get</a>
+                        <a href="{{ url('/#contact') }}?package={{ $package->slug }}&consultation=free" class="text-primary hover:underline text-sm mt-2 block text-center">Free Consultation</a>
                     </div>
                 </div>
             @empty
