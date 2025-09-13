@@ -1,30 +1,43 @@
-@extends('layouts.app')
+@php $title = 'My Orders'; @endphp
+@extends('layouts.customer')
 
 @section('content')
-<div class="bg-gray-100 py-12">
-    <div class="container mx-auto px-4">
-        <div class="flex flex-wrap items-center justify-between mb-6">
-            <h1 class="text-3xl font-bold text-gray-800">My Orders</h1>
-            <a href="{{ route('customer.dashboard') }}" class="btn-outline-primary px-4 py-2 rounded-lg">
-                <i class="fas fa-arrow-left mr-2"></i> Dashboard
+<div class="w-full px-4 md:px-6 space-y-6">
+    @if(session('success'))
+        <div class="p-3 rounded bg-green-100 text-green-700">{{ session('success') }}</div>
+    @endif
+    @if(session('error'))
+        <div class="p-3 rounded bg-red-100 text-red-700">{{ session('error') }}</div>
+    @endif
+
+    <!-- Page Header -->
+    <div class="flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+            <div class="min-w-0">
+                <h1 class="text-2xl font-semibold tracking-tight text-gray-900">My Package Orders</h1>
+                <p class="text-sm text-gray-600">Track and manage your package orders</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('packages') }}" class="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 shadow">
+                    <i class="fas fa-plus mr-2"></i> Browse Packages
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders List -->
+    @if(count($orders) === 0)
+        <div class="bg-white rounded-lg shadow p-8 text-center text-gray-600">
+            <div class="text-lg font-medium mb-2">No orders found</div>
+            <p class="mb-4">You haven't placed any package orders yet.</p>
+            <a href="{{ route('packages') }}" class="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700">
+                <i class="fas fa-plus mr-2"></i> Browse Packages
             </a>
         </div>
-
-        @if(session('success'))
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
-                <p>{{ session('success') }}</p>
-            </div>
-        @endif
-
-        @if(session('error'))
-            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
-                <p>{{ session('error') }}</p>
-            </div>
-        @endif
-
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
-            @if(count($orders) > 0)
-                <table class="min-w-full divide-y divide-gray-200">
+    @else
+        <div class="bg-white rounded-lg shadow">
+             <div class="overflow-x-auto">
+                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -92,15 +105,8 @@
                         @endforeach
                     </tbody>
                 </table>
-            @else
-                <div class="py-12 text-center">
-                    <p class="text-gray-500 text-lg">You don't have any orders yet.</p>
-                    <a href="{{ route('packages') }}" class="btn-primary mt-4 inline-block px-6 py-3 rounded-lg">
-                        Browse Packages
-                    </a>
-                </div>
-            @endif
-        </div>
-    </div>
+             </div>
+         </div>
+    @endif
 </div>
 @endsection

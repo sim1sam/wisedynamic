@@ -171,9 +171,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
 // Customer dashboard (protected)
 Route::middleware('auth')->group(function(){
-    Route::get('/customer', function(){
-        return view('frontend.customer.index');
-    })->name('customer.dashboard');
+    Route::get('/customer', [\App\Http\Controllers\Customer\DashboardController::class, 'index'])->name('customer.dashboard');
 
     // Customer Requests
     Route::get('/customer/requests', [RequestController::class, 'index'])->name('customer.requests.index');

@@ -5,21 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Customer Dashboard' }} - {{ config('app.name') }}</title>
-    @if (app()->environment('production'))
-        @vite(['resources/css/app.css','resources/js/app.js'])
-    @else
-        @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-            @vite(['resources/css/app.css','resources/js/app.js'])
-        @else
-            <!-- Fallback (DEV only): Tailwind via CDN when Vite build/hot is unavailable -->
-            <script src="https://cdn.tailwindcss.com"></script>
-        @endif
-    @endif
+    <!-- Tailwind CSS via CDN (no npm required) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#0976bc',
+                        'dark': '#0e0f3e'
+                    }
+                }
+            }
+        }
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="{{ asset('assets/css/customer-dashboard.css') }}" />
     @stack('styles')
 </head>
-<body class="bg-gray-100 text-gray-900">
+<body class="dashboard-container text-gray-900">
 <div class="min-h-screen flex">
     <!-- Sidebar -->
     <aside id="customer-sidebar" class="w-64 text-gray-100 flex-shrink-0 md:flex md:flex-col md:relative fixed inset-y-0 left-0 z-40 transform transition-transform duration-200 ease-in-out -translate-x-full md:translate-x-0 shadow-lg">
@@ -42,24 +46,37 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="link-item flex items-center px-3 py-2 rounded-md">
-                        <i class="fas fa-box-open w-5 mr-3"></i>
-                        <span>Orders</span>
-                        <span class="ml-auto text-xs bg-blue-600 text-white px-2 py-0.5 rounded">Soon</span>
+                    <div class="px-3 py-1">
+                        <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Orders</span>
+                    </div>
+                </li>
+                <li>
+                    <a href="{{ route('customer.orders.index') }}" class="link-item flex items-center px-3 py-2 rounded-md {{ request()->routeIs('customer.orders.*') ? 'active' : '' }}">
+                        <i class="fas fa-box w-5 mr-3"></i>
+                        <span>Package Orders</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="link-item flex items-center px-3 py-2 rounded-md">
-                        <i class="fas fa-user w-5 mr-3"></i>
-                        <span>Profile</span>
-                        <span class="ml-auto text-xs bg-blue-600 text-white px-2 py-0.5 rounded">Soon</span>
+                    <a href="{{ route('customer.service-orders.index') }}" class="link-item flex items-center px-3 py-2 rounded-md {{ request()->routeIs('customer.service-orders.*') ? 'active' : '' }}">
+                        <i class="fas fa-cogs w-5 mr-3"></i>
+                        <span>Service Orders</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="link-item flex items-center px-3 py-2 rounded-md">
-                        <i class="fas fa-gear w-5 mr-3"></i>
-                        <span>Settings</span>
-                        <span class="ml-auto text-xs bg-blue-600 text-white px-2 py-0.5 rounded">Soon</span>
+                    <div class="px-3 py-1 mt-4">
+                        <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Account</span>
+                    </div>
+                </li>
+                <li>
+                    <a href="{{ route('home') }}" class="link-item flex items-center px-3 py-2 rounded-md">
+                        <i class="fas fa-home w-5 mr-3"></i>
+                        <span>Back to Website</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('contact') }}" class="link-item flex items-center px-3 py-2 rounded-md">
+                        <i class="fas fa-headset w-5 mr-3"></i>
+                        <span>Support</span>
                     </a>
                 </li>
             </ul>
