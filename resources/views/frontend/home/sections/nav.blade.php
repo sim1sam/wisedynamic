@@ -63,11 +63,19 @@
               <a href="{{ route('login') }}" class="inline-block bg-gradient-to-r from-blue-600 to-purple-600 text-white px-5 py-2.5 rounded-full font-semibold shadow hover:shadow-lg transition">Login</a>
             @endguest
             @auth
-              <div class="flex items-center justify-between">
-                <span class="mr-3"><i class="far fa-user mr-1"></i>{{ auth()->user()->name }}</span>
-                <form method="POST" action="{{ route('logout') }}">
+              <div class="border-t pt-2 mt-2">
+                <div class="flex items-center mb-3">
+                  <i class="far fa-user mr-2 text-gray-600"></i>
+                  <span class="font-medium text-gray-800">{{ auth()->user()->name }}</span>
+                </div>
+                <a href="{{ route('customer.dashboard') }}" class="block py-2 font-medium text-blue-600 hover:text-blue-700">
+                  <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                </a>
+                <form method="POST" action="{{ route('logout') }}" class="mt-2">
                   @csrf
-                  <button type="submit" class="px-4 py-2 rounded-full bg-gray-800 text-white hover:bg-gray-900">Logout</button>
+                  <button type="submit" class="w-full text-left py-2 font-medium text-red-600 hover:text-red-700">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                  </button>
                 </form>
               </div>
             @endauth
