@@ -11,7 +11,11 @@
                  <p class="welcome-text text-lg">Here's an overview of your account activity</p>
              </div>
             <div class="hidden md:block">
-                <i class="fas fa-user-circle text-6xl text-blue-200"></i>
+                @if(auth()->user()->profile_image)
+                    <img src="{{ asset('storage/' . auth()->user()->profile_image) }}" alt="Profile Image" class="w-16 h-16 rounded-full object-cover border-2 border-blue-200">
+                @else
+                    <i class="fas fa-user-circle text-6xl text-blue-200"></i>
+                @endif
             </div>
       </div>
     </div>

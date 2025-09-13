@@ -114,9 +114,13 @@
             </div>
             <div class="flex items-center gap-3">
                 <span class="hidden sm:block text-sm text-gray-600">{{ auth()->user()->email ?? '' }}</span>
-                <div class="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">
-                    <i class="far fa-user"></i>
-                </div>
+                @if(auth()->user()->profile_image)
+                    <img src="{{ asset('storage/' . auth()->user()->profile_image) }}" alt="Profile Image" class="w-9 h-9 rounded-full object-cover border border-gray-300">
+                @else
+                    <div class="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">
+                        <i class="far fa-user"></i>
+                    </div>
+                @endif
             </div>
         </header>
 
