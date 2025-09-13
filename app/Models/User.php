@@ -31,6 +31,7 @@ class User extends Authenticatable
         'state',
         'postal_code',
         'country',
+        'profile_image',
     ];
 
     /**
@@ -62,7 +63,7 @@ class User extends Authenticatable
      */
     public function packageOrders()
     {
-        return $this->hasMany(PackageOrder::class, 'email', 'email');
+        return $this->hasMany(PackageOrder::class, 'user_id');
     }
     
     /**
@@ -70,6 +71,6 @@ class User extends Authenticatable
      */
     public function serviceOrders()
     {
-        return $this->hasMany(ServiceOrder::class, 'email', 'email');
+        return $this->hasMany(ServiceOrder::class, 'user_id');
     }
 }

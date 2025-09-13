@@ -196,5 +196,12 @@ Route::middleware('auth')->group(function(){
     Route::get('/quick-request', function(){
         return redirect(url('/').'?qr=1#quick-request');
     })->name('quick-request');
+    
+    // Profile Management
+    Route::get('/profile', [\App\Http\Controllers\Customer\ProfileController::class, 'show'])->name('customer.profile.show');
+    Route::put('/profile', [\App\Http\Controllers\Customer\ProfileController::class, 'update'])->name('customer.profile.update');
+    Route::put('/profile/password', [\App\Http\Controllers\Customer\ProfileController::class, 'updatePassword'])->name('customer.profile.password.update');
+    Route::post('/profile/image', [\App\Http\Controllers\Customer\ProfileController::class, 'updateImage'])->name('customer.profile.image.update');
+    Route::delete('/profile/image', [\App\Http\Controllers\Customer\ProfileController::class, 'deleteImage'])->name('customer.profile.image.delete');
 });
 

@@ -17,8 +17,8 @@ class ServiceOrderController extends Controller
     public function index()
     {
         try {
-            // Get orders for the current user by email
-            $orders = ServiceOrder::where('email', Auth::user()->email)
+            // Get orders for the current user using relationship
+            $orders = Auth::user()->serviceOrders()
                 ->orderBy('created_at', 'desc')
                 ->get();
             
@@ -43,7 +43,7 @@ class ServiceOrderController extends Controller
     {
         try {
             // Ensure the order belongs to the current user
-            if ($serviceOrder->email !== Auth::user()->email) {
+            if ($serviceOrder->user_id !== Auth::id()) {
                 return redirect()->route('customer.service-orders.index')
                     ->with('error', 'You do not have permission to view this order.');
             }

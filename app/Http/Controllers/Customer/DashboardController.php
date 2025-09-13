@@ -21,9 +21,9 @@ class DashboardController extends Controller
         try {
             $user = Auth::user();
             
-            // Get customer's statistics
-            $packageOrders = PackageOrder::where('email', $user->email)->get();
-            $serviceOrders = ServiceOrder::where('email', $user->email)->get();
+            // Get customer's statistics using relationships
+            $packageOrders = $user->packageOrders;
+            $serviceOrders = $user->serviceOrders;
             $customerRequests = CustomerRequest::where('user_id', $user->id)->get();
             
             // Calculate statistics

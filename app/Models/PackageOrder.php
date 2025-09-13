@@ -11,6 +11,7 @@ class PackageOrder extends Model
     use HasFactory;
     
     protected $fillable = [
+        'user_id',
         'package_id',
         'package_name',
         'amount',
@@ -40,6 +41,14 @@ class PackageOrder extends Model
     protected $casts = [
         'payment_history' => 'array',
     ];
+    
+    /**
+     * Get the user who placed this order.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
     
     /**
      * Get the package associated with this order.

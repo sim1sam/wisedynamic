@@ -68,6 +68,12 @@
                     </div>
                 </li>
                 <li>
+                    <a href="{{ route('customer.profile.show') }}" class="link-item flex items-center px-3 py-2 rounded-md {{ request()->routeIs('customer.profile.*') ? 'active' : '' }}">
+                        <i class="fas fa-user-edit w-5 mr-3"></i>
+                        <span>My Profile</span>
+                    </a>
+                </li>
+                <li>
                     <a href="{{ route('home') }}" class="link-item flex items-center px-3 py-2 rounded-md">
                         <i class="fas fa-home w-5 mr-3"></i>
                         <span>Back to Website</span>

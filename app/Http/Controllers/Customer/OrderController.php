@@ -16,8 +16,8 @@ class OrderController extends Controller
     public function index()
     {
         try {
-            // Get orders for the current user by email
-            $orders = PackageOrder::where('email', Auth::user()->email)
+            // Get orders for the current user using relationship
+            $orders = Auth::user()->packageOrders()
                 ->orderBy('created_at', 'desc')
                 ->get();
             
@@ -42,7 +42,7 @@ class OrderController extends Controller
     {
         try {
             // Ensure the order belongs to the current user
-            if ($order->email !== Auth::user()->email) {
+            if ($order->user_id !== Auth::id()) {
                 return redirect()->route('customer.orders.index')
                     ->with('error', 'You do not have permission to view this order.');
             }

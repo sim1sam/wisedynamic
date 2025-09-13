@@ -15,6 +15,7 @@ class ServiceOrder extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'user_id',
         'service_id',
         'service_name',
         'amount',
@@ -48,6 +49,14 @@ class ServiceOrder extends Model
     protected $casts = [
         'payment_history' => 'array',
     ];
+    
+    /**
+     * Get the user who placed this order.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
     
     /**
      * Get the service associated with this order.
