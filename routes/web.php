@@ -211,8 +211,17 @@ Route::middleware('auth')->group(function(){
     Route::get('/fund/{fundRequest}', [\App\Http\Controllers\Customer\FundController::class, 'show'])->name('customer.fund.show');
     Route::get('/fund/{fundRequest}/ssl-payment', [\App\Http\Controllers\Customer\FundController::class, 'sslPayment'])->name('customer.fund.ssl-payment');
     Route::post('/fund/{fundRequest}/ssl-success', [\App\Http\Controllers\Customer\FundController::class, 'sslSuccess'])->name('customer.fund.ssl-success');
-     Route::post('/fund/{fundRequest}/ssl-fail', [\App\Http\Controllers\Customer\FundController::class, 'sslFail'])->name('customer.fund.ssl-fail');
- });
+      Route::post('/fund/{fundRequest}/ssl-fail', [\App\Http\Controllers\Customer\FundController::class, 'sslFail'])->name('customer.fund.ssl-fail');
+      
+      // Custom Service Management
+      Route::get('/custom-service', [\App\Http\Controllers\Customer\CustomServiceController::class, 'index'])->name('customer.custom-service.index');
+      Route::get('/custom-service/create', [\App\Http\Controllers\Customer\CustomServiceController::class, 'create'])->name('customer.custom-service.create');
+      Route::post('/custom-service', [\App\Http\Controllers\Customer\CustomServiceController::class, 'store'])->name('customer.custom-service.store');
+      Route::get('/custom-service/{customServiceRequest}', [\App\Http\Controllers\Customer\CustomServiceController::class, 'show'])->name('customer.custom-service.show');
+      Route::get('/custom-service/{customServiceRequest}/ssl-payment', [\App\Http\Controllers\Customer\CustomServiceController::class, 'sslPayment'])->name('customer.custom-service.ssl-payment');
+      Route::post('/custom-service/{customServiceRequest}/ssl-success', [\App\Http\Controllers\Customer\CustomServiceController::class, 'sslSuccess'])->name('customer.custom-service.ssl-success');
+      Route::post('/custom-service/{customServiceRequest}/ssl-fail', [\App\Http\Controllers\Customer\CustomServiceController::class, 'sslFail'])->name('customer.custom-service.ssl-fail');
+  });
  
  // Admin Fund Request Management Routes
  Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {

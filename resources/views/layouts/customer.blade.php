@@ -80,6 +80,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ route('customer.custom-service.index') }}" class="link-item flex items-center px-3 py-2 rounded-md {{ request()->routeIs('customer.custom-service.*') ? 'active' : '' }}">
+                        <i class="fas fa-cogs w-5 mr-3"></i>
+                        <span>Custom Services</span>
+                    </a>
+                </li>
+                <li>
                     <a href="{{ route('home') }}" class="link-item flex items-center px-3 py-2 rounded-md">
                         <i class="fas fa-home w-5 mr-3"></i>
                         <span>Back to Website</span>

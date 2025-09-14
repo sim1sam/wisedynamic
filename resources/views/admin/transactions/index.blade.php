@@ -41,6 +41,9 @@
                                 @if($transaction->fund_request_id && $transaction->fundRequest && $transaction->fundRequest->user)
                                     <strong>{{ $transaction->fundRequest->user->name }}</strong><br>
                                     <small class="text-muted">{{ $transaction->fundRequest->user->email }}</small>
+                                @elseif($transaction->custom_service_request_id && $transaction->customServiceRequest && $transaction->customServiceRequest->user)
+                                    <strong>{{ $transaction->customServiceRequest->user->name }}</strong><br>
+                                    <small class="text-muted">{{ $transaction->customServiceRequest->user->email }}</small>
                                 @elseif($transaction->package_order_id && $transaction->packageOrder)
                                     <strong>{{ $transaction->packageOrder->full_name }}</strong><br>
                                     <small class="text-muted">{{ $transaction->packageOrder->email }}</small>
@@ -58,6 +61,8 @@
                                     <span class="badge badge-success">Service</span>
                                 @elseif($transaction->fund_request_id)
                                     <span class="badge badge-warning">Fund Request</span>
+                                @elseif($transaction->custom_service_request_id)
+                                    <span class="badge badge-primary">Custom Service</span>
                                 @else
                                     <span class="badge badge-secondary">Unknown</span>
                                 @endif
@@ -75,6 +80,13 @@
                                     <a href="{{ route('admin.fund-requests.show', $transaction->fund_request_id) }}">
                                         #{{ $transaction->fund_request_id }}
                                     </a>
+                                @elseif($transaction->custom_service_request_id)
+                                    <span class="text-primary">
+                                        #{{ $transaction->custom_service_request_id }}
+                                    </span>
+                                    @if($transaction->customServiceRequest)
+                                        <br><small class="text-muted">{{ $transaction->customServiceRequest->getServiceTypeLabel() }}</small>
+                                    @endif
                                 @else
                                     —
                                 @endif

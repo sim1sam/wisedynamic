@@ -18,7 +18,7 @@ class TransactionController extends Controller
     {
         try {
             // Get all transactions with their related orders and fund requests
-            $transactions = Transaction::with(['packageOrder', 'serviceOrder', 'fundRequest.user'])
+            $transactions = Transaction::with(['packageOrder', 'serviceOrder', 'fundRequest.user', 'customServiceRequest.user'])
                 ->orderBy('created_at', 'desc')
                 ->get();
             
@@ -42,7 +42,7 @@ class TransactionController extends Controller
     {
         try {
             // Load related orders and fund requests
-            $transaction->load(['packageOrder', 'serviceOrder', 'fundRequest.user']);
+            $transaction->load(['packageOrder', 'serviceOrder', 'fundRequest.user', 'customServiceRequest.user']);
             
             return view('admin.transactions.show', [
                 'transaction' => $transaction

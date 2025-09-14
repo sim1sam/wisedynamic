@@ -84,6 +84,14 @@ class User extends Authenticatable
     }
     
     /**
+     * Get the custom service requests for the user.
+     */
+    public function customServiceRequests()
+    {
+        return $this->hasMany(CustomServiceRequest::class);
+    }
+    
+    /**
      * Add funds to user balance.
      */
     public function addBalance($amount)
