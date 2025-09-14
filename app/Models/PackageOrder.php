@@ -65,4 +65,12 @@ class PackageOrder extends Model
     {
         return $this->hasMany(Transaction::class);
     }
+    
+    /**
+     * Get the manual payment associated with this package order.
+     */
+    public function manualPayment()
+    {
+        return $this->morphOne(ManualPayment::class, 'payable');
+    }
 }

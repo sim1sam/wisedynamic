@@ -220,8 +220,14 @@ Route::middleware('auth')->group(function(){
       Route::get('/custom-service/{customServiceRequest}', [\App\Http\Controllers\Customer\CustomServiceController::class, 'show'])->name('customer.custom-service.show');
       Route::get('/custom-service/{customServiceRequest}/ssl-payment', [\App\Http\Controllers\Customer\CustomServiceController::class, 'sslPayment'])->name('customer.custom-service.ssl-payment');
       Route::post('/custom-service/{customServiceRequest}/ssl-success', [\App\Http\Controllers\Customer\CustomServiceController::class, 'sslSuccess'])->name('customer.custom-service.ssl-success');
-      Route::post('/custom-service/{customServiceRequest}/ssl-fail', [\App\Http\Controllers\Customer\CustomServiceController::class, 'sslFail'])->name('customer.custom-service.ssl-fail');
-  });
+       Route::post('/custom-service/{customServiceRequest}/ssl-fail', [\App\Http\Controllers\Customer\CustomServiceController::class, 'sslFail'])->name('customer.custom-service.ssl-fail');
+       
+       // Payment Routes
+       Route::get('/payment/{type}/{id}/options', [\App\Http\Controllers\Customer\PaymentController::class, 'showPaymentOptions'])->name('customer.payment.options');
+       Route::post('/payment/{type}/{id}/ssl', [\App\Http\Controllers\Customer\PaymentController::class, 'processSSLPayment'])->name('customer.payment.ssl');
+       Route::get('/payment/{type}/{id}/manual', [\App\Http\Controllers\Customer\PaymentController::class, 'showManualPaymentForm'])->name('customer.payment.manual');
+       Route::post('/payment/{type}/{id}/manual', [\App\Http\Controllers\Customer\PaymentController::class, 'processManualPayment'])->name('customer.payment.manual.submit');
+   });
  
  // Admin Fund Request Management Routes
  Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {

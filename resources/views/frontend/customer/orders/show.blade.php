@@ -58,12 +58,24 @@
                                             <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                                 Completed
                                             </span>
+                                        @elseif($order->status === 'accepted')
+                                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                Accepted
+                                            </span>
                                         @elseif($order->status === 'cancelled')
                                             <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
                                                 Cancelled
                                             </span>
                                         @endif
                                     </p>
+                                    
+                                    @if($order->status === 'accepted' && ($order->payment_status ?? 'unpaid') !== 'paid')
+                                        <div class="mt-4">
+                                            <a href="{{ route('customer.payment.options', ['package', $order->id]) }}" class="w-full inline-block text-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold">
+                                                <i class="fas fa-credit-card mr-2"></i>Pay Now
+                                            </a>
+                                        </div>
+                                    @endif
                                     
                                     <div class="mt-4">
                                         <p class="text-gray-700 font-medium">Payment Status:</p>

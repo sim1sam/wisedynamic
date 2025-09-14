@@ -200,6 +200,7 @@ class CartController extends Controller
             
             // Create the package order
             $order = \App\Models\PackageOrder::create([
+                'user_id' => auth()->check() ? auth()->id() : null,
                 'package_id' => $package ? $package->id : null,
                 'package_name' => $packageName,
                 'amount' => $amount,
@@ -244,6 +245,7 @@ class CartController extends Controller
             
             // Create the service order
             $order = \App\Models\ServiceOrder::create([
+                'user_id' => auth()->check() ? auth()->id() : null,
                 'service_id' => $service ? $service->id : null,
                 'service_name' => $serviceName,
                 'amount' => $amount,

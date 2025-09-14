@@ -73,4 +73,20 @@ class ServiceOrder extends Model
     {
         return $this->hasMany(Transaction::class, 'service_order_id');
     }
+    
+    /**
+     * Get the transaction associated with this service order.
+     */
+    public function transaction()
+    {
+        return $this->hasOne(Transaction::class);
+    }
+    
+    /**
+     * Get the manual payment associated with this service order.
+     */
+    public function manualPayment()
+    {
+        return $this->morphOne(ManualPayment::class, 'payable');
+    }
 }
