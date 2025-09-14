@@ -203,5 +203,25 @@ Route::middleware('auth')->group(function(){
     Route::put('/profile/password', [\App\Http\Controllers\Customer\ProfileController::class, 'updatePassword'])->name('customer.profile.password.update');
     Route::post('/profile/image', [\App\Http\Controllers\Customer\ProfileController::class, 'updateImage'])->name('customer.profile.image.update');
     Route::delete('/profile/image', [\App\Http\Controllers\Customer\ProfileController::class, 'deleteImage'])->name('customer.profile.image.delete');
-});
+    
+    // Fund Management
+    Route::get('/fund', [\App\Http\Controllers\Customer\FundController::class, 'index'])->name('customer.fund.index');
+    Route::get('/fund/create', [\App\Http\Controllers\Customer\FundController::class, 'create'])->name('customer.fund.create');
+    Route::post('/fund', [\App\Http\Controllers\Customer\FundController::class, 'store'])->name('customer.fund.store');
+    Route::get('/fund/{fundRequest}', [\App\Http\Controllers\Customer\FundController::class, 'show'])->name('customer.fund.show');
+    Route::get('/fund/{fundRequest}/ssl-payment', [\App\Http\Controllers\Customer\FundController::class, 'sslPayment'])->name('customer.fund.ssl-payment');
+    Route::post('/fund/{fundRequest}/ssl-success', [\App\Http\Controllers\Customer\FundController::class, 'sslSuccess'])->name('customer.fund.ssl-success');
+     Route::post('/fund/{fundRequest}/ssl-fail', [\App\Http\Controllers\Customer\FundController::class, 'sslFail'])->name('customer.fund.ssl-fail');
+ });
+ 
+ // Admin Fund Request Management Routes
+ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+     Route::get('/fund-requests', [\App\Http\Controllers\Admin\FundRequestController::class, 'index'])->name('admin.fund-requests.index');
+     Route::get('/fund-requests/{fundRequest}', [\App\Http\Controllers\Admin\FundRequestController::class, 'show'])->name('admin.fund-requests.show');
+     Route::get('/fund-requests/{fundRequest}/edit', [\App\Http\Controllers\Admin\FundRequestController::class, 'edit'])->name('admin.fund-requests.edit');
+     Route::put('/fund-requests/{fundRequest}', [\App\Http\Controllers\Admin\FundRequestController::class, 'update'])->name('admin.fund-requests.update');
+     Route::post('/fund-requests/{fundRequest}/approve', [\App\Http\Controllers\Admin\FundRequestController::class, 'approve'])->name('admin.fund-requests.approve');
+     Route::post('/fund-requests/{fundRequest}/reject', [\App\Http\Controllers\Admin\FundRequestController::class, 'reject'])->name('admin.fund-requests.reject');
+     Route::get('/fund-requests-stats', [\App\Http\Controllers\Admin\FundRequestController::class, 'statistics'])->name('admin.fund-requests.statistics');
+ });
 

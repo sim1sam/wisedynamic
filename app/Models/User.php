@@ -32,6 +32,7 @@ class User extends Authenticatable
         'postal_code',
         'country',
         'profile_image',
+        'balance',
     ];
 
     /**
@@ -72,5 +73,33 @@ class User extends Authenticatable
     public function serviceOrders()
     {
         return $this->hasMany(ServiceOrder::class, 'user_id');
+    }
+    
+    /**
+     * Get the fund requests for the user.
+     */
+    public function fundRequests()
+    {
+        return $this->hasMany(FundRequest::class);
+    }
+    
+    /**
+     * Add funds to user balance.
+     */
+    public function addBalance($amount)
+    {
+        $this->increment('balance', $amount);
+    }
+    
+    /**
+     * Deduct funds from user balance.
+     */
+    public function deductBalance($amount)
+    {
+        if ($this->balance >= $amount) {
+            $this->decrement('balance', $amount);
+            return true;
+        }
+        return false;
     }
 }

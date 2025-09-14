@@ -9,6 +9,12 @@
              <div>
                  <h1 class="text-3xl font-bold mb-2 welcome-text">Welcome back, {{ auth()->user()->name }}!</h1>
                  <p class="welcome-text text-lg">Here's an overview of your account activity</p>
+                 <div class="mt-2 flex items-center">
+                     <span class="welcome-text text-sm mr-4">Account Balance:</span>
+                     <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm font-semibold">
+                         BDT {{ number_format(auth()->user()->balance, 2) }}
+                     </span>
+                 </div>
              </div>
             <div class="hidden md:block">
                 @if(auth()->user()->profile_image)

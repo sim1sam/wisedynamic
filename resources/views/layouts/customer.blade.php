@@ -74,6 +74,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ route('customer.fund.index') }}" class="link-item flex items-center px-3 py-2 rounded-md {{ request()->routeIs('customer.fund.*') ? 'active' : '' }}">
+                        <i class="fas fa-wallet w-5 mr-3"></i>
+                        <span>Fund Management</span>
+                    </a>
+                </li>
+                <li>
                     <a href="{{ route('home') }}" class="link-item flex items-center px-3 py-2 rounded-md">
                         <i class="fas fa-home w-5 mr-3"></i>
                         <span>Back to Website</span>

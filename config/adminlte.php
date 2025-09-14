@@ -325,6 +325,12 @@ return [
             'active' => ['admin/transactions*'],
         ],
         [
+            'text' => 'Fund Requests',
+            'url' => 'admin/fund-requests',
+            'icon' => 'fas fa-fw fa-wallet',
+            'active' => ['admin/fund-requests*'],
+        ],
+        [
             'text' => 'Services',
             'icon' => 'fas fa-fw fa-cogs',
             'submenu' => [
