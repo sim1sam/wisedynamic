@@ -233,6 +233,13 @@ Route::middleware('auth')->group(function(){
      Route::post('/fund-requests/{fundRequest}/reject', [\App\Http\Controllers\Admin\FundRequestController::class, 'reject'])->name('admin.fund-requests.reject');
      Route::get('/fund-requests-stats', [\App\Http\Controllers\Admin\FundRequestController::class, 'statistics'])->name('admin.fund-requests.statistics');
      
+     // Admin Custom Service Request Management Routes
+     Route::get('/custom-service-requests', [\App\Http\Controllers\Admin\CustomServiceRequestController::class, 'index'])->name('admin.custom-service-requests.index');
+     Route::get('/custom-service-requests/{customServiceRequest}', [\App\Http\Controllers\Admin\CustomServiceRequestController::class, 'show'])->name('admin.custom-service-requests.show');
+     Route::post('/custom-service-requests/{customServiceRequest}/update-status', [\App\Http\Controllers\Admin\CustomServiceRequestController::class, 'updateStatus'])->name('admin.custom-service-requests.update-status');
+     Route::post('/custom-service-requests/{customServiceRequest}/assign', [\App\Http\Controllers\Admin\CustomServiceRequestController::class, 'assign'])->name('admin.custom-service-requests.assign');
+     Route::get('/custom-service-requests/stats', [\App\Http\Controllers\Admin\CustomServiceRequestController::class, 'getStats'])->name('admin.custom-service-requests.stats');
+     
      // Admin Transaction Routes
      Route::get('/transactions', [\App\Http\Controllers\Admin\TransactionController::class, 'index'])->name('admin.transactions.index');
      Route::get('/transactions/{transaction}', [\App\Http\Controllers\Admin\TransactionController::class, 'show'])->name('admin.transactions.show');

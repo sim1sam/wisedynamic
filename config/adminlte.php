@@ -331,6 +331,12 @@ return [
             'active' => ['admin/fund-requests*'],
         ],
         [
+            'text' => 'Custom Services',
+            'url' => 'admin/custom-service-requests',
+            'icon' => 'fas fa-fw fa-cogs',
+            'active' => ['admin/custom-service-requests*'],
+        ],
+        [
             'text' => 'Services',
             'icon' => 'fas fa-fw fa-cogs',
             'submenu' => [
