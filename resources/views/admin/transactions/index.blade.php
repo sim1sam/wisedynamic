@@ -23,6 +23,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Transaction #</th>
+                        <th>Customer</th>
                         <th>Order Type</th>
                         <th>Order #</th>
                         <th>Amount</th>
@@ -37,10 +38,26 @@
                             <td>{{ $transaction->id }}</td>
                             <td>{{ $transaction->transaction_number }}</td>
                             <td>
+                                @if($transaction->fund_request_id && $transaction->fundRequest && $transaction->fundRequest->user)
+                                    <strong>{{ $transaction->fundRequest->user->name }}</strong><br>
+                                    <small class="text-muted">{{ $transaction->fundRequest->user->email }}</small>
+                                @elseif($transaction->package_order_id && $transaction->packageOrder)
+                                    <strong>{{ $transaction->packageOrder->full_name }}</strong><br>
+                                    <small class="text-muted">{{ $transaction->packageOrder->email }}</small>
+                                @elseif($transaction->service_order_id && $transaction->serviceOrder)
+                                    <strong>{{ $transaction->serviceOrder->full_name }}</strong><br>
+                                    <small class="text-muted">{{ $transaction->serviceOrder->email }}</small>
+                                @else
+                                    <span class="text-muted">N/A</span>
+                                @endif
+                            </td>
+                            <td>
                                 @if($transaction->package_order_id)
                                     <span class="badge badge-info">Package</span>
                                 @elseif($transaction->service_order_id)
                                     <span class="badge badge-success">Service</span>
+                                @elseif($transaction->fund_request_id)
+                                    <span class="badge badge-warning">Fund Request</span>
                                 @else
                                     <span class="badge badge-secondary">Unknown</span>
                                 @endif
@@ -53,6 +70,10 @@
                                 @elseif($transaction->service_order_id)
                                     <a href="{{ route('admin.service-orders.show', $transaction->service_order_id) }}">
                                         #{{ $transaction->service_order_id }}
+                                    </a>
+                                @elseif($transaction->fund_request_id)
+                                    <a href="{{ route('admin.fund-requests.show', $transaction->fund_request_id) }}">
+                                        #{{ $transaction->fund_request_id }}
                                     </a>
                                 @else
                                     —
@@ -71,7 +92,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center">No transactions found.</td>
+                            <td colspan="9" class="text-center">No transactions found.</td>
                         </tr>
                     @endforelse
                 </tbody>

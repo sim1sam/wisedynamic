@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Models\FundRequest;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -110,6 +111,16 @@ class FundController extends Controller
         
         // Add balance to user account
         Auth::user()->addBalance($fundRequest->amount);
+        
+        // Create transaction record
+        Transaction::create([
+            'transaction_number' => Transaction::generateTransactionNumber(),
+            'fund_request_id' => $fundRequest->id,
+            'amount' => $fundRequest->amount,
+            'payment_method' => 'SSL Payment',
+            'status' => 'completed',
+            'notes' => 'SSL payment successful - Balance added automatically. Transaction ID: ' . $fundRequest->ssl_transaction_id,
+        ]);
         
         return redirect()->route('customer.fund.index')
             ->with('success', 'Payment successful! Your account has been credited with BDT ' . number_format($fundRequest->amount));

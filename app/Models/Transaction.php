@@ -19,6 +19,7 @@ class Transaction extends Model
         'transaction_number',
         'package_order_id',
         'service_order_id',
+        'fund_request_id',
         'amount',
         'payment_method',
         'status',
@@ -39,6 +40,14 @@ class Transaction extends Model
     public function serviceOrder()
     {
         return $this->belongsTo(ServiceOrder::class);
+    }
+    
+    /**
+     * Get the fund request associated with this transaction.
+     */
+    public function fundRequest()
+    {
+        return $this->belongsTo(FundRequest::class);
     }
     
     /**

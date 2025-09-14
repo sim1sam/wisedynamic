@@ -223,5 +223,9 @@ Route::middleware('auth')->group(function(){
      Route::post('/fund-requests/{fundRequest}/approve', [\App\Http\Controllers\Admin\FundRequestController::class, 'approve'])->name('admin.fund-requests.approve');
      Route::post('/fund-requests/{fundRequest}/reject', [\App\Http\Controllers\Admin\FundRequestController::class, 'reject'])->name('admin.fund-requests.reject');
      Route::get('/fund-requests-stats', [\App\Http\Controllers\Admin\FundRequestController::class, 'statistics'])->name('admin.fund-requests.statistics');
+     
+     // Admin Transaction Routes
+     Route::get('/transactions', [\App\Http\Controllers\Admin\TransactionController::class, 'index'])->name('admin.transactions.index');
+     Route::get('/transactions/{transaction}', [\App\Http\Controllers\Admin\TransactionController::class, 'show'])->name('admin.transactions.show');
  });
 

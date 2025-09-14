@@ -70,4 +70,12 @@ class FundRequest extends Model
     {
         return $query->where('status', self::STATUS_APPROVED);
     }
+    
+    /**
+     * Get the transaction associated with this fund request.
+     */
+    public function transaction()
+    {
+        return $this->hasOne(Transaction::class);
+    }
 }

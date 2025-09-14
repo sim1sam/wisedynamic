@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\FundRequest;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -64,6 +65,16 @@ class FundRequestController extends Controller
         
         // Add balance to user account
         $fundRequest->user->addBalance($fundRequest->amount);
+        
+        // Create transaction record
+        Transaction::create([
+            'transaction_number' => Transaction::generateTransactionNumber(),
+            'fund_request_id' => $fundRequest->id,
+            'amount' => $fundRequest->amount,
+            'payment_method' => $fundRequest->payment_method === 'ssl' ? 'SSL Payment' : 'Bank Transfer',
+            'status' => 'completed',
+            'notes' => 'Fund request approved - Balance added to customer account. ' . ($request->admin_notes ? 'Admin notes: ' . $request->admin_notes : ''),
+        ]);
         
         return redirect()->route('admin.fund-requests.index')
             ->with('success', 'Fund request approved successfully. User balance updated.');
