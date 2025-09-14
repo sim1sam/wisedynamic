@@ -31,6 +31,8 @@ class PackageOrder extends Model
         'page_url',
         'notes',
         'status',
+        'payment_status',
+        'payment_method',
         'paid_amount',
         'due_amount',
         'total_installments',

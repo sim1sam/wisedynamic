@@ -25,8 +25,8 @@ class PaymentController extends Controller
             abort(404);
         }
         
-        // Check if order is accepted and payment is pending
-        if ($order->status !== 'accepted' || $order->payment_status === 'paid') {
+        // Check if order is accepted/processing and payment is pending
+        if (!in_array($order->status, ['accepted', 'processing']) || $order->payment_status === 'paid') {
             return redirect()->back()->with('error', 'Payment is not available for this order.');
         }
         
@@ -44,6 +44,12 @@ class PaymentController extends Controller
             abort(404);
         }
         
+        $validated = $request->validate([
+            'payment_amount' => ['required', 'numeric', 'min:1', 'max:' . $order->amount],
+        ]);
+        
+        $paymentAmount = $validated['payment_amount'];
+        
         // For now, simulate SSL payment success
         // In production, integrate with actual SSL payment gateway
         
@@ -51,25 +57,32 @@ class PaymentController extends Controller
         
         try {
             // Update order payment status
+            $newPaidAmount = ($order->paid_amount ?? 0) + $paymentAmount;
+            $newDueAmount = $order->amount - $newPaidAmount;
+            
             $order->update([
-                'payment_status' => 'paid',
+                'payment_status' => $newDueAmount <= 0 ? 'paid' : 'pending_verification',
                 'payment_method' => 'SSL Payment',
+                'paid_amount' => $newPaidAmount,
+                'due_amount' => $newDueAmount,
             ]);
             
             // Create transaction record
             Transaction::create([
                 'transaction_number' => Transaction::generateTransactionNumber(),
                 $type === 'package' ? 'package_order_id' : 'service_order_id' => $order->id,
-                'amount' => $order->total_amount,
+                'amount' => $paymentAmount,
                 'payment_method' => 'SSL Payment',
                 'status' => 'completed',
-                'notes' => 'SSL payment completed successfully.',
+                'notes' => 'SSL payment completed successfully. Amount: BDT ' . number_format($paymentAmount, 2),
             ]);
             
             DB::commit();
             
+            $message = $newDueAmount <= 0 ? 'Payment completed successfully!' : 'Partial payment of BDT ' . number_format($paymentAmount, 2) . ' completed successfully!';
+            
             return redirect()->route('customer.' . ($type === 'package' ? 'orders' : 'service-orders') . '.show', $order)
-                ->with('success', 'Payment completed successfully!');
+                ->with('success', $message);
                 
         } catch (\Exception $e) {
             DB::rollback();
@@ -90,10 +103,18 @@ class PaymentController extends Controller
             abort(404);
         }
         
+        // Get payment amount from request or default to full amount
+        $paymentAmount = $request->get('payment_amount', $order->amount);
+        
+        // Validate payment amount
+        if ($paymentAmount > $order->amount || $paymentAmount <= 0) {
+            $paymentAmount = $order->amount;
+        }
+        
         // Check if manual payment already exists
         $existingPayment = $order->manualPayment;
         
-        return view('frontend.customer.payment.manual', compact('order', 'type', 'existingPayment'));
+        return view('frontend.customer.payment.manual', compact('order', 'type', 'existingPayment', 'paymentAmount'));
     }
     
     /**
@@ -125,7 +146,7 @@ class PaymentController extends Controller
                 ['payable_type' => get_class($order), 'payable_id' => $order->id],
                 [
                     'user_id' => Auth::id(),
-                    'amount' => $order->total_amount,
+                    'amount' => $order->amount,
                     'bank_name' => $validated['bank_name'],
                     'account_number' => $validated['account_number'],
                     'transaction_id' => $validated['transaction_id'],

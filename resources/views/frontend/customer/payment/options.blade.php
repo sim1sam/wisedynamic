@@ -46,17 +46,17 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Total Amount</label>
-                    <p class="text-2xl font-bold text-green-600">BDT {{ number_format($order->total_amount, 2) }}</p>
+                    <p class="text-2xl font-bold text-green-600">BDT {{ number_format($order->amount, 2) }}</p>
                 </div>
                 @if($type === 'package')
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Package</label>
-                        <p class="text-sm text-gray-900">{{ $order->package->name }}</p>
+                        <p class="text-sm text-gray-900">{{ $order->package_name ?? 'N/A' }}</p>
                     </div>
                 @else
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Service</label>
-                        <p class="text-sm text-gray-900">{{ $order->service->name }}</p>
+                        <p class="text-sm text-gray-900">{{ $order->service_name ?? 'N/A' }}</p>
                     </div>
                 @endif
                 <div>
@@ -64,6 +64,35 @@
                     <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
                         {{ ucfirst($order->status) }}
                     </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Amount Selection -->
+    <div class="bg-white rounded-lg shadow dashboard-card card-blue">
+        <div class="card-header-themed p-4 rounded-t-lg">
+            <h3 class="text-lg font-bold section-header mb-0">Payment Amount</h3>
+        </div>
+        <div class="p-6">
+            <div class="mb-4">
+                <label for="payment_amount" class="block text-sm font-medium text-gray-700 mb-2">Amount to Pay (BDT)</label>
+                <input type="number" id="payment_amount" name="payment_amount" 
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                    value="{{ $order->amount }}" 
+                    min="1" 
+                    max="{{ $order->amount }}" 
+                    step="0.01" 
+                    required>
+                <p class="text-sm text-gray-500 mt-1">You can pay any amount up to the full order amount</p>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div class="flex items-start">
+                    <i class="fas fa-info-circle text-blue-600 mt-1 mr-3"></i>
+                    <div>
+                        <h4 class="font-semibold text-blue-900 mb-2">Payment Options</h4>
+                        <p class="text-blue-800 text-sm">Choose your preferred payment method below. You can pay the full amount or make a partial payment.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -99,8 +128,9 @@
                         </div>
                     </div>
                     
-                    <form method="POST" action="{{ route('customer.payment.ssl', [$type, $order->id]) }}">
+                    <form method="POST" action="{{ route('customer.payment.ssl', [$type, $order->id]) }}" id="ssl-payment-form">
                         @csrf
+                        <input type="hidden" name="payment_amount" id="ssl_payment_amount" value="{{ $order->amount }}">
                         <button type="submit" class="w-full px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition font-semibold">
                             <i class="fas fa-credit-card mr-2"></i>Pay with SSL
                         </button>
@@ -130,9 +160,12 @@
                         </div>
                     </div>
                     
-                    <a href="{{ route('customer.payment.manual', [$type, $order->id]) }}" class="w-full inline-block px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition font-semibold">
-                        <i class="fas fa-university mr-2"></i>Pay via Bank Transfer
-                    </a>
+                    <form method="GET" action="{{ route('customer.payment.manual', [$type, $order->id]) }}" id="manual-payment-form">
+                        <input type="hidden" name="payment_amount" id="manual_payment_amount" value="{{ $order->amount }}">
+                        <button type="submit" class="w-full px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition font-semibold">
+                            <i class="fas fa-university mr-2"></i>Pay via Bank Transfer
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -192,3 +225,43 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const paymentAmountInput = document.getElementById('payment_amount');
+    const sslAmountInput = document.getElementById('ssl_payment_amount');
+    const manualAmountInput = document.getElementById('manual_payment_amount');
+    
+    // Update hidden fields when payment amount changes
+    paymentAmountInput.addEventListener('input', function() {
+        const amount = this.value;
+        sslAmountInput.value = amount;
+        manualAmountInput.value = amount;
+    });
+    
+    // Validate payment amount before form submission
+    document.getElementById('ssl-payment-form').addEventListener('submit', function(e) {
+        const amount = parseFloat(paymentAmountInput.value);
+        const maxAmount = parseFloat(paymentAmountInput.max);
+        
+        if (amount <= 0 || amount > maxAmount) {
+            e.preventDefault();
+            alert('Please enter a valid payment amount between 1 and ' + maxAmount + ' BDT.');
+            return false;
+        }
+    });
+    
+    document.getElementById('manual-payment-form').addEventListener('submit', function(e) {
+        const amount = parseFloat(paymentAmountInput.value);
+        const maxAmount = parseFloat(paymentAmountInput.max);
+        
+        if (amount <= 0 || amount > maxAmount) {
+            e.preventDefault();
+            alert('Please enter a valid payment amount between 1 and ' + maxAmount + ' BDT.');
+            return false;
+        }
+    });
+});
+</script>
+@endpush

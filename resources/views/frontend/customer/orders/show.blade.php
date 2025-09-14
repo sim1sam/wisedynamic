@@ -69,7 +69,7 @@
                                         @endif
                                     </p>
                                     
-                                    @if($order->status === 'accepted' && ($order->payment_status ?? 'unpaid') !== 'paid')
+                                    @if(($order->status === 'accepted' || $order->status === 'processing') && ($order->payment_status ?? 'unpaid') !== 'paid')
                                         <div class="mt-4">
                                             <a href="{{ route('customer.payment.options', ['package', $order->id]) }}" class="w-full inline-block text-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold">
                                                 <i class="fas fa-credit-card mr-2"></i>Pay Now
@@ -113,32 +113,24 @@
                                         </div>
                                     </div>
                                     
-                                    @if($order->status === 'processing')
+                                    @if($order->payment_method)
                                         <div class="mt-4">
-                                            <form action="{{ route('customer.orders.process-payment', $order) }}" method="POST">
-                                                @csrf
-                                                <div class="mb-3">
-                                                    <label for="payment_amount" class="block text-sm font-medium text-gray-700 mb-1">Payment Amount (BDT)</label>
-                                                    <input type="number" id="payment_amount" name="payment_amount" 
-                                                        class="w-full border rounded-lg px-4 py-2" 
-                                                        value="{{ $order->due_amount }}" 
-                                                        min="1" max="{{ $order->due_amount }}" required>
-                                                    <p class="text-sm text-gray-500 mt-1">You can pay any amount up to the full due amount</p>
-                                                </div>
-                                                
-                                                <div class="mb-3">
-                                                    <label for="payment_method" class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
-                                                    <select id="payment_method" name="payment_method" class="w-full border rounded-lg px-4 py-2">
-                                                        <option value="bank_transfer">Bank Transfer</option>
-                                                        <option value="card">Credit/Debit Card</option>
-                                                        <option value="mobile_banking">Mobile Banking</option>
-                                                    </select>
-                                                </div>
-                                                
-                                                <button type="submit" class="btn-primary w-full py-2 rounded-lg">
-                                                    <i class="fas fa-credit-card mr-2"></i> Make Payment
-                                                </button>
-                                            </form>
+                                            <p class="text-gray-700 font-medium">Payment Method:</p>
+                                            <div class="bg-blue-50 p-3 rounded-lg">
+                                                @if($order->payment_method === 'SSL Payment')
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                                        <i class="fas fa-credit-card mr-2"></i>SSL Payment Gateway
+                                                    </span>
+                                                @elseif($order->payment_method === 'Manual Bank Transfer')
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                                        <i class="fas fa-university mr-2"></i>Manual Bank Transfer
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                                                        <i class="fas fa-credit-card mr-2"></i>{{ $order->payment_method }}
+                                                    </span>
+                                                @endif
+                                            </div>
                                         </div>
                                     @endif
                                 </div>

@@ -39,6 +39,8 @@ class ServiceOrder extends Model
         'total_installments',
         'current_installment',
         'payment_history',
+        'payment_status',
+        'payment_method',
     ];
     
     /**

@@ -45,8 +45,11 @@
                     <p class="text-sm text-gray-900">{{ $type === 'package' ? 'Package Order' : 'Service Order' }}</p>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Total Amount</label>
-                    <p class="text-2xl font-bold text-green-600">BDT {{ number_format($order->total_amount, 2) }}</p>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Payment Amount</label>
+                    <p class="text-2xl font-bold text-green-600">BDT {{ number_format($paymentAmount, 2) }}</p>
+                    @if($paymentAmount < $order->amount)
+                        <p class="text-sm text-gray-500">Partial payment (Total: BDT {{ number_format($order->amount, 2) }})</p>
+                    @endif
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Payment Status</label>
@@ -211,7 +214,7 @@
                                 <h4 class="font-semibold text-yellow-900 mb-2">Important Notes</h4>
                                 <ul class="text-yellow-800 text-sm space-y-1">
                                     <li>• Please ensure the screenshot clearly shows the transaction details</li>
-                                    <li>• The amount transferred must match exactly: <strong>BDT {{ number_format($order->total_amount, 2) }}</strong></li>
+                                    <li>• The amount transferred must match exactly: <strong>BDT {{ number_format($order->amount, 2) }}</strong></li>
                                     <li>• Payment verification may take 1-2 business days</li>
                                     <li>• You will receive an email notification once payment is verified</li>
                                 </ul>
