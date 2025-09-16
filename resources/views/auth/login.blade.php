@@ -63,9 +63,6 @@
 
         <div class="mt-6 text-center text-sm text-gray-600">
           Don't have an account? <a href="{{ route('register') }}" class="text-blue-600 hover:underline">Register</a>
-          <div class="mt-2">
-            <a href="{{ route('admin.login') }}" class="text-gray-500 hover:underline">Admin Login</a>
-          </div>
         </div>
       </div>
     </div>
