@@ -25,6 +25,8 @@ class WebsiteSettingController extends Controller
     {
         $validated = $request->validate([
             'site_name' => 'required|string|max:255',
+            'meta_title' => 'nullable|string|max:60',
+            'meta_description' => 'nullable|string|max:160',
             'site_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'site_favicon' => 'nullable|image|mimes:ico,png|max:1024',
             'logo_alt_text' => 'nullable|string|max:255',

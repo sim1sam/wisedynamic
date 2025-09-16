@@ -29,6 +29,26 @@
                 @enderror
             </div>
             
+            <div class="form-group">
+                <label for="meta_title">Meta Title</label>
+                <input type="text" name="meta_title" id="meta_title" class="form-control @error('meta_title') is-invalid @enderror" 
+                    value="{{ old('meta_title', $websiteSetting->meta_title) }}" maxlength="60">
+                @error('meta_title')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+                <small class="form-text text-muted">SEO meta title for the website (recommended: 50-60 characters)</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="meta_description">Meta Description</label>
+                <textarea name="meta_description" id="meta_description" class="form-control @error('meta_description') is-invalid @enderror" 
+                    rows="3" maxlength="160">{{ old('meta_description', $websiteSetting->meta_description) }}</textarea>
+                @error('meta_description')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+                <small class="form-text text-muted">SEO meta description for the website (recommended: 150-160 characters)</small>
+            </div>
+            
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">

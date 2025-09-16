@@ -11,6 +11,8 @@ class WebsiteSetting extends Model
     
     protected $fillable = [
         'site_name',
+        'meta_title',
+        'meta_description',
         'site_logo',
         'site_favicon',
         'logo_alt_text',
