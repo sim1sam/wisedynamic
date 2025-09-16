@@ -129,11 +129,14 @@ class PaymentController extends Controller
         }
         
         $validated = $request->validate([
+            'payment_amount' => ['required', 'numeric', 'min:1', 'max:' . $order->amount],
             'bank_name' => ['required', 'string', 'max:255'],
             'account_number' => ['required', 'string', 'max:255'],
             'transaction_id' => ['nullable', 'string', 'max:255'],
             'payment_screenshot' => ['required', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
         ]);
+        
+        $paymentAmount = $validated['payment_amount'];
         
         DB::beginTransaction();
         
@@ -146,7 +149,7 @@ class PaymentController extends Controller
                 ['payable_type' => get_class($order), 'payable_id' => $order->id],
                 [
                     'user_id' => Auth::id(),
-                    'amount' => $order->amount,
+                    'amount' => $paymentAmount,
                     'bank_name' => $validated['bank_name'],
                     'account_number' => $validated['account_number'],
                     'transaction_id' => $validated['transaction_id'],
@@ -161,10 +164,14 @@ class PaymentController extends Controller
                 'payment_method' => 'Manual Bank Transfer',
             ]);
             
+            $message = $paymentAmount < $order->amount ? 
+                'Partial payment proof of BDT ' . number_format($paymentAmount, 2) . ' submitted successfully! Please wait for admin verification.' :
+                'Payment proof submitted successfully! Please wait for admin verification.';
+            
             DB::commit();
             
             return redirect()->route('customer.' . ($type === 'package' ? 'orders' : 'service-orders') . '.show', $order)
-                ->with('success', 'Payment proof submitted successfully! Please wait for admin verification.');
+                ->with('success', $message);
                 
         } catch (\Exception $e) {
             DB::rollback();

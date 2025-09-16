@@ -46,9 +46,18 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Payment Amount</label>
-                    <p class="text-2xl font-bold text-green-600">BDT {{ number_format($paymentAmount, 2) }}</p>
+                    <div class="mb-2">
+                        <input type="number" id="manual_payment_amount" name="payment_amount" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" 
+                            value="{{ $paymentAmount }}" 
+                            min="1" 
+                            max="{{ $order->amount }}" 
+                            step="0.01" 
+                            required>
+                    </div>
+                    <p class="text-sm text-gray-500">You can pay any amount up to BDT {{ number_format($order->amount, 2) }}</p>
                     @if($paymentAmount < $order->amount)
-                        <p class="text-sm text-gray-500">Partial payment (Total: BDT {{ number_format($order->amount, 2) }})</p>
+                        <p class="text-sm text-gray-500">Default: Partial payment</p>
                     @endif
                 </div>
                 <div>
@@ -186,19 +195,25 @@
                         
                         <div class="md:col-span-2">
                             <label for="payment_screenshot" class="block text-sm font-medium text-gray-700 mb-2">Payment Screenshot *</label>
-                            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-blue-400 transition">
-                                <div class="space-y-1 text-center">
-                                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <div class="flex text-sm text-gray-600">
-                                        <label for="payment_screenshot" class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
-                                            <span>Upload a screenshot</span>
-                                            <input id="payment_screenshot" name="payment_screenshot" type="file" class="sr-only" accept="image/*" required>
-                                        </label>
-                                        <p class="pl-1">or drag and drop</p>
+                            <div id="upload-area" class="mt-1 flex justify-center px-4 sm:px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-blue-400 transition cursor-pointer">
+                                <div class="space-y-1 text-center w-full">
+                                    <div id="upload-icon">
+                                        <svg class="mx-auto h-8 sm:h-12 w-8 sm:w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                    </div>
+                                    <div class="flex flex-col sm:flex-row justify-center items-center text-sm text-gray-600">
+                                        <button type="button" id="upload-button" class="relative cursor-pointer bg-blue-600 text-white px-4 py-2 rounded-md font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition mb-2 sm:mb-0 sm:mr-2">
+                                            <span id="upload-text">Choose Screenshot</span>
+                                            <input id="payment_screenshot" name="payment_screenshot" type="file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/*" required>
+                                        </button>
+                                        <p class="text-gray-500">or drag and drop here</p>
                                     </div>
                                     <p class="text-xs text-gray-500">PNG, JPG up to 2MB</p>
+                                    <div id="file-info" class="hidden mt-2 p-2 bg-green-50 border border-green-200 rounded text-sm text-green-700">
+                                        <i class="fas fa-check-circle mr-1"></i>
+                                        <span id="file-name"></span>
+                                    </div>
                                 </div>
                             </div>
                             @error('payment_screenshot')
@@ -237,15 +252,113 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.getElementById('payment_screenshot');
-    const fileLabel = fileInput.parentElement;
+    const uploadArea = document.getElementById('upload-area');
+    const uploadButton = document.getElementById('upload-button');
+    const uploadText = document.getElementById('upload-text');
+    const fileInfo = document.getElementById('file-info');
+    const fileName = document.getElementById('file-name');
+    const uploadIcon = document.getElementById('upload-icon');
     
+    // Handle file selection
+    function handleFileSelect(file) {
+        if (file) {
+            // Validate file type
+            if (!file.type.match('image.*')) {
+                alert('Please select an image file (PNG, JPG, JPEG)');
+                return;
+            }
+            
+            // Validate file size (2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('File size must be less than 2MB');
+                return;
+            }
+            
+            // Update UI
+            uploadText.textContent = 'Change Screenshot';
+            fileName.textContent = file.name;
+            fileInfo.classList.remove('hidden');
+            uploadArea.classList.add('border-green-400', 'bg-green-50');
+            uploadArea.classList.remove('border-gray-300');
+            
+            // Hide upload icon and show success
+            uploadIcon.innerHTML = '<i class="fas fa-check-circle text-green-500 text-2xl sm:text-4xl"></i>';
+        }
+    }
+    
+    // File input change event
     fileInput.addEventListener('change', function(e) {
-        const fileName = e.target.files[0]?.name;
-        if (fileName) {
-            fileLabel.querySelector('span').textContent = fileName;
+        const file = e.target.files[0];
+        handleFileSelect(file);
+    });
+    
+    // Click on upload area
+    uploadArea.addEventListener('click', function(e) {
+        if (e.target !== fileInput) {
+            fileInput.click();
         }
     });
-});
+    
+    // Drag and drop functionality
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadArea.classList.add('border-blue-400', 'bg-blue-50');
+    });
+    
+    uploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('border-blue-400', 'bg-blue-50');
+    });
+    
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('border-blue-400', 'bg-blue-50');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            handleFileSelect(files[0]);
+        }
+    });
+    
+    // Mobile touch support
+     uploadArea.addEventListener('touchstart', function(e) {
+         uploadArea.classList.add('border-blue-400');
+     });
+     
+     uploadArea.addEventListener('touchend', function(e) {
+         uploadArea.classList.remove('border-blue-400');
+     });
+     
+     // Payment amount validation
+     const paymentAmountInput = document.getElementById('manual_payment_amount');
+     const maxAmount = parseFloat(paymentAmountInput.max);
+     
+     paymentAmountInput.addEventListener('input', function(e) {
+         const amount = parseFloat(e.target.value);
+         
+         // Remove any existing validation classes
+         e.target.classList.remove('border-red-500', 'border-green-500');
+         
+         if (amount > 0 && amount <= maxAmount) {
+             e.target.classList.add('border-green-500');
+         } else if (amount > maxAmount) {
+             e.target.classList.add('border-red-500');
+         }
+     });
+     
+     // Form submission validation
+     document.querySelector('form').addEventListener('submit', function(e) {
+         const amount = parseFloat(paymentAmountInput.value);
+         
+         if (amount <= 0 || amount > maxAmount) {
+             e.preventDefault();
+             alert('Please enter a valid payment amount between 1 and ' + maxAmount + ' BDT.');
+             paymentAmountInput.focus();
+             return false;
+         }
+     });
+ });
 </script>
 @endpush
 @endsection
