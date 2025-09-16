@@ -97,6 +97,16 @@ class CustomServiceController extends Controller
                  ]);
             }
             
+            // Create notification for admin
+            \App\Models\Notification::createNotification(
+                'custom_service',
+                'New Custom Service Request',
+                "New custom service request #{$customServiceRequest->id} from {$customServiceRequest->user->name} for BDT {$totalAmount}",
+                route('admin.custom-service-requests.show', $customServiceRequest->id),
+                $customServiceRequest->id,
+                'App\\Models\\CustomServiceRequest'
+            );
+            
             if ($validated['payment_method'] === 'balance') {
                 // Deduct from user balance
                 Auth::user()->deductBalance($totalAmount);

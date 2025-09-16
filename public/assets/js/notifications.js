@@ -1,28 +1,6 @@
-/**
- * WiseDynamic Admin JavaScript
- */
-
-$(function() {
-    // Initialize tooltips
-    $('[data-toggle="tooltip"]').tooltip();
-    
-    // Initialize popovers
-    $('[data-toggle="popover"]').popover();
-    
-    // Confirm delete actions
-    $('.btn-delete-confirm').on('click', function(e) {
-        if (!confirm('Are you sure you want to delete this item? This action cannot be undone.')) {
-            e.preventDefault();
-        }
-    });
-    
-    // Notification System
-    initializeNotificationSystem();
-});
-
 // Admin Notification System
-function initializeNotificationSystem() {
-    console.log('Initializing notification system...');
+$(document).ready(function() {
+    console.log('Notification system loading...');
     
     // Only run on admin pages
     if (!window.location.pathname.includes('/admin/')) {
@@ -30,32 +8,21 @@ function initializeNotificationSystem() {
         return;
     }
     
-    console.log('On admin page, adding notifications');
+    console.log('On admin page, initializing notifications');
     
-    // Wait for AdminLTE to fully load, then add notification dropdown
-    setTimeout(function() {
-        addNotificationDropdown();
-        // Initialize notification functionality
-        initializeNotifications();
-    }, 1000);
-}
+    // Add notification dropdown to navbar
+    addNotificationDropdown();
+    
+    // Initialize notification functionality
+    initializeNotifications();
+});
 
 function addNotificationDropdown() {
     console.log('Adding notification dropdown...');
     
-    // Try multiple selectors to find the navbar
-    let navbar = $('.main-header .navbar .navbar-nav.ml-auto');
-    console.log('Found navbar with ml-auto:', navbar.length);
-    
-    if (navbar.length === 0) {
-        navbar = $('.main-header .navbar .navbar-nav');
-        console.log('Found navbar without ml-auto:', navbar.length);
-    }
-    
-    if (navbar.length === 0) {
-        navbar = $('.navbar .navbar-nav');
-        console.log('Found any navbar:', navbar.length);
-    }
+    // Find the navbar and add notification dropdown
+    const navbar = $('.main-header .navbar .navbar-nav.ml-auto');
+    console.log('Found navbar elements:', navbar.length);
     
     if (navbar.length) {
         console.log('Navbar found, adding notification HTML');
@@ -83,29 +50,13 @@ function addNotificationDropdown() {
         const fullscreenWidget = navbar.find('.nav-item').last();
         if (fullscreenWidget.length) {
             fullscreenWidget.before(notificationHtml);
-            console.log('Notification dropdown added before fullscreen widget');
         } else {
             navbar.append(notificationHtml);
-            console.log('Notification dropdown appended to navbar');
         }
-    } else {
-        console.log('Navbar not found! Available elements:');
-        console.log('main-header:', $('.main-header').length);
-        console.log('navbar:', $('.navbar').length);
-        console.log('navbar-nav:', $('.navbar-nav').length);
-        console.log('All navbar classes:', $('.navbar').attr('class'));
-        
-        // Try again after another delay
-        setTimeout(function() {
-            console.log('Retrying notification dropdown...');
-            addNotificationDropdown();
-        }, 2000);
     }
 }
 
 function initializeNotifications() {
-    console.log('Initializing notification functionality...');
-    
     // Load notifications on page load
     loadNotifications();
     
@@ -135,20 +86,16 @@ function initializeNotifications() {
 }
 
 function loadNotifications() {
-    console.log('Loading notifications...');
     $.get('/admin/notifications/api', function(data) {
-        console.log('Notifications loaded:', data);
         updateNotificationUI(data);
-    }).fail(function(xhr, status, error) {
-        console.error('Failed to load notifications:', error);
+    }).fail(function() {
+        console.error('Failed to load notifications');
     });
 }
 
 function updateNotificationUI(data) {
     const count = data.unread_count;
     const notifications = data.notifications;
-    
-    console.log('Updating UI with', count, 'notifications');
     
     // Update count badge
     if (count > 0) {
@@ -167,7 +114,7 @@ function updateNotificationUI(data) {
         listContainer.append('<div class="dropdown-item text-muted text-center">No new notifications</div>');
     } else {
         notifications.forEach(function(notification) {
-            const timeAgo = moment ? moment(notification.created_at).fromNow() : 'Recently';
+            const timeAgo = moment(notification.created_at).fromNow();
             const item = `
                 <a href="${notification.url || '#'}" class="dropdown-item notification-item" data-id="${notification.id}">
                     <i class="fas fa-${getNotificationIcon(notification.type)} mr-2"></i>
@@ -220,48 +167,21 @@ function markAllAsRead() {
     });
 }
 
-// Add notification styles
-$(document).ready(function() {
-    const notificationStyles = `
-        <style>
-        .notification-item {
-            white-space: normal !important;
-        }
-        .notification-item:hover {
-            background-color: #f8f9fa;
-        }
-        .dropdown-item-title {
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-        </style>
-    `;
-    
-    $('head').append(notificationStyles);
-});
-    
-    // Auto-hide alerts after 5 seconds
-    setTimeout(function() {
-        $('.alert-success, .alert-info').fadeOut(500);
-    }, 5000);
-    
-    // File input preview
-    $('.custom-file-input').on('change', function() {
-        let fileName = $(this).val().split('\\').pop();
-        $(this).next('.custom-file-label').addClass("selected").html(fileName);
-        
-        // Image preview if it's an image
-        let fileInput = this;
-        if (fileInput.files && fileInput.files[0]) {
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                let previewElement = $(fileInput).closest('.form-group').find('.img-preview');
-                if (previewElement.length) {
-                    previewElement.attr('src', e.target.result);
-                }
-            }
-            reader.readAsDataURL(fileInput.files[0]);
-        }
-    });
-});
+// Add CSS styles
+const notificationStyles = `
+<style>
+.notification-item {
+    white-space: normal !important;
+}
+.notification-item:hover {
+    background-color: #f8f9fa;
+}
+.dropdown-item-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+</style>
+`;
+
+$('head').append(notificationStyles);

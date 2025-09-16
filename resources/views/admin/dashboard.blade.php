@@ -317,3 +317,8 @@
   </div>
 </div>
 @endsection
+
+@section('js')
+@parent
+@include('admin.partials.notification-test')
+@endsection

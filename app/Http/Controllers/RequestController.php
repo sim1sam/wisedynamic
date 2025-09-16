@@ -55,7 +55,7 @@ class RequestController extends Controller
             'post_link' => ['nullable','url','max:2048'],
         ]);
 
-        CustomerRequest::create([
+        $customerRequest = CustomerRequest::create([
             'user_id' => $request->user()->id,
             // keep legacy title filled with page_name for compatibility
             'title' => $validated['page_name'],
@@ -67,6 +67,16 @@ class RequestController extends Controller
             'post_link' => $validated['post_link'] ?? null,
             'status' => CustomerRequest::STATUS_PENDING,
         ]);
+        
+        // Create notification for admin
+        \App\Models\Notification::createNotification(
+            'customer_request',
+            'New Customer Request',
+            "New marketing request from {$request->user()->name} for {$validated['page_name']} - BDT {$validated['ads_budget_bdt']}",
+            route('admin.requests.show', $customerRequest->id),
+            $customerRequest->id,
+            'App\\Models\\CustomerRequest'
+        );
 
         return redirect()->route('customer.requests.index')->with('success', 'Request submitted successfully.');
     }

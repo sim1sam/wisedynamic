@@ -226,10 +226,20 @@ class CartController extends Controller
                 'notes' => $cart['notes'] ?? null,
                 
                 // Set initial status
-                'status' => 'pending',
-            ]);
-            
-            $redirectParam = 'package=' . urlencode($itemKey);
+            'status' => 'pending',
+        ]);
+        
+        // Create notification for admin
+        \App\Models\Notification::createNotification(
+            'package_order',
+            'New Package Order',
+            "New package order #{$order->id} from {$customer['full_name']} for {$packageName}",
+            route('admin.package-orders.show', $order->id),
+            $order->id,
+            'App\\Models\\PackageOrder'
+        );
+        
+        $redirectParam = 'package=' . urlencode($itemKey);
         } else {
             // Handle service order
             $service = null;
@@ -271,10 +281,20 @@ class CartController extends Controller
                 'notes' => null,
                 
                 // Set initial status
-                'status' => 'pending',
-            ]);
-            
-            $redirectParam = 'service=' . urlencode($itemKey);
+            'status' => 'pending',
+        ]);
+        
+        // Create notification for admin
+        \App\Models\Notification::createNotification(
+            'service_order',
+            'New Service Order',
+            "New service order #{$order->id} from {$customer['full_name']} for {$serviceName}",
+            route('admin.service-orders.show', $order->id),
+            $order->id,
+            'App\\Models\\ServiceOrder'
+        );
+        
+        $redirectParam = 'service=' . urlencode($itemKey);
         }
         
         // Clear the cart session

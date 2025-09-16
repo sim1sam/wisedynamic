@@ -22,7 +22,17 @@ class ContactController extends Controller
             'message' => 'required|string',
         ]);
 
-        CustomerMessage::create($validated);
+        $message = CustomerMessage::create($validated);
+        
+        // Create notification for admin
+        \App\Models\Notification::createNotification(
+            'message',
+            'New Contact Message',
+            "New message from {$validated['name']} - {$validated['subject']}",
+            route('admin.messages.show', $message->id),
+            $message->id,
+            'App\\Models\\CustomerMessage'
+        );
 
         return redirect()->route('contact')->with('success', 'Your message has been sent successfully!');
     }

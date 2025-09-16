@@ -85,6 +85,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('messages/{message}', [ContactController::class, 'show'])->name('messages.show');
     Route::delete('messages/{message}', [ContactController::class, 'destroy'])->name('messages.destroy');
     
+    // Notifications
+    Route::get('notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('notifications/api', [\App\Http\Controllers\Admin\NotificationController::class, 'getNotifications'])->name('notifications.api');
+    Route::post('notifications/{id}/read', [\App\Http\Controllers\Admin\NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('notifications/read-all', [\App\Http\Controllers\Admin\NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
+    
 });
 
 // Service Categories and Services Management (admin prefix but no name prefix)

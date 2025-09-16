@@ -64,11 +64,31 @@ class FundController extends Controller
             
             $fundRequest->save();
             
+            // Create notification for admin
+            \App\Models\Notification::createNotification(
+                'fund_request',
+                'New Fund Request',
+                "New fund request #{$fundRequest->id} from {$fundRequest->user->name} for BDT {$fundRequest->amount}",
+                route('admin.fund-requests.show', $fundRequest->id),
+                $fundRequest->id,
+                'App\\Models\\FundRequest'
+            );
+            
             return redirect()->route('customer.fund.index')
                 ->with('success', 'Fund request submitted successfully. Please wait for admin approval.');
         } else {
             // Handle SSL payment - redirect to payment gateway
             $fundRequest->save();
+            
+            // Create notification for admin
+            \App\Models\Notification::createNotification(
+                'fund_request',
+                'New Fund Request (SSL)',
+                "New SSL fund request #{$fundRequest->id} from {$fundRequest->user->name} for BDT {$fundRequest->amount}",
+                route('admin.fund-requests.show', $fundRequest->id),
+                $fundRequest->id,
+                'App\\Models\\FundRequest'
+            );
             
             return redirect()->route('customer.fund.ssl-payment', $fundRequest)
                 ->with('info', 'Redirecting to payment gateway...');
