@@ -50,46 +50,196 @@ class PaymentController extends Controller
         
         $paymentAmount = $validated['payment_amount'];
         
-        // For now, simulate SSL payment success
-        // In production, integrate with actual SSL payment gateway
+        // SSL Commerz payment gateway integration
+        $sslConfig = config('sslcommerz');
         
-        DB::beginTransaction();
+        // Generate unique transaction ID
+        $transactionId = 'TXN_' . $order->id . '_' . time();
         
-        try {
-            // Update order payment status
-            $newPaidAmount = ($order->paid_amount ?? 0) + $paymentAmount;
-            $newDueAmount = $order->amount - $newPaidAmount;
+        // Prepare SSL Commerz payment data
+        $postData = [
+            'store_id' => $sslConfig['store_id'],
+            'store_passwd' => $sslConfig['store_password'],
+            'total_amount' => $paymentAmount,
+            'currency' => 'BDT',
+            'tran_id' => $transactionId,
+            'success_url' => route('customer.payment.ssl.success', ['type' => $type, 'id' => $id, 'tran_id' => $transactionId]),
+            'fail_url' => route('customer.payment.ssl.fail', ['type' => $type, 'id' => $id]),
+            'cancel_url' => route('customer.payment.ssl.cancel', ['type' => $type, 'id' => $id]),
+            'ipn_url' => $sslConfig['ipn_url'],
             
-            $order->update([
-                'payment_status' => $newDueAmount <= 0 ? 'paid' : 'pending_verification',
-                'payment_method' => 'SSL Payment',
-                'paid_amount' => $newPaidAmount,
-                'due_amount' => $newDueAmount,
-            ]);
+            // Customer information
+            'cus_name' => Auth::user()->name,
+            'cus_email' => Auth::user()->email,
+            'cus_add1' => 'Dhaka',
+            'cus_city' => 'Dhaka',
+            'cus_country' => 'Bangladesh',
+            'cus_phone' => Auth::user()->phone ?? '01700000000',
             
-            // Create transaction record
-            Transaction::create([
-                'transaction_number' => Transaction::generateTransactionNumber(),
-                $type === 'package' ? 'package_order_id' : 'service_order_id' => $order->id,
+            // Product information
+            'product_name' => $type === 'package' ? 'Package Order #' . $order->id : 'Service Order #' . $order->id,
+            'product_category' => ucfirst($type) . ' Order',
+            'product_profile' => 'general',
+            
+            // Shipping information
+            'shipping_method' => 'NO',
+            'ship_name' => Auth::user()->name,
+            'ship_add1' => 'Dhaka',
+            'ship_city' => 'Dhaka',
+            'ship_country' => 'Bangladesh',
+        ];
+        
+        // Store transaction data in session for later verification
+        session([
+            'ssl_payment_data' => [
+                'transaction_id' => $transactionId,
+                'order_type' => $type,
+                'order_id' => $id,
                 'amount' => $paymentAmount,
-                'payment_method' => 'SSL Payment',
-                'status' => 'completed',
-                'notes' => 'SSL payment completed successfully. Amount: BDT ' . number_format($paymentAmount, 2),
-            ]);
+                'user_id' => Auth::id(),
+            ]
+        ]);
+        
+        // Get SSL Commerz API URL
+        $apiUrl = $sslConfig['sandbox'] ? $sslConfig['api_url']['sandbox'] : $sslConfig['api_url']['live'];
+        
+        // Initialize cURL
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $apiUrl);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode !== 200 || !$response) {
+            return redirect()->back()->with('error', 'Unable to connect to payment gateway. Please try again.');
+        }
+        
+        $responseData = json_decode($response, true);
+        
+        if (isset($responseData['status']) && $responseData['status'] === 'SUCCESS') {
+            // Redirect to SSL Commerz payment page
+            return redirect($responseData['GatewayPageURL']);
+        } else {
+            return redirect()->back()->with('error', 'Payment gateway error: ' . ($responseData['failedreason'] ?? 'Unknown error'));
+        }
+    }
+    
+    /**
+     * Handle SSL payment success callback.
+     */
+    public function sslSuccess(Request $request)
+    {
+        $transactionId = $request->get('tran_id');
+        $paymentData = session('ssl_payment_data');
+        
+        if (!$paymentData || $paymentData['transaction_id'] !== $transactionId) {
+            return redirect()->route('customer.dashboard')->with('error', 'Invalid payment session.');
+        }
+        
+        // Verify payment with SSL Commerz
+        $sslConfig = config('sslcommerz');
+        $validationUrl = $sslConfig['sandbox'] ? $sslConfig['validation_url']['sandbox'] : $sslConfig['validation_url']['live'];
+        
+        $validationData = [
+            'val_id' => $request->get('val_id'),
+            'store_id' => $sslConfig['store_id'],
+            'store_passwd' => $sslConfig['store_password'],
+        ];
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $validationUrl);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($validationData));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        
+        $response = curl_exec($ch);
+        curl_close($ch);
+        
+        $validationResponse = json_decode($response, true);
+        
+        if ($validationResponse['status'] === 'VALID' && $validationResponse['tran_id'] === $transactionId) {
+            // Payment is valid, process the order
+            $order = $this->getOrder($paymentData['order_type'], $paymentData['order_id']);
             
-            DB::commit();
+            DB::beginTransaction();
             
-            $message = $newDueAmount <= 0 ? 'Payment completed successfully!' : 'Partial payment of BDT ' . number_format($paymentAmount, 2) . ' completed successfully!';
-            
-            return redirect()->route('customer.' . ($type === 'package' ? 'orders' : 'service-orders') . '.show', $order)
-                ->with('success', $message);
+            try {
+                // Update order payment status
+                $newPaidAmount = ($order->paid_amount ?? 0) + $paymentData['amount'];
+                $newDueAmount = $order->amount - $newPaidAmount;
                 
-        } catch (\Exception $e) {
-            DB::rollback();
-            
-            return redirect()->back()
+                $order->update([
+                    'payment_status' => $newDueAmount <= 0 ? 'paid' : 'pending_verification',
+                    'payment_method' => 'SSL Payment',
+                    'paid_amount' => $newPaidAmount,
+                    'due_amount' => $newDueAmount,
+                ]);
+                
+                // Create transaction record
+                Transaction::create([
+                    'transaction_number' => Transaction::generateTransactionNumber(),
+                    $paymentData['order_type'] === 'package' ? 'package_order_id' : 'service_order_id' => $order->id,
+                    'amount' => $paymentData['amount'],
+                    'payment_method' => 'SSL Payment',
+                    'status' => 'completed',
+                    'notes' => 'SSL payment completed successfully. Transaction ID: ' . $transactionId . ', Amount: BDT ' . number_format($paymentData['amount'], 2),
+                ]);
+                
+                DB::commit();
+                
+                // Clear session data
+                session()->forget('ssl_payment_data');
+                
+                $message = $newDueAmount <= 0 ? 'Payment completed successfully!' : 'Partial payment of BDT ' . number_format($paymentData['amount'], 2) . ' completed successfully!';
+                
+                return redirect()->route('customer.' . ($paymentData['order_type'] === 'package' ? 'orders' : 'service-orders') . '.show', $order)
+                    ->with('success', $message);
+                    
+            } catch (\Exception $e) {
+                DB::rollback();
+                return redirect()->route('customer.dashboard')->with('error', 'Payment processing failed.');
+            }
+        } else {
+            return redirect()->route('customer.dashboard')->with('error', 'Payment verification failed.');
+        }
+    }
+    
+    /**
+     * Handle SSL payment failure callback.
+     */
+    public function sslFail(Request $request)
+    {
+        $paymentData = session('ssl_payment_data');
+        session()->forget('ssl_payment_data');
+        
+        if ($paymentData) {
+            return redirect()->route('customer.payment.options', [$paymentData['order_type'], $paymentData['order_id']])
                 ->with('error', 'Payment failed. Please try again.');
         }
+        
+        return redirect()->route('customer.dashboard')->with('error', 'Payment failed.');
+    }
+    
+    /**
+     * Handle SSL payment cancellation callback.
+     */
+    public function sslCancel(Request $request)
+    {
+        $paymentData = session('ssl_payment_data');
+        session()->forget('ssl_payment_data');
+        
+        if ($paymentData) {
+            return redirect()->route('customer.payment.options', [$paymentData['order_type'], $paymentData['order_id']])
+                ->with('info', 'Payment was cancelled.');
+        }
+        
+        return redirect()->route('customer.dashboard')->with('info', 'Payment was cancelled.');
     }
     
     /**

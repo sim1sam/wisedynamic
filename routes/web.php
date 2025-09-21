@@ -234,6 +234,11 @@ Route::middleware('auth')->group(function(){
        Route::get('/payment/{type}/{id}/manual', [\App\Http\Controllers\Customer\PaymentController::class, 'showManualPaymentForm'])->name('customer.payment.manual');
        Route::post('/payment/{type}/{id}/manual', [\App\Http\Controllers\Customer\PaymentController::class, 'processManualPayment'])->name('customer.payment.manual.submit');
    });
+
+// SSL Commerz Callback Routes (outside auth middleware for gateway callbacks)
+Route::get('/customer/payment/ssl/success/{type}/{id}', [\App\Http\Controllers\Customer\PaymentController::class, 'sslSuccess'])->name('customer.payment.ssl.success');
+Route::get('/customer/payment/ssl/fail/{type}/{id}', [\App\Http\Controllers\Customer\PaymentController::class, 'sslFail'])->name('customer.payment.ssl.fail');
+Route::get('/customer/payment/ssl/cancel/{type}/{id}', [\App\Http\Controllers\Customer\PaymentController::class, 'sslCancel'])->name('customer.payment.ssl.cancel');
  
  // Admin Fund Request Management Routes
  Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {

@@ -24,14 +24,14 @@ return new class extends Migration
         
         // Update existing orders to link with users based on email
         DB::statement('
-            UPDATE package_orders po 
-            SET user_id = (SELECT id FROM users WHERE email = po.email LIMIT 1) 
+            UPDATE package_orders 
+            SET user_id = (SELECT id FROM users WHERE email = package_orders.email LIMIT 1) 
             WHERE user_id IS NULL
         ');
         
         DB::statement('
-            UPDATE service_orders so 
-            SET user_id = (SELECT id FROM users WHERE email = so.email LIMIT 1) 
+            UPDATE service_orders 
+            SET user_id = (SELECT id FROM users WHERE email = service_orders.email LIMIT 1) 
             WHERE user_id IS NULL
         ');
     }
