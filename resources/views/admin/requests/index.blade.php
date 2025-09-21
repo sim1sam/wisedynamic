@@ -48,6 +48,7 @@
                   <th>Days</th>
                   <th>Post Link</th>
                   <th>Status</th>
+                  <th>Conversion</th>
                   <th>Created</th>
                   <th class="text-right" style="width: 240px;">Actions</th>
                 </tr>
@@ -73,6 +74,20 @@
                     <td>
                       <span class="badge badge-secondary text-uppercase">{{ \Illuminate\Support\Str::headline($req->status) }}</span>
                     </td>
+                    <td>
+                      @if($req->is_converted)
+                        <span class="badge badge-success">
+                          <i class="fas fa-check-circle"></i> Converted
+                        </span>
+                        @if($req->service_order_id)
+                          <br><small class="text-muted">Order #{{ $req->service_order_id }}</small>
+                        @endif
+                      @else
+                        <span class="badge badge-light">
+                          <i class="fas fa-clock"></i> Not Converted
+                        </span>
+                      @endif
+                    </td>
                     <td>{{ $req->created_at->format('Y-m-d H:i') }}</td>
                     <td class="text-right">
                       <form method="POST" action="{{ route('admin.requests.status', $req) }}" class="form-inline justify-content-end">
@@ -95,7 +110,7 @@
                   </tr>
                 @empty
                   <tr>
-                    <td colspan="9" class="text-center text-muted py-5">No requests found.</td>
+                    <td colspan="10" class="text-center text-muted py-5">No requests found.</td>
                   </tr>
                 @endforelse
               </tbody>

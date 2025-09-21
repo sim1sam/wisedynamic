@@ -22,6 +22,15 @@ class CustomerRequest extends Model
         'days',
         'post_link',
         'status',
+        // conversion fields
+        'is_converted',
+        'service_order_id',
+        'converted_at',
+    ];
+
+    protected $casts = [
+        'is_converted' => 'boolean',
+        'converted_at' => 'datetime',
     ];
 
     public const STATUS_PENDING = 'pending';
@@ -31,5 +40,10 @@ class CustomerRequest extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function serviceOrder(): BelongsTo
+    {
+        return $this->belongsTo(ServiceOrder::class);
     }
 }

@@ -139,6 +139,7 @@ class CustomerRequestController extends Controller
             
             // Create the service order with direct DB insertion to avoid model issues
             $serviceOrderId = DB::table('service_orders')->insertGetId([
+                'user_id' => $user->id,
                 'service_id' => $service->id,
                 'service_name' => $service->title,
                 'amount' => $validated['amount'],
@@ -168,8 +169,13 @@ class CustomerRequestController extends Controller
             
             \Log::info('Service order created', ['order_id' => $serviceOrder->id]);
             
-            // Update the customer request status to done
-            $customerRequest->update(['status' => CustomerRequest::STATUS_DONE]);
+            // Update the customer request status to done and mark as converted
+            $customerRequest->update([
+                'status' => CustomerRequest::STATUS_DONE,
+                'is_converted' => true,
+                'service_order_id' => $serviceOrderId,
+                'converted_at' => now(),
+            ]);
             
             // Commit the transaction
             DB::commit();
