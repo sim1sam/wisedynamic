@@ -161,6 +161,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('transactions/{transaction}', [\App\Http\Controllers\Admin\TransactionController::class, 'show'])
         ->name('transactions.show');
         
+    // Manual Payments Management
+    Route::get('manual-payments', [\App\Http\Controllers\Admin\ManualPaymentController::class, 'index'])
+        ->name('admin.manual-payments.index');
+    Route::get('manual-payments/{manualPayment}', [\App\Http\Controllers\Admin\ManualPaymentController::class, 'show'])
+        ->name('admin.manual-payments.show');
+    Route::post('manual-payments/{manualPayment}/approve', [\App\Http\Controllers\Admin\ManualPaymentController::class, 'approve'])
+        ->name('admin.manual-payments.approve');
+    Route::post('manual-payments/{manualPayment}/reject', [\App\Http\Controllers\Admin\ManualPaymentController::class, 'reject'])
+        ->name('admin.manual-payments.reject');
+        
     // Customer Management
     Route::resource('customers', \App\Http\Controllers\Admin\CustomerController::class)->names([
         'index' => 'admin.customers.index',

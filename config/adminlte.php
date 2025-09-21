@@ -331,6 +331,12 @@ return [
             'active' => ['admin/fund-requests*'],
         ],
         [
+            'text' => 'Manual Payments',
+            'url' => 'admin/manual-payments',
+            'icon' => 'fas fa-fw fa-credit-card',
+            'active' => ['admin/manual-payments*'],
+        ],
+        [
             'text' => 'Custom Services',
             'url' => 'admin/custom-service-requests',
             'icon' => 'fas fa-fw fa-cogs',

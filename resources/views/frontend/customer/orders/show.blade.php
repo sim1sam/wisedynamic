@@ -95,7 +95,11 @@
                                             <div class="flex justify-between mb-1">
                                                 <span>Payment Status:</span>
                                                 <span>
-                                                    @if(($order->paid_amount ?? 0) <= 0)
+                                                    @if($order->payment_status === 'pending_verification')
+                                                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800">
+                                                            <i class="fas fa-clock mr-1"></i>Pending Verification
+                                                        </span>
+                                                    @elseif(($order->paid_amount ?? 0) <= 0)
                                                         <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
                                                             Not Paid
                                                         </span>
@@ -122,9 +126,29 @@
                                                         <i class="fas fa-credit-card mr-2"></i>SSL Payment Gateway
                                                     </span>
                                                 @elseif($order->payment_method === 'Manual Bank Transfer')
-                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                                        <i class="fas fa-university mr-2"></i>Manual Bank Transfer
-                                                    </span>
+                                                    <div class="space-y-2">
+                                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                                            <i class="fas fa-university mr-2"></i>Manual Bank Transfer
+                                                        </span>
+                                                        @if($order->payment_status === 'pending_verification')
+                                                            <div class="mt-2 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                                                                <div class="flex items-center">
+                                                                    <i class="fas fa-clock text-orange-500 mr-2"></i>
+                                                                    <span class="text-orange-800 font-medium">Payment Under Review</span>
+                                                                </div>
+                                                                <p class="text-orange-700 text-sm mt-1">
+                                                                    Your payment proof has been submitted and is being verified by our admin team. 
+                                                                    You will be notified once the verification is complete.
+                                                                </p>
+                                                                @if($order->manualPayment)
+                                                                    <div class="mt-2 text-sm text-orange-700">
+                                                                        <strong>Submitted:</strong> {{ $order->manualPayment->created_at->format('M d, Y H:i') }}<br>
+                                                                        <strong>Amount:</strong> BDT {{ number_format($order->manualPayment->amount, 2) }}
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                        @endif
+                                                    </div>
                                                 @else
                                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
                                                         <i class="fas fa-credit-card mr-2"></i>{{ $order->payment_method }}

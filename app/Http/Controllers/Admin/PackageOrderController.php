@@ -217,7 +217,7 @@ class PackageOrderController extends Controller
             ]);
             
             $paymentAmount = $validated['payment_amount'];
-            $paymentMethod = $validated['payment_method'] ?? 'manual';
+            $paymentMethod = $validated['payment_method'] ?? 'bank_transfer';
             $notes = $validated['notes'] ?? null;
             
             // Check if payment amount exceeds due amount

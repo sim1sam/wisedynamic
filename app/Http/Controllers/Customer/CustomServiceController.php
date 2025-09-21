@@ -116,7 +116,7 @@ class CustomServiceController extends Controller
                     'transaction_number' => Transaction::generateTransactionNumber(),
                     'custom_service_request_id' => $customServiceRequest->id,
                     'amount' => $totalAmount,
-                    'payment_method' => 'Balance Payment',
+                    'payment_method' => 'wallet',
                     'status' => 'completed',
                     'notes' => 'Custom service request payment - Balance deducted from customer account.',
                 ]);
