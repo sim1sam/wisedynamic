@@ -60,6 +60,14 @@
           <div class="card-body">
             <p class="mb-2"><strong>Customer:</strong> {{ optional($customerRequest->user)->name }} <span class="text-muted">{{ optional($customerRequest->user)->email }}</span></p>
             <p class="mb-2"><strong>Status:</strong> <span class="badge badge-secondary">{{ \Illuminate\Support\Str::headline($customerRequest->status) }}</span></p>
+            @if($customerRequest->is_converted && $customerRequest->service_order_id)
+            <p class="mb-2"><strong>Converted to:</strong> 
+              <a href="{{ route('admin.service-orders.show', $customerRequest->service_order_id) }}" class="btn btn-success btn-sm">
+                <i class="fas fa-external-link-alt mr-1"></i>Service Order #{{ $customerRequest->service_order_id }}
+              </a>
+            </p>
+            <p class="mb-2"><strong>Converted at:</strong> {{ $customerRequest->converted_at ? $customerRequest->converted_at->format('Y-m-d H:i') : 'N/A' }}</p>
+            @endif
             <p class="mb-2"><strong>Created:</strong> {{ $customerRequest->created_at->format('Y-m-d H:i') }}</p>
             <p class="mb-0"><strong>Updated:</strong> {{ $customerRequest->updated_at->format('Y-m-d H:i') }}</p>
           </div>
@@ -97,6 +105,17 @@
           <div class="card-header bg-primary">
             <h3 class="card-title">Convert to Service Order</h3>
           </div>
+          @if($customerRequest->is_converted)
+          <div class="card-body text-center">
+            <div class="alert alert-success">
+              <i class="fas fa-check-circle mr-2"></i>
+              This request has already been converted to 
+              <a href="{{ route('admin.service-orders.show', $customerRequest->service_order_id) }}" class="alert-link">
+                Service Order #{{ $customerRequest->service_order_id }}
+              </a>
+            </div>
+          </div>
+          @else
           <form method="POST" action="{{ route('admin.requests.convert', $customerRequest) }}">
             @csrf
             <div class="card-body">
@@ -135,6 +154,7 @@
               <button type="submit" class="btn btn-primary">Convert to Service Order</button>
             </div>
           </form>
+          @endif
         </div>
       </div>
     </div>

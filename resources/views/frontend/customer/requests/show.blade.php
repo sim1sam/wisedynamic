@@ -62,6 +62,20 @@
         <div class="text-sm text-gray-500">Status</div>
         <div class="inline-block mt-1 px-2 py-1 text-xs rounded bg-gray-100 text-gray-800">{{ \Illuminate\Support\Str::headline($customerRequest->status) }}</div>
       </div>
+      @if($customerRequest->is_converted && $customerRequest->service_order_id)
+      <div>
+        <div class="text-sm text-gray-500">Converted to Service Order</div>
+        <div class="mt-1">
+          <a href="{{ route('customer.service-orders.show', $customerRequest->service_order_id) }}" class="inline-flex items-center px-3 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 text-sm">
+            <i class="fas fa-external-link-alt mr-2"></i>View Service Order #{{ $customerRequest->service_order_id }}
+          </a>
+        </div>
+      </div>
+      <div>
+        <div class="text-sm text-gray-500">Converted at</div>
+        <div class="mt-1 text-gray-700">{{ $customerRequest->converted_at ? $customerRequest->converted_at->format('Y-m-d H:i') : 'N/A' }}</div>
+      </div>
+      @endif
       <div>
         <div class="text-sm text-gray-500">Created</div>
         <div class="mt-1 text-gray-700">{{ $customerRequest->created_at->format('Y-m-d H:i') }}</div>
