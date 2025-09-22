@@ -186,7 +186,7 @@ class PaymentController extends Controller
                     'transaction_number' => Transaction::generateTransactionNumber(),
                     $paymentData['order_type'] === 'package' ? 'package_order_id' : 'service_order_id' => $order->id,
                     'amount' => $paymentData['amount'],
-                    'payment_method' => 'ssl',
+                    'payment_method' => 'SSL Payment',
                     'status' => 'completed',
                     'notes' => 'SSL payment completed successfully. Transaction ID: ' . $transactionId . ', Amount: BDT ' . number_format($paymentData['amount'], 2),
                 ]);
@@ -315,8 +315,8 @@ class PaymentController extends Controller
             ]);
             
             $message = $paymentAmount < $order->amount ? 
-                'Partial payment proof of BDT ' . number_format($paymentAmount, 2) . ' submitted successfully! Admin will check and update your payment status.' :
-                'Payment proof submitted successfully! Admin will check and update your payment status.';
+                'Partial payment proof of BDT ' . number_format($paymentAmount, 2) . ' submitted successfully! Please wait for admin verification.' :
+                'Payment proof submitted successfully! Please wait for admin verification.';
             
             DB::commit();
             

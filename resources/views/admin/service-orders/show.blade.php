@@ -107,7 +107,7 @@
                                     </td>
                                 </tr>
                                 
-                                @if($order->status === 'processing')
+                                @if($order->status === 'processing' && ($order->due_amount ?? $order->amount) > 0)
                                 <tr>
                                     <th>Process Payment</th>
                                     <td>
