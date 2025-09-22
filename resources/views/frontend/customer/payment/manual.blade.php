@@ -45,7 +45,7 @@
     @endif
 
     <!-- Header Section -->
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+    <div class="w-full px-4 sm:px-6 lg:px-8 mb-6">
         <div class="bg-white rounded-lg shadow-sm p-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
@@ -69,7 +69,7 @@
     </div>
 
     <!-- Progress Indicator -->
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+    <div class="w-full px-4 sm:px-6 lg:px-8 mb-6">
         <div class="bg-white rounded-lg shadow-sm p-6">
             <div class="flex items-center justify-between mb-4">
                 <span class="text-sm font-medium text-gray-700">Payment Progress</span>
@@ -86,11 +86,11 @@
         </div>
     </div>
 
-    <!-- Main Content with Sidebar Layout -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid lg:grid-cols-3 gap-6">
+    <!-- Main Content - Full Width Layout -->
+    <div class="w-full px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-4 gap-6">
             <!-- Main Content -->
-            <div class="lg:col-span-2 space-y-6">
+            <div class="lg:col-span-3 space-y-6">
 
                 <!-- Order Summary -->
                 <div class="bg-white rounded-lg shadow-sm p-6">
@@ -304,7 +304,7 @@
 
     <!-- Full Width Payment Status Section -->
     @if($existingPayment)
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        <div class="w-full px-4 sm:px-6 lg:px-8 mt-6">
             <div class="bg-white rounded-lg shadow dashboard-card card-blue">
                 <div class="card-header-themed p-4 rounded-t-lg">
                     <h3 class="text-lg font-bold section-header mb-0">Payment Status</h3>
@@ -353,7 +353,7 @@
 
     <!-- Full Width Payment Form Section -->
     @if(!$existingPayment || $existingPayment->status === 'rejected')
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        <div class="w-full px-4 sm:px-6 lg:px-8 mt-6">
             <div class="bg-white rounded-lg shadow dashboard-card card-blue">
                 <div class="card-header-themed p-4 rounded-t-lg">
                     <h3 class="text-lg font-bold section-header mb-0">Submit Payment Proof</h3>
