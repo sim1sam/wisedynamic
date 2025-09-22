@@ -25,12 +25,38 @@ class PaymentController extends Controller
             abort(404);
         }
         
-        // Check if order is accepted/processing and payment is pending
-        if (!in_array($order->status, ['accepted', 'processing']) || $order->payment_status === 'paid') {
-            return redirect()->back()->with('error', 'Payment is not available for this order.');
+        // Check if order is already fully paid
+        if ($order->payment_status === 'paid') {
+            return redirect()->route('customer.dashboard')->with('info', 'This order has already been paid.');
         }
         
-        return view('frontend.customer.payment.options', compact('order', 'type'));
+        // Calculate remaining amount to pay
+        $remainingAmount = $order->amount - ($order->paid_amount ?? 0);
+        
+        // Get payment statistics for better UX
+        $paymentStats = [
+            'total_amount' => $order->amount,
+            'paid_amount' => $order->paid_amount ?? 0,
+            'remaining_amount' => $remainingAmount,
+            'payment_progress' => $order->paid_amount ? round(($order->paid_amount / $order->amount) * 100, 1) : 0,
+            'is_partial_payment' => ($order->paid_amount ?? 0) > 0,
+            'can_make_partial' => $remainingAmount > 100, // Minimum 100 BDT for partial payment
+        ];
+        
+        // Get recent payment history for this order
+        $recentPayments = Transaction::where(function($query) use ($type, $id) {
+            if ($type === 'package') {
+                $query->where('package_order_id', $id);
+            } else {
+                $query->where('service_order_id', $id);
+            }
+        })
+        ->where('status', 'completed')
+        ->orderBy('created_at', 'desc')
+        ->limit(3)
+        ->get();
+        
+        return view('frontend.customer.payment.options', compact('order', 'type', 'paymentStats', 'recentPayments'));
     }
     
     /**
@@ -50,16 +76,30 @@ class PaymentController extends Controller
         
         $paymentAmount = $validated['payment_amount'];
         
+        // Enhanced payment amount validation
+        $totalAmount = $order->total_amount ?? $order->amount;
+        $paidAmount = $order->payments()->where('status', 'completed')->sum('amount');
+        $remainingAmount = $totalAmount - $paidAmount;
+
+        // Validate payment amount
+        if ($paymentAmount > $remainingAmount) {
+            return redirect()->back()->with('error', 'Payment amount cannot exceed remaining balance of ৳' . number_format($remainingAmount, 2));
+        }
+
+        if ($paymentAmount < 1) {
+            return redirect()->back()->with('error', 'Payment amount must be at least ৳1.00');
+        }
+        
         // SSL Commerz payment gateway integration
         $sslConfig = config('sslcommerz');
         
         // Generate unique transaction ID
-        $transactionId = 'TXN_' . $order->id . '_' . time();
+        $transactionId = 'WD' . time() . rand(1000, 9999);
         
-        // Prepare SSL Commerz payment data
+        // Enhanced SSL payment data
         $postData = [
-            'store_id' => $sslConfig['store_id'],
-            'store_passwd' => $sslConfig['store_password'],
+            'store_id' => $sslConfig['apiCredentials']['store_id'],
+            'store_passwd' => $sslConfig['apiCredentials']['store_password'],
             'total_amount' => $paymentAmount,
             'currency' => 'BDT',
             'tran_id' => $transactionId,
@@ -71,37 +111,43 @@ class PaymentController extends Controller
             // Customer information
             'cus_name' => Auth::user()->name,
             'cus_email' => Auth::user()->email,
-            'cus_add1' => 'Dhaka',
+            'cus_add1' => Auth::user()->address ?? 'Dhaka',
             'cus_city' => 'Dhaka',
             'cus_country' => 'Bangladesh',
             'cus_phone' => Auth::user()->phone ?? '01700000000',
             
             // Product information
-            'product_name' => $type === 'package' ? 'Package Order #' . $order->id : 'Service Order #' . $order->id,
-            'product_category' => ucfirst($type) . ' Order',
+            'product_name' => ucfirst($type) . ' Order #' . $order->id,
+            'product_category' => ucfirst($type),
             'product_profile' => 'general',
             
             // Shipping information
             'shipping_method' => 'NO',
             'ship_name' => Auth::user()->name,
-            'ship_add1' => 'Dhaka',
+            'ship_add1' => Auth::user()->address ?? 'Dhaka',
             'ship_city' => 'Dhaka',
             'ship_country' => 'Bangladesh',
+            
+            // Additional parameters
+            'value_a' => $type,
+            'value_b' => $id,
+            'value_c' => Auth::id(),
+            'value_d' => $paymentAmount,
         ];
         
-        // Store transaction data in session for later verification
+        // Store payment attempt in session for tracking
         session([
-            'ssl_payment_data' => [
+            'payment_attempt' => [
                 'transaction_id' => $transactionId,
                 'order_type' => $type,
                 'order_id' => $id,
                 'amount' => $paymentAmount,
-                'user_id' => Auth::id(),
+                'timestamp' => now()
             ]
         ]);
         
         // Get SSL Commerz API URL
-        $apiUrl = $sslConfig['sandbox'] ? $sslConfig['api_url']['sandbox'] : $sslConfig['api_url']['live'];
+        $apiUrl = $sslConfig['apiDomain'] . $sslConfig['apiUrl']['make_payment'];
         
         // Initialize cURL
         $ch = curl_init();
@@ -114,20 +160,37 @@ class PaymentController extends Controller
         
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
         curl_close($ch);
         
-        if ($httpCode !== 200 || !$response) {
-            return redirect()->back()->with('error', 'Unable to connect to payment gateway. Please try again.');
+        if ($error) {
+            \Log::error('SSL Payment cURL Error: ' . $error);
+            return redirect()->back()->with('error', 'Payment gateway connection failed. Please try again.');
+        }
+
+        if ($httpCode !== 200) {
+            \Log::error('SSL Payment HTTP Error: ' . $httpCode);
+            return redirect()->back()->with('error', 'Payment gateway returned error. Please try again.');
         }
         
         $responseData = json_decode($response, true);
         
-        if (isset($responseData['status']) && $responseData['status'] === 'SUCCESS') {
-            // Redirect to SSL Commerz payment page
-            return redirect($responseData['GatewayPageURL']);
-        } else {
-            return redirect()->back()->with('error', 'Payment gateway error: ' . ($responseData['failedreason'] ?? 'Unknown error'));
+        if (!$responseData || $responseData['status'] !== 'SUCCESS') {
+            $errorMessage = $responseData['failedreason'] ?? 'Payment initialization failed';
+            \Log::error('SSL Payment Init Failed: ' . $errorMessage);
+            return redirect()->back()->with('error', 'Payment initialization failed: ' . $errorMessage);
         }
+
+        // Log successful payment initialization
+        \Log::info('SSL Payment Initialized', [
+            'transaction_id' => $transactionId,
+            'order_type' => $type,
+            'order_id' => $id,
+            'amount' => $paymentAmount,
+            'gateway_url' => $responseData['GatewayPageURL']
+        ]);
+        
+        return redirect($responseData['GatewayPageURL']);
     }
     
     /**
@@ -144,12 +207,12 @@ class PaymentController extends Controller
         
         // Verify payment with SSL Commerz
         $sslConfig = config('sslcommerz');
-        $validationUrl = $sslConfig['sandbox'] ? $sslConfig['validation_url']['sandbox'] : $sslConfig['validation_url']['live'];
+        $validationUrl = $sslConfig['apiDomain'] . $sslConfig['apiUrl']['order_validate'];
         
         $validationData = [
             'val_id' => $request->get('val_id'),
-            'store_id' => $sslConfig['store_id'],
-            'store_passwd' => $sslConfig['store_password'],
+            'store_id' => $sslConfig['apiCredentials']['store_id'],
+            'store_passwd' => $sslConfig['apiCredentials']['store_password'],
         ];
         
         $ch = curl_init();
@@ -281,18 +344,45 @@ class PaymentController extends Controller
         $validated = $request->validate([
             'payment_amount' => ['required', 'numeric', 'min:1', 'max:' . $order->amount],
             'bank_name' => ['required', 'string', 'max:255'],
-            'account_number' => ['required', 'string', 'max:255'],
-            'transaction_id' => ['nullable', 'string', 'max:255'],
-            'payment_screenshot' => ['required', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+            'account_number' => ['required', 'string', 'max:50'],
+            'transaction_id' => ['required', 'string', 'max:100'],
+            'payment_date' => ['required', 'date', 'before_or_equal:today'],
+            'payment_screenshot' => ['required', 'image', 'mimes:jpeg,png,jpg,pdf', 'max:5120'],
+            'notes' => ['nullable', 'string', 'max:500']
         ]);
         
         $paymentAmount = $validated['payment_amount'];
+        
+        // Enhanced payment amount validation
+        $totalAmount = $order->total_amount ?? $order->amount;
+        $paidAmount = $order->payments()->where('status', 'completed')->sum('amount');
+        $remainingAmount = $totalAmount - $paidAmount;
+
+        // Validate payment amount
+        if ($paymentAmount > $remainingAmount) {
+            return redirect()->back()->with('error', 'Payment amount cannot exceed remaining balance of ৳' . number_format($remainingAmount, 2));
+        }
+
+        if ($paymentAmount < 1) {
+            return redirect()->back()->with('error', 'Payment amount must be at least ৳1.00');
+        }
+        
+        // Check for duplicate transaction ID
+        $existingPayment = ManualPayment::where('transaction_id', $validated['transaction_id'])
+            ->where('status', '!=', 'rejected')
+            ->first();
+
+        if ($existingPayment) {
+            return redirect()->back()->with('error', 'This transaction ID has already been used. Please provide a unique transaction ID.');
+        }
         
         DB::beginTransaction();
         
         try {
             // Store the screenshot
-            $screenshotPath = $request->file('payment_screenshot')->store('payment-screenshots', 'public');
+            $file = $request->file('payment_screenshot');
+            $fileName = 'receipt_' . time() . '_' . $file->getClientOriginalName();
+            $screenshotPath = $file->storeAs('payment-screenshots', $fileName, 'public');
             
             // Create or update manual payment record
             $order->manualPayment()->updateOrCreate(
@@ -305,6 +395,10 @@ class PaymentController extends Controller
                     'transaction_id' => $validated['transaction_id'],
                     'payment_screenshot' => $screenshotPath,
                     'status' => ManualPayment::STATUS_PENDING,
+                    'payment_date' => $validated['payment_date'],
+                    'notes' => $validated['notes'] ?? null,
+                    'submitted_at' => now(),
+                    'ip_address' => $request->ip()
                 ]
             );
             
@@ -314,9 +408,18 @@ class PaymentController extends Controller
                 'payment_method' => 'Manual Bank Transfer',
             ]);
             
+            // Log the manual payment submission
+            \Log::info('Manual Payment Submitted', [
+                'user_id' => Auth::id(),
+                'order_type' => $type,
+                'order_id' => $id,
+                'amount' => $paymentAmount,
+                'transaction_id' => $validated['transaction_id']
+            ]);
+            
             $message = $paymentAmount < $order->amount ? 
-                'Partial payment proof of BDT ' . number_format($paymentAmount, 2) . ' submitted successfully! Please wait for admin verification.' :
-                'Payment proof submitted successfully! Please wait for admin verification.';
+                'Partial payment proof of BDT ' . number_format($paymentAmount, 2) . ' submitted successfully! It will be reviewed by our team within 24 hours.' :
+                'Payment proof submitted successfully! It will be reviewed by our team within 24 hours. You will receive a confirmation once approved.';
             
             DB::commit();
             
@@ -325,6 +428,13 @@ class PaymentController extends Controller
                 
         } catch (\Exception $e) {
             DB::rollback();
+            
+            \Log::error('Manual Payment Processing Error: ' . $e->getMessage());
+            
+            // Delete uploaded file if payment creation failed
+            if (isset($screenshotPath) && Storage::disk('public')->exists($screenshotPath)) {
+                Storage::disk('public')->delete($screenshotPath);
+            }
             
             return redirect()->back()
                 ->withInput()

@@ -91,4 +91,13 @@ class ServiceOrder extends Model
     {
         return $this->morphOne(ManualPayment::class, 'payable');
     }
+
+    /**
+     * Get all payments (transactions) for this service order.
+     * This method combines transactions to provide a unified payment interface.
+     */
+    public function payments()
+    {
+        return $this->transactions();
+    }
 }

@@ -75,4 +75,13 @@ class PackageOrder extends Model
     {
         return $this->morphOne(ManualPayment::class, 'payable');
     }
+
+    /**
+     * Get all payments (transactions) for this package order.
+     * This method combines transactions to provide a unified payment interface.
+     */
+    public function payments()
+    {
+        return $this->transactions();
+    }
 }
