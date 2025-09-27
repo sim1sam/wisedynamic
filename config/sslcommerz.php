@@ -1,24 +1,31 @@
 <?php
 
-// SSLCommerz configuration
-
-$apiDomain = env('SSLCZ_TESTMODE') ? "https://sandbox.sslcommerz.com" : "https://securepay.sslcommerz.com";
 return [
-    'apiCredentials' => [
-        'store_id' => env("SSLCZ_STORE_ID"),
-        'store_password' => env("SSLCZ_STORE_PASSWORD"),
+    /*
+    |--------------------------------------------------------------------------
+    | SSL Commerz Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for SSL Commerz payment gateway integration
+    |
+    */
+
+    'store_id' => env('SSLCOMMERZ_STORE_ID'),
+    'store_password' => env('SSLCOMMERZ_STORE_PASSWORD'),
+    'sandbox' => env('SSLCOMMERZ_SANDBOX', true),
+    
+    'success_url' => env('APP_URL') . '/customer/payment/ssl/success',
+    'fail_url' => env('APP_URL') . '/customer/payment/ssl/fail',
+    'cancel_url' => env('APP_URL') . '/customer/payment/ssl/cancel',
+    'ipn_url' => env('APP_URL') . '/customer/payment/ssl/ipn',
+    
+    'api_url' => [
+        'sandbox' => 'https://sandbox.sslcommerz.com/gwprocess/v4/api.php',
+        'live' => 'https://securepay.sslcommerz.com/gwprocess/v4/api.php',
     ],
-    'apiUrl' => [
-        'make_payment' => "/gwprocess/v4/api.php",
-        'transaction_status' => "/validator/api/merchantTransIDvalidationAPI.php",
-        'order_validate' => "/validator/api/validationserverAPI.php",
-        'refund_payment' => "/validator/api/merchantTransIDvalidationAPI.php",
-        'refund_status' => "/validator/api/merchantTransIDvalidationAPI.php",
+    
+    'validation_url' => [
+        'sandbox' => 'https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php',
+        'live' => 'https://securepay.sslcommerz.com/validator/api/validationserverAPI.php',
     ],
-    'apiDomain' => $apiDomain,
-    'connect_from_localhost' => env("IS_LOCALHOST", false), // For Sandbox, use "true", For Live, use "false"
-    'success_url' => '/success',
-    'failed_url' => '/fail',
-    'cancel_url' => '/cancel',
-    'ipn_url' => '/ipn',
 ];

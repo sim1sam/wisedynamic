@@ -257,8 +257,7 @@
                         </div>
                     </div>
                     
-                    <form method="POST" action="{{ route('customer.payment.manual', [$type, $order->id]) }}" id="manual-payment-form">
-                        @csrf
+                    <form method="GET" action="{{ route('customer.payment.manual', [$type, $order->id]) }}" id="manual-payment-form">
                         <input type="hidden" name="payment_amount" id="manual_payment_amount" value="{{ $order->amount }}">
                         <button type="submit" class="w-full px-6 py-4 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                             <i class="fas fa-university mr-2"></i>Bank Transfer - BDT <span id="manual-amount-display">{{ number_format($order->amount, 2) }}</span>

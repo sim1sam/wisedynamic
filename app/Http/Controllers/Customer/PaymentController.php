@@ -207,7 +207,7 @@ class PaymentController extends Controller
         
         // Verify payment with SSL Commerz
         $sslConfig = config('sslcommerz');
-        $validationUrl = $sslConfig['apiDomain'] . $sslConfig['apiUrl']['order_validate'];
+        $validationUrl = $sslConfig['sandbox'] ? $sslConfig['validation_url']['sandbox'] : $sslConfig['validation_url']['live'];
         
         $validationData = [
             'val_id' => $request->get('val_id'),

@@ -70,7 +70,7 @@
 
     <!-- Progress Indicator -->
     <div class="w-full px-4 sm:px-6 lg:px-8 mb-6">
-        <div class="bg-white rounded-lg shadow-sm p-6">
+        <div class="bg-white rounded-lg shadow-sm p-4">p-6">
             <div class="flex items-center justify-between mb-4">
                 <span class="text-sm font-medium text-gray-700">Payment Progress</span>
                 <span class="text-sm text-gray-500">Step 1 of 3</span>
