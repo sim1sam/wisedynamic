@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('transaction_number')->unique();
             $table->foreignId('package_order_id')->nullable()->constrained('package_orders')->nullOnDelete();
-            $table->foreignId('service_order_id')->nullable()->constrained('service_orders')->nullOnDelete();
+            $table->unsignedBigInteger('service_order_id')->nullable();
             $table->decimal('amount', 10, 2);
             $table->string('payment_method')->default('manual');
             $table->string('status')->default('completed');

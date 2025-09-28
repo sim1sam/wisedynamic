@@ -20,10 +20,6 @@
                     
                     $currentScheme = $colorSchemes[$index % count($colorSchemes)];
                     $featured = $package->featured;
-                    
-                    // Parse description for features
-                    $description = $package->description;
-                    $features = explode("\n", $description);
                 @endphp
                 
                 <div class="bg-gradient-to-b {{ $currentScheme[0] }} to-white p-8 rounded-lg shadow-lg card-hover border-2 border-transparent {{ $featured ? $currentScheme[1] : 'hover:'.$currentScheme[1] }}">
@@ -42,19 +38,8 @@
                         <p class="text-gray-600">{{ $package->short_description }}</p>
                     </div>
                     
-                    <div class="space-y-3 mb-6">
-                        @foreach($features as $feature)
-                            @if(trim($feature) != '')
-                                <div class="flex items-center">
-                                    @if(strpos(strtolower($feature), 'delivery') !== false)
-                                        <i class="fas fa-clock text-orange-500 mr-2"></i>
-                                    @else
-                                        <i class="fas fa-check text-green-500 mr-2"></i>
-                                    @endif
-                                    <span>{{ trim($feature) }}</span>
-                                </div>
-                            @endif
-                        @endforeach
+                    <div class="prose space-y-3 mb-6">
+                        {!! $package->description !!}
                     </div>
                     
                     <div class="text-sm text-gray-600 mb-4">

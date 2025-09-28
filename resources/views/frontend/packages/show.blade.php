@@ -24,35 +24,15 @@
                 <div class="mb-12">
                     <h2 class="text-3xl font-bold mb-6">Package Overview</h2>
                     <div class="prose prose-lg max-w-none">
-                        {!! $package->description !!}
+                        <p class="text-gray-700 text-lg leading-relaxed">{{ $package->short_description }}</p>
                     </div>
                 </div>
                 
                 <div id="features" class="mb-12">
                     <h2 class="text-3xl font-bold mb-6">Key Features</h2>
                     <div class="bg-gray-50 p-6 rounded-lg">
-                        <div class="space-y-4">
-                            @php
-                                // Parse description for features
-                                $features = explode("\n", $package->description);
-                            @endphp
-                            
-                            @foreach($features as $feature)
-                                @if(trim($feature) != '')
-                                    <div class="flex items-start">
-                                        <div class="mt-1 mr-3 flex-shrink-0">
-                                            @if(strpos(strtolower($feature), 'delivery') !== false)
-                                                <i class="fas fa-clock text-orange-500"></i>
-                                            @else
-                                                <i class="fas fa-check-circle text-green-500"></i>
-                                            @endif
-                                        </div>
-                                        <div>
-                                            <p class="text-gray-800">{{ trim($feature) }}</p>
-                                        </div>
-                                    </div>
-                                @endif
-                            @endforeach
+                        <div class="prose prose-lg max-w-none">
+                            {!! $package->description !!}
                         </div>
                     </div>
                 </div>
@@ -114,22 +94,43 @@
                             
                             <div class="space-y-3 mb-6">
                                 @php
-                                    // Get first 5 features for sidebar
-                                    $sidebarFeatures = array_slice(array_filter($features, function($item) {
-                                        return trim($item) != '';
-                                    }), 0, 5);
+                                    // Get first 5 features for sidebar - use the same parsing logic
+                                    $description = $package->description;
+                                    
+                                    // Check if description contains HTML
+                                    if (strip_tags($description) != $description) {
+                                        // HTML content - extract list items
+                                        preg_match_all('/<li[^>]*>(.*?)<\/li>/s', $description, $matches);
+                                        $allFeatures = $matches[1] ?? [];
+                                        
+                                        // If no list items found, try to extract from other HTML elements
+                                        if (empty($allFeatures)) {
+                                            // Remove HTML tags and split by common separators
+                                            $plainText = strip_tags($description);
+                                            $allFeatures = preg_split('/[\n\r]+/', $plainText);
+                                        }
+                                    } else {
+                                        // Plain text content
+                                        $allFeatures = explode("\n", $description);
+                                    }
+                                    
+                                    // Clean up and get first 5 features
+                                    $cleanFeatures = array_filter(array_map('trim', $allFeatures), function($item) {
+                                        return !empty($item);
+                                    });
+                                    $sidebarFeatures = array_slice($cleanFeatures, 0, 5);
                                 @endphp
                                 
                                 @foreach($sidebarFeatures as $feature)
                                     <div class="flex items-center">
                                         <i class="fas fa-check text-green-500 mr-2"></i>
-                                        <span class="text-sm">{{ trim($feature) }}</span>
+                                        <span class="text-sm">{!! strip_tags($feature) !!}</span>
                                     </div>
                                 @endforeach
                             </div>
                             
                             <div class="space-y-3">
-                                <a href="{{ url('/#contact') }}" class="block text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:opacity-90 transition">
+                                <a href="{{ route('cart.show', ['package' => $package->slug]) }}" class="block text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:opacity-90 transition">
                                     Get Started
                                 </a>
                                 <a href="tel:+8801234567890" class="block text-center border border-gray-300 text-gray-700 py-3 px-6 rounded-lg font-semibold hover:bg-gray-50 transition">

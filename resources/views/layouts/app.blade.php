@@ -46,6 +46,39 @@
             @keyframes pulse { 0%,100%{ transform: scale(1);} 50%{ transform: scale(1.03);} }
             .animate-pulse-custom { animation: pulse 2s infinite; }
             .section-divider { width: 5rem; height: 4px; background: linear-gradient(90deg, #0976bc, #0e0f3e); margin: 0 auto; border-radius: 9999px; }
+            
+            /* Custom prose styles for rich text content */
+            .prose ul {
+                list-style-type: disc;
+                margin-left: 1.5rem;
+                margin-bottom: 1rem;
+                padding-left: 0.5rem;
+            }
+            .prose ol {
+                list-style-type: decimal;
+                margin-left: 1.5rem;
+                margin-bottom: 1rem;
+                padding-left: 0.5rem;
+            }
+            .prose li {
+                margin-bottom: 0.5rem;
+                line-height: 1.6;
+            }
+            .prose p {
+                margin-bottom: 1rem;
+                line-height: 1.6;
+            }
+            .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+                margin-top: 1.5rem;
+                margin-bottom: 1rem;
+                font-weight: 600;
+            }
+            .prose strong {
+                font-weight: 600;
+            }
+            .prose em {
+                font-style: italic;
+            }
         </style>
     @endif
     @stack('head')

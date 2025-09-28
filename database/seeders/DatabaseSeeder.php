@@ -20,6 +20,10 @@ class DatabaseSeeder extends Seeder
             ContactPageSeeder::class,
             ServiceCategorySeeder::class,
             ServiceSeeder::class,
+            PackageCategorySeeder::class,
+            PackageSeeder::class,
+            DigitalMarketingPackagesSeeder::class,
+            WebsiteDevelopmentPackagesSeeder::class,
         ]);
     }
 }
