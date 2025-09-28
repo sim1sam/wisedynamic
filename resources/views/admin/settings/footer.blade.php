@@ -8,7 +8,7 @@
   <div class="card-header d-flex justify-content-between align-items-center">
     <h3 class="card-title">Manage Footer</h3>
   </div>
-  <form method="POST" action="{{ route('admin.settings.footer.update') }}">
+  <form method="POST" action="{{ route('admin.settings.footer.update') }}" enctype="multipart/form-data">
     @csrf
     @method('PUT')
     <div class="card-body">
@@ -66,6 +66,18 @@
       <div class="form-group">
         <label>Copyright Text</label>
         <input type="text" class="form-control" name="copyright_text" value="{{ old('copyright_text', $setting->copyright_text ?? '') }}" placeholder="© {{ date('Y') }} Wise Dynamic. All rights reserved."/>
+      </div>
+
+      <div class="form-group">
+        <label>SSL Logo</label>
+        <input type="file" class="form-control-file" name="ssl_logo" accept="image/*"/>
+        @if(!empty($setting->ssl_logo))
+          <div class="mt-2">
+            <small class="text-muted">Current SSL Logo:</small><br>
+            <img src="{{ asset($setting->ssl_logo) }}" alt="Current SSL Logo" class="img-thumbnail" style="max-width: 200px; max-height: 100px;">
+          </div>
+        @endif
+        <small class="form-text text-muted">Upload an image file (JPEG, PNG, JPG, GIF, SVG). Max size: 2MB</small>
       </div>
 
     </div>

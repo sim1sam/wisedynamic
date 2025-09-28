@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" width="320" height="80">
+  <!-- Blue rounded rectangle background matching the original -->
+  <rect x="0" y="0" width="320" height="80" rx="12" ry="12" fill="#4A90E2"/>
+  
+  <!-- SSLCommerz text - single line as in original -->
+  <text x="24" y="50" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="bold" fill="white" letter-spacing="-1px">SSLCommerz</text>
+</svg>

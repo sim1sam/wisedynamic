@@ -10,6 +10,6 @@ class FooterSetting extends Model
     use HasFactory;
 
     protected $fillable = [
-        'company_name', 'tagline', 'phone', 'email', 'facebook_url', 'twitter_url', 'linkedin_url', 'instagram_url', 'copyright_text'
+        'company_name', 'tagline', 'phone', 'email', 'facebook_url', 'twitter_url', 'linkedin_url', 'instagram_url', 'copyright_text', 'ssl_logo'
     ];
 }

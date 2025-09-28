@@ -28,10 +28,23 @@ class FooterSettingController extends Controller
             'linkedin_url' => ['nullable','url','max:2048'],
             'instagram_url' => ['nullable','url','max:2048'],
             'copyright_text' => ['nullable','string','max:255'],
+            'ssl_logo' => ['nullable','image','mimes:jpeg,png,jpg,gif,svg','max:2048'],
         ]);
+
+        // Handle SSL logo upload
+        if ($request->hasFile('ssl_logo')) {
+            $file = $request->file('ssl_logo');
+            $filename = time() . '_ssl_logo.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images'), $filename);
+            $data['ssl_logo'] = 'images/' . $filename;
+        }
 
         $setting = FooterSetting::query()->latest('id')->first();
         if ($setting) {
+            // If updating and new SSL logo uploaded, delete old one
+            if ($request->hasFile('ssl_logo') && $setting->ssl_logo && file_exists(public_path($setting->ssl_logo))) {
+                unlink(public_path($setting->ssl_logo));
+            }
             $setting->update($data);
         } else {
             $setting = FooterSetting::create($data);
