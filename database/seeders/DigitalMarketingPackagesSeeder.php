@@ -30,7 +30,7 @@ class DigitalMarketingPackagesSeeder extends Seeder
             [
                 'title' => 'Social Media Marketing',
                 'short_description' => 'Boost your social media presence',
-                'description' => "12 branded content designs\nFacebook/Instagram Ads setup\nPage setup & audience targeting\nWeekly performance report",
+                'description' => "<ul><li>12 branded content designs</li><li>Facebook/Instagram Ads setup</li><li>Page setup & audience targeting</li><li>Weekly performance report</li></ul>",
                 'price' => 12000,
                 'price_unit' => 'Per Month',
                 'status' => true,
@@ -39,7 +39,7 @@ class DigitalMarketingPackagesSeeder extends Seeder
             [
                 'title' => 'SEO Growth Plan',
                 'short_description' => 'Improve your search engine rankings',
-                'description' => "Full website SEO audit\nKeyword research + competitor analysis\nOn-page + Technical SEO\nGoogle Console & Sitemap setup\nMonthly rank tracking",
+                'description' => "<ul><li>Full website SEO audit</li><li>Keyword research + competitor analysis</li><li>On-page + Technical SEO</li><li>Google Console & Sitemap setup</li><li>Monthly rank tracking</li></ul>",
                 'price' => 18000,
                 'price_unit' => 'Per Month',
                 'status' => true,
@@ -48,7 +48,7 @@ class DigitalMarketingPackagesSeeder extends Seeder
             [
                 'title' => 'Google Ads Campaign',
                 'short_description' => 'Drive targeted traffic to your website',
-                'description' => "Google Ads account setup\nUp to 3 campaign sets\nConversion & traffic targeting\nA/B testing + ROI reporting",
+                'description' => "<ul><li>Google Ads account setup</li><li>Up to 3 campaign sets</li><li>Conversion & traffic targeting</li><li>A/B testing + ROI reporting</li></ul>",
                 'price' => 15000,
                 'price_unit' => 'Per Month',
                 'status' => true,

@@ -32,15 +32,8 @@
                     <h3 class="text-2xl font-bold mb-4 text-center">{{ $package->title }}</h3>
                     <div class="price-highlight text-3xl font-bold text-center mb-6">BDT {{ number_format($package->price) }}/- <span class="text-base font-normal text-gray-600">{{ $package->price_unit }}</span></div>
                     
-                    <div class="space-y-3 mb-6">
-                        @foreach($features as $feature)
-                            @if(trim($feature) != '')
-                                <div class="flex items-start">
-                                    <i class="fas fa-check text-green-500 mr-3 mt-1"></i>
-                                    <span>{{ trim($feature) }}</span>
-                                </div>
-                            @endif
-                        @endforeach
+                    <div class="prose space-y-3 mb-6">
+                        {!! $package->description !!}
                     </div>
                 </div>
             @empty
