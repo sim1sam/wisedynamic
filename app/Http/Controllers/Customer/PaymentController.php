@@ -210,6 +210,11 @@ class PaymentController extends Controller
             abort(404);
         }
         
+        // If it's a GET request, show the payment form
+        if ($request->isMethod('GET')) {
+            return view('customer.payment.ssl-form', compact('order', 'type', 'id'));
+        }
+        
         // Validate payment amount based on order type
         if ($type === 'custom-service') {
             $totalAmount = $order->total_amount;

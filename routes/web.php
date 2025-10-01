@@ -252,7 +252,7 @@ Route::middleware('auth')->group(function(){
        
        // Payment Routes
        Route::get('/payment/{type}/{id}/options', [\App\Http\Controllers\Customer\PaymentController::class, 'showPaymentOptions'])->name('customer.payment.options');
-       Route::post('/payment/{type}/{id}/ssl', [\App\Http\Controllers\Customer\PaymentController::class, 'processSSLPayment'])->name('customer.payment.ssl');
+       Route::match(['get', 'post'], '/payment/{type}/{id}/ssl', [\App\Http\Controllers\Customer\PaymentController::class, 'processSSLPayment'])->name('customer.payment.ssl');
        Route::get('/payment/{type}/{id}/manual', [\App\Http\Controllers\Customer\PaymentController::class, 'showManualPaymentForm'])->name('customer.payment.manual');
        Route::post('/payment/{type}/{id}/manual', [\App\Http\Controllers\Customer\PaymentController::class, 'processManualPayment'])->name('customer.payment.manual.submit');
    });
