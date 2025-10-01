@@ -7,7 +7,7 @@
 
             <div class="relative grid md:grid-cols-3 gap-6 md:gap-10 items-center">
                 <div class="md:col-span-2">
-                    <h3 class="text-2xl md:text-3xl font-extrabold tracking-tight">Quick Add Request</h3>
+                    <h3 class="text-2xl md:text-3xl font-extrabold tracking-tight">Quick Ad Request</h3>
                     <p class="mt-2 text-white/90">Boost your post across social media. Send the essentials, we’ll do the rest.</p>
                     <ul class="mt-5 space-y-2">
                         <li class="flex items-start gap-3">

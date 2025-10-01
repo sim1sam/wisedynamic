@@ -42,7 +42,7 @@
                 <li>
                     <a href="{{ route('customer.requests.index') }}" class="link-item flex items-center px-3 py-2 rounded-md {{ request()->routeIs('customer.requests.*') ? 'active' : '' }}">
                         <i class="fa-regular fa-paper-plane w-5 mr-3"></i>
-                        <span>Requests</span>
+                        <span>Quick Ad Request</span>
                     </a>
                 </li>
                 <li>
@@ -82,7 +82,7 @@
                 <li>
                     <a href="{{ route('customer.custom-service.index') }}" class="link-item flex items-center px-3 py-2 rounded-md {{ request()->routeIs('customer.custom-service.*') ? 'active' : '' }}">
                         <i class="fas fa-cogs w-5 mr-3"></i>
-                        <span>Custom Services</span>
+                        <span>Custom Marketing Services</span>
                     </a>
                 </li>
                 <li>
