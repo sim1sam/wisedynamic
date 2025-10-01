@@ -337,7 +337,7 @@ return [
             'active' => ['admin/manual-payments*'],
         ],
         [
-            'text' => 'Custom Services',
+            'text' => 'Custom Marketing Services',
             'url' => 'admin/custom-service-requests',
             'icon' => 'fas fa-fw fa-cogs',
             'active' => ['admin/custom-service-requests*'],
@@ -455,7 +455,7 @@ return [
                     'active' => ['admin/customers*'],
                 ],
                 [
-                    'text' => 'Customer Requests',
+                    'text' => 'Customer Ad Requests',
                     'url' => 'admin/requests',
                     'icon' => 'fas fa-fw fa-clipboard-list',
                     'active' => ['admin/requests*'],
