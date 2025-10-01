@@ -96,7 +96,7 @@ class FundController extends Controller
     }
     
     /**
-     * Show SSL payment page.
+     * Process SSL payment for fund request.
      */
     public function sslPayment(FundRequest $fundRequest)
     {
@@ -105,9 +105,23 @@ class FundController extends Controller
             abort(403);
         }
         
-        // For now, we'll show a placeholder SSL payment page
-        // In production, this would integrate with actual SSL payment gateway
-        return view('frontend.customer.fund.ssl-payment', compact('fundRequest'));
+        // Check if payment is already completed
+        if ($fundRequest->ssl_transaction_id) {
+            return redirect()->route('customer.fund.show', $fundRequest)
+                ->with('info', 'Payment has already been completed for this request.');
+        }
+        
+        // Check if request is in valid state for payment
+        if ($fundRequest->status !== 'pending') {
+            return redirect()->route('customer.fund.show', $fundRequest)
+                ->with('error', 'This request is not available for payment.');
+        }
+        
+        // Redirect directly to SSL payment processing
+        return redirect()->route('customer.payment.ssl', [
+            'type' => 'fund',
+            'id' => $fundRequest->id
+        ]);
     }
     
     /**

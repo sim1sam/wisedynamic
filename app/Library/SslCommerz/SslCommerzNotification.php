@@ -20,8 +20,8 @@ class SslCommerzNotification extends AbstractSslCommerz
     {
         $this->config = config('sslcommerz');
 
-        $this->setStoreId($this->config['apiCredentials']['store_id']);
-        $this->setStorePassword($this->config['apiCredentials']['store_password']);
+        $this->setStoreId($this->config['store_id']);
+        $this->setStorePassword($this->config['store_password']);
     }
 
     public function orderValidate($post_data, $trx_id = '', $amount = 0, $currency = "BDT")

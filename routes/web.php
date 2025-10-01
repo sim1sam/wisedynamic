@@ -234,6 +234,9 @@ Route::middleware('auth')->group(function(){
     Route::get('/fund/{fundRequest}/ssl-payment', [\App\Http\Controllers\Customer\FundController::class, 'sslPayment'])->name('customer.fund.ssl-payment');
     Route::post('/fund/{fundRequest}/ssl-success', [\App\Http\Controllers\Customer\FundController::class, 'sslSuccess'])->name('customer.fund.ssl-success');
       Route::post('/fund/{fundRequest}/ssl-fail', [\App\Http\Controllers\Customer\FundController::class, 'sslFail'])->name('customer.fund.ssl-fail');
+      // Allow GET as well to avoid 405 from gateways that use GET
+      Route::get('/fund/{fundRequest}/ssl-success', [\App\Http\Controllers\Customer\FundController::class, 'sslSuccess']);
+      Route::get('/fund/{fundRequest}/ssl-fail', [\App\Http\Controllers\Customer\FundController::class, 'sslFail']);
       
       // Custom Service Management
       Route::get('/custom-service', [\App\Http\Controllers\Customer\CustomServiceController::class, 'index'])->name('customer.custom-service.index');
@@ -243,6 +246,9 @@ Route::middleware('auth')->group(function(){
       Route::get('/custom-service/{customServiceRequest}/ssl-payment', [\App\Http\Controllers\Customer\CustomServiceController::class, 'sslPayment'])->name('customer.custom-service.ssl-payment');
       Route::post('/custom-service/{customServiceRequest}/ssl-success', [\App\Http\Controllers\Customer\CustomServiceController::class, 'sslSuccess'])->name('customer.custom-service.ssl-success');
        Route::post('/custom-service/{customServiceRequest}/ssl-fail', [\App\Http\Controllers\Customer\CustomServiceController::class, 'sslFail'])->name('customer.custom-service.ssl-fail');
+       // Allow GET as well to avoid 405
+       Route::get('/custom-service/{customServiceRequest}/ssl-success', [\App\Http\Controllers\Customer\CustomServiceController::class, 'sslSuccess']);
+       Route::get('/custom-service/{customServiceRequest}/ssl-fail', [\App\Http\Controllers\Customer\CustomServiceController::class, 'sslFail']);
        
        // Payment Routes
        Route::get('/payment/{type}/{id}/options', [\App\Http\Controllers\Customer\PaymentController::class, 'showPaymentOptions'])->name('customer.payment.options');
@@ -251,12 +257,17 @@ Route::middleware('auth')->group(function(){
        Route::post('/payment/{type}/{id}/manual', [\App\Http\Controllers\Customer\PaymentController::class, 'processManualPayment'])->name('customer.payment.manual.submit');
    });
 
-// SSL Commerz Callback Routes (outside auth middleware for gateway callbacks)
-Route::get('/customer/payment/ssl/success/{type}/{id}', [\App\Http\Controllers\Customer\PaymentController::class, 'sslSuccess'])->name('customer.payment.ssl.success');
-Route::get('/customer/payment/ssl/fail/{type}/{id}', [\App\Http\Controllers\Customer\PaymentController::class, 'sslFail'])->name('customer.payment.ssl.fail');
-Route::get('/customer/payment/ssl/cancel/{type}/{id}', [\App\Http\Controllers\Customer\PaymentController::class, 'sslCancel'])->name('customer.payment.ssl.cancel');
- 
- // Admin Fund Request Management Routes
+// SSL Commerz callback routes (outside of any middleware group to avoid CSRF issues)
+Route::match(['get','post'], '/customer/payment/ssl/success/{type}/{id}', [\App\Http\Controllers\Customer\PaymentController::class, 'sslSuccess'])
+    ->name('customer.payment.ssl.success');
+Route::match(['get','post'], '/customer/payment/ssl/fail/{type}/{id}', [\App\Http\Controllers\Customer\PaymentController::class, 'sslFail'])
+    ->name('customer.payment.ssl.fail');
+Route::match(['get','post'], '/customer/payment/ssl/cancel/{type}/{id}', [\App\Http\Controllers\Customer\PaymentController::class, 'sslCancel'])
+    ->name('customer.payment.ssl.cancel');
+Route::match(['get','post'], '/customer/payment/ssl/ipn', [\App\Http\Controllers\Customer\PaymentController::class, 'sslIpn'])
+    ->name('customer.payment.ssl.ipn');
+
+// Admin Fund Request Management Routes
  Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
      Route::get('/fund-requests', [\App\Http\Controllers\Admin\FundRequestController::class, 'index'])->name('admin.fund-requests.index');
      Route::get('/fund-requests/{fundRequest}', [\App\Http\Controllers\Admin\FundRequestController::class, 'show'])->name('admin.fund-requests.show');

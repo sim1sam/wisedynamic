@@ -158,7 +158,7 @@ class CustomServiceController extends Controller
     }
     
     /**
-     * Show SSL payment page.
+     * Process SSL payment directly.
      */
     public function sslPayment(CustomServiceRequest $customServiceRequest)
     {
@@ -167,8 +167,23 @@ class CustomServiceController extends Controller
             abort(403);
         }
         
-        // For now, we'll show a placeholder SSL payment page
-        return view('frontend.customer.custom-service.ssl-payment', compact('customServiceRequest'));
+        // Check if payment is already completed
+        if ($customServiceRequest->ssl_transaction_id) {
+            return redirect()->route('customer.custom-service.show', $customServiceRequest)
+                ->with('info', 'Payment has already been completed for this request.');
+        }
+        
+        // Check if request is in valid state for payment
+        if ($customServiceRequest->status !== 'pending') {
+            return redirect()->route('customer.custom-service.show', $customServiceRequest)
+                ->with('error', 'This request is not available for payment.');
+        }
+        
+        // Redirect directly to SSL payment processing
+        return redirect()->route('customer.payment.ssl', [
+            'type' => 'custom-service',
+            'id' => $customServiceRequest->id
+        ]);
     }
     
     /**
