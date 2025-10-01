@@ -3,8 +3,8 @@
 @section('title', 'SSL Payment')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-4 sm:py-8 px-4">
-    <div class="max-w-lg mx-auto w-full">
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-4 sm:py-8 lg:py-16 px-4">
+    <div class="max-w-lg mx-auto w-full mt-4 sm:mt-8 lg:mt-16">
         <!-- Header Section -->
         <div class="text-center mb-6 sm:mb-8">
             <div class="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full mb-3 sm:mb-4">
