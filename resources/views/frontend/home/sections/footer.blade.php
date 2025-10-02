@@ -13,8 +13,9 @@
             
             <div class="text-center">
                 <div class="flex items-center justify-center mb-4">
-                    <i class="fas fa-code text-3xl mr-3"></i>
-                    <span class="text-3xl font-bold">{{ $footerSettings->company_name ?? 'Wise Dynamic' }}</span>
+                    @if(!empty($websiteSettings->site_logo))
+                        <img src="{{ asset('storage/' . $websiteSettings->site_logo) }}" alt="{{ $websiteSettings->logo_alt_text ?? 'Company Logo' }}" class="h-12 w-auto">
+                    @endif
                 </div>
                 @php $tagline = $footerSettings->tagline ?? 'Your Technology Partner for Innovation, Affordability & Results'; @endphp
                 <p class="text-lg mb-6 opacity-90">{{ $tagline }}</p>

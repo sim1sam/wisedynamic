@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use App\Models\FooterSetting;
+use App\Models\WebsiteSetting;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,5 +28,12 @@ class AppServiceProvider extends ServiceProvider
             $footerSettings = null;
         }
         View::share('footerSettings', $footerSettings);
+
+        try {
+            $websiteSettings = WebsiteSetting::first();
+        } catch (\Throwable $e) {
+            $websiteSettings = null;
+        }
+        View::share('websiteSettings', $websiteSettings);
     }
 }
