@@ -114,10 +114,22 @@ class CustomerController extends Controller
             $packageOrders = $customer->packageOrders()->orderBy('created_at', 'desc')->get();
             $serviceOrders = $customer->serviceOrders()->orderBy('created_at', 'desc')->get();
             
+            // Load customer's fund requests
+            $fundRequests = $customer->fundRequests()->orderBy('created_at', 'desc')->get();
+            
+            // Calculate fund statistics
+            $totalFundRequested = $fundRequests->sum('amount');
+            $totalFundApproved = $fundRequests->where('status', 'approved')->sum('amount');
+            $pendingFundRequests = $fundRequests->where('status', 'pending')->sum('amount');
+            
             return view('admin.customers.show', [
                 'customer' => $customer,
                 'packageOrders' => $packageOrders,
-                'serviceOrders' => $serviceOrders
+                'serviceOrders' => $serviceOrders,
+                'fundRequests' => $fundRequests,
+                'totalFundRequested' => $totalFundRequested,
+                'totalFundApproved' => $totalFundApproved,
+                'pendingFundRequests' => $pendingFundRequests
             ]);
         } catch (\Exception $e) {
             Log::error('Error viewing customer', [

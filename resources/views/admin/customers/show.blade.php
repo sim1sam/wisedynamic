@@ -64,6 +64,12 @@
                             </td>
                         </tr>
                         <tr>
+                            <th>Current Balance</th>
+                            <td>
+                                <span class="badge badge-success">৳{{ number_format($customer->balance ?? 0, 2) }}</span>
+                            </td>
+                        </tr>
+                        <tr>
                             <th>Registered</th>
                             <td>{{ $customer->created_at->format('M d, Y H:i') }}</td>
                         </tr>
@@ -101,8 +107,52 @@
             </div>
         </div>
         
-        <!-- Address Information -->
+        <!-- Fund Information -->
         <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Fund Information</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th style="width: 40%">Total Fund Requested</th>
+                            <td>
+                                <span class="badge badge-info">৳{{ number_format($totalFundRequested ?? 0, 2) }}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Total Fund Approved</th>
+                            <td>
+                                <span class="badge badge-success">৳{{ number_format($totalFundApproved ?? 0, 2) }}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Pending Fund Requests</th>
+                            <td>
+                                <span class="badge badge-warning">৳{{ number_format($pendingFundRequests ?? 0, 2) }}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Available Balance</th>
+                            <td>
+                                <span class="badge badge-primary">৳{{ number_format($customer->balance ?? 0, 2) }}</span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ route('admin.fund-requests.create') }}?user_id={{ $customer->id }}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus"></i> Create Fund Request
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Address Information -->
+    <div class="row mt-4">
+        <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Address Information</h3>
@@ -112,7 +162,7 @@
                         <table class="table table-bordered">
                             @if($customer->address)
                                 <tr>
-                                    <th style="width: 30%">Address</th>
+                                    <th style="width: 20%">Address</th>
                                     <td>{{ $customer->address }}</td>
                                 </tr>
                             @endif
@@ -143,6 +193,67 @@
                         </table>
                     @else
                         <div class="text-muted">No address information provided</div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Fund Requests -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Fund Requests</h3>
+                </div>
+                <div class="card-body">
+                    @if($fundRequests->count() > 0)
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Amount</th>
+                                    <th>Payment Method</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($fundRequests as $request)
+                                    <tr>
+                                        <td>{{ $request->id }}</td>
+                                        <td>৳{{ number_format($request->amount, 2) }}</td>
+                                        <td>
+                                            @if($request->payment_method === 'ssl')
+                                                <span class="badge badge-info">SSL Payment</span>
+                                            @else
+                                                <span class="badge badge-secondary">Manual Transfer</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($request->status === 'pending')
+                                                <span class="badge badge-warning">Pending</span>
+                                            @elseif($request->status === 'approved')
+                                                <span class="badge badge-success">Approved</span>
+                                            @elseif($request->status === 'rejected')
+                                                <span class="badge badge-danger">Rejected</span>
+                                            @else
+                                                <span class="badge badge-secondary">{{ ucfirst($request->status) }}</span>
+                                            @endif
+                                        </td>
+                                        <td>{{ $request->created_at->format('M d, Y') }}</td>
+                                        <td>
+                                            <a href="{{ route('admin.fund-requests.show', $request) }}" class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @else
+                        <div class="text-muted">No fund requests found</div>
                     @endif
                 </div>
             </div>
