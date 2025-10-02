@@ -1,8 +1,6 @@
-@extends('adminlte::page')
+<?php $__env->startSection('title', 'Transactions'); ?>
 
-@section('title', 'Transactions')
-
-@section('content_header')
+<?php $__env->startSection('content_header'); ?>
     <div class="d-flex justify-content-between">
         <h1>Transactions</h1>
         <div>
@@ -11,15 +9,15 @@
             </button>
         </div>
     </div>
-@stop
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
     <!-- SSL Status Statistics Cards -->
     <div class="row mb-4">
         <div class="col-lg-3 col-6">
             <div class="small-box bg-info">
                 <div class="inner">
-                    <h3>{{ $stats['ssl_transactions'] ?? 0 }}</h3>
+                    <h3><?php echo e($stats['ssl_transactions'] ?? 0); ?></h3>
                     <p>SSL Transactions</p>
                 </div>
                 <div class="icon">
@@ -30,7 +28,7 @@
         <div class="col-lg-3 col-6">
             <div class="small-box bg-success">
                 <div class="inner">
-                    <h3>{{ $stats['ssl_success'] ?? 0 }}</h3>
+                    <h3><?php echo e($stats['ssl_success'] ?? 0); ?></h3>
                     <p>SSL Success</p>
                 </div>
                 <div class="icon">
@@ -41,7 +39,7 @@
         <div class="col-lg-3 col-6">
             <div class="small-box bg-warning">
                 <div class="inner">
-                    <h3>{{ $stats['ssl_pending'] ?? 0 }}</h3>
+                    <h3><?php echo e($stats['ssl_pending'] ?? 0); ?></h3>
                     <p>SSL Pending</p>
                 </div>
                 <div class="icon">
@@ -52,7 +50,7 @@
         <div class="col-lg-3 col-6">
             <div class="small-box bg-danger">
                 <div class="inner">
-                    <h3>{{ $stats['ssl_failed'] ?? 0 }}</h3>
+                    <h3><?php echo e($stats['ssl_failed'] ?? 0); ?></h3>
                     <p>SSL Failed</p>
                 </div>
                 <div class="icon">
@@ -71,16 +69,16 @@
                     <div class="input-group input-group-sm mr-2">
                         <select name="ssl_status" class="form-control">
                             <option value="">All SSL Status</option>
-                            <option value="success" {{ request('ssl_status') == 'success' ? 'selected' : '' }}>Success</option>
-                            <option value="pending" {{ request('ssl_status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="failed" {{ request('ssl_status') == 'failed' ? 'selected' : '' }}>Failed</option>
+                            <option value="success" <?php echo e(request('ssl_status') == 'success' ? 'selected' : ''); ?>>Success</option>
+                            <option value="pending" <?php echo e(request('ssl_status') == 'pending' ? 'selected' : ''); ?>>Pending</option>
+                            <option value="failed" <?php echo e(request('ssl_status') == 'failed' ? 'selected' : ''); ?>>Failed</option>
                         </select>
                     </div>
                     <div class="input-group input-group-sm mr-2">
                         <select name="payment_method" class="form-control">
                             <option value="">All Methods</option>
-                            <option value="SSL Payment" {{ request('payment_method') == 'SSL Payment' ? 'selected' : '' }}>SSL Payment</option>
-                            <option value="Manual" {{ request('payment_method') == 'Manual' ? 'selected' : '' }}>Manual</option>
+                            <option value="SSL Payment" <?php echo e(request('payment_method') == 'SSL Payment' ? 'selected' : ''); ?>>SSL Payment</option>
+                            <option value="Manual" <?php echo e(request('payment_method') == 'Manual' ? 'selected' : ''); ?>>Manual</option>
                         </select>
                     </div>
                     <button type="submit" class="btn btn-primary btn-sm">Filter</button>
@@ -88,12 +86,12 @@
             </div>
         </div>
         <div class="card-body">
-            @if(session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
-            @endif
-            @if(session('error'))
-                <div class="alert alert-danger">{{ session('error') }}</div>
-            @endif
+            <?php if(session('success')): ?>
+                <div class="alert alert-success"><?php echo e(session('success')); ?></div>
+            <?php endif; ?>
+            <?php if(session('error')): ?>
+                <div class="alert alert-danger"><?php echo e(session('error')); ?></div>
+            <?php endif; ?>
 
             <table class="table table-bordered table-striped" id="transactionsTable">
                 <thead>
@@ -113,151 +111,156 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($transactions as $transaction)
+                    <?php $__empty_1 = true; $__currentLoopData = $transactions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $transaction): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                         <tr>
-                            <td>{{ $transaction->id }}</td>
-                            <td>{{ $transaction->transaction_number }}</td>
+                            <td><?php echo e($transaction->id); ?></td>
+                            <td><?php echo e($transaction->transaction_number); ?></td>
                             <td>
-                                @if($transaction->fund_request_id && $transaction->fundRequest && $transaction->fundRequest->user)
-                                    <strong>{{ $transaction->fundRequest->user->name }}</strong><br>
-                                    <small class="text-muted">{{ $transaction->fundRequest->user->email }}</small>
-                                @elseif($transaction->custom_service_request_id && $transaction->customServiceRequest && $transaction->customServiceRequest->user)
-                                    <strong>{{ $transaction->customServiceRequest->user->name }}</strong><br>
-                                    <small class="text-muted">{{ $transaction->customServiceRequest->user->email }}</small>
-                                @elseif($transaction->package_order_id && $transaction->packageOrder)
-                                    <strong>{{ $transaction->packageOrder->full_name }}</strong><br>
-                                    <small class="text-muted">{{ $transaction->packageOrder->email }}</small>
-                                @elseif($transaction->service_order_id && $transaction->serviceOrder)
-                                    <strong>{{ $transaction->serviceOrder->full_name }}</strong><br>
-                                    <small class="text-muted">{{ $transaction->serviceOrder->email }}</small>
-                                @elseif($transaction->isSSLTransaction() && $transaction->customer_name)
-                                    <strong>{{ $transaction->customer_name }}</strong><br>
-                                    <small class="text-muted">{{ $transaction->customer_email }}</small>
-                                @else
+                                <?php if($transaction->fund_request_id && $transaction->fundRequest && $transaction->fundRequest->user): ?>
+                                    <strong><?php echo e($transaction->fundRequest->user->name); ?></strong><br>
+                                    <small class="text-muted"><?php echo e($transaction->fundRequest->user->email); ?></small>
+                                <?php elseif($transaction->custom_service_request_id && $transaction->customServiceRequest && $transaction->customServiceRequest->user): ?>
+                                    <strong><?php echo e($transaction->customServiceRequest->user->name); ?></strong><br>
+                                    <small class="text-muted"><?php echo e($transaction->customServiceRequest->user->email); ?></small>
+                                <?php elseif($transaction->package_order_id && $transaction->packageOrder): ?>
+                                    <strong><?php echo e($transaction->packageOrder->full_name); ?></strong><br>
+                                    <small class="text-muted"><?php echo e($transaction->packageOrder->email); ?></small>
+                                <?php elseif($transaction->service_order_id && $transaction->serviceOrder): ?>
+                                    <strong><?php echo e($transaction->serviceOrder->full_name); ?></strong><br>
+                                    <small class="text-muted"><?php echo e($transaction->serviceOrder->email); ?></small>
+                                <?php elseif($transaction->isSSLTransaction() && $transaction->customer_name): ?>
+                                    <strong><?php echo e($transaction->customer_name); ?></strong><br>
+                                    <small class="text-muted"><?php echo e($transaction->customer_email); ?></small>
+                                <?php else: ?>
                                     <span class="text-muted">N/A</span>
-                                @endif
+                                <?php endif; ?>
                             </td>
                             <td>
-                                @if($transaction->package_order_id)
+                                <?php if($transaction->package_order_id): ?>
                                     <span class="badge badge-info">Package</span>
-                                @elseif($transaction->service_order_id)
+                                <?php elseif($transaction->service_order_id): ?>
                                     <span class="badge badge-success">Service</span>
-                                @elseif($transaction->fund_request_id)
+                                <?php elseif($transaction->fund_request_id): ?>
                                     <span class="badge badge-warning">Fund Request</span>
-                                @elseif($transaction->custom_service_request_id)
+                                <?php elseif($transaction->custom_service_request_id): ?>
                                     <span class="badge badge-primary">Custom Service</span>
-                                @else
+                                <?php else: ?>
                                     <span class="badge badge-secondary">Unknown</span>
-                                @endif
+                                <?php endif; ?>
                             </td>
                             <td>
-                                @if($transaction->package_order_id)
-                                    <a href="{{ route('admin.package-orders.show', $transaction->package_order_id) }}">
-                                        #{{ $transaction->package_order_id }}
+                                <?php if($transaction->package_order_id): ?>
+                                    <a href="<?php echo e(route('admin.package-orders.show', $transaction->package_order_id)); ?>">
+                                        #<?php echo e($transaction->package_order_id); ?>
+
                                     </a>
-                                @elseif($transaction->service_order_id)
-                                    <a href="{{ route('admin.service-orders.show', $transaction->service_order_id) }}">
-                                        #{{ $transaction->service_order_id }}
+                                <?php elseif($transaction->service_order_id): ?>
+                                    <a href="<?php echo e(route('admin.service-orders.show', $transaction->service_order_id)); ?>">
+                                        #<?php echo e($transaction->service_order_id); ?>
+
                                     </a>
-                                @elseif($transaction->fund_request_id)
-                                    <a href="{{ route('admin.fund-requests.show', $transaction->fund_request_id) }}">
-                                        #{{ $transaction->fund_request_id }}
+                                <?php elseif($transaction->fund_request_id): ?>
+                                    <a href="<?php echo e(route('admin.fund-requests.show', $transaction->fund_request_id)); ?>">
+                                        #<?php echo e($transaction->fund_request_id); ?>
+
                                     </a>
-                                @elseif($transaction->custom_service_request_id)
-                                    <a href="{{ route('admin.custom-service-requests.show', $transaction->custom_service_request_id) }}">
-                                        #{{ $transaction->custom_service_request_id }}
+                                <?php elseif($transaction->custom_service_request_id): ?>
+                                    <a href="<?php echo e(route('admin.custom-service-requests.show', $transaction->custom_service_request_id)); ?>">
+                                        #<?php echo e($transaction->custom_service_request_id); ?>
+
                                     </a>
-                                @else
+                                <?php else: ?>
                                     <span class="text-muted">N/A</span>
-                                @endif
+                                <?php endif; ?>
                             </td>
-                            <td>{{ number_format($transaction->amount, 2) }} {{ $transaction->currency }}</td>
+                            <td><?php echo e(number_format($transaction->amount, 2)); ?> <?php echo e($transaction->currency); ?></td>
                             <td>
-                                @if($transaction->payment_method == 'SSL Payment')
+                                <?php if($transaction->payment_method == 'SSL Payment'): ?>
                                     <span class="badge badge-primary">
                                         <i class="fas fa-shield-alt"></i> SSL Payment
                                     </span>
-                                @else
-                                    <span class="badge badge-secondary">{{ $transaction->payment_method }}</span>
-                                @endif
+                                <?php else: ?>
+                                    <span class="badge badge-secondary"><?php echo e($transaction->payment_method); ?></span>
+                                <?php endif; ?>
                             </td>
                             <td>
-                                @if($transaction->ssl_transaction_id)
-                                    <code>{{ $transaction->ssl_transaction_id }}</code>
-                                @else
+                                <?php if($transaction->ssl_transaction_id): ?>
+                                    <code><?php echo e($transaction->ssl_transaction_id); ?></code>
+                                <?php else: ?>
                                     <span class="text-muted">N/A</span>
-                                @endif
+                                <?php endif; ?>
                             </td>
                             <td>
-                                @if($transaction->ssl_status)
-                                    @if($transaction->ssl_status == 'success')
+                                <?php if($transaction->ssl_status): ?>
+                                    <?php if($transaction->ssl_status == 'success'): ?>
                                         <span class="badge badge-success">
                                             <i class="fas fa-check"></i> Success
                                         </span>
-                                    @elseif($transaction->ssl_status == 'pending')
+                                    <?php elseif($transaction->ssl_status == 'pending'): ?>
                                         <span class="badge badge-warning">
                                             <i class="fas fa-clock"></i> Pending
                                         </span>
-                                    @elseif($transaction->ssl_status == 'failed')
+                                    <?php elseif($transaction->ssl_status == 'failed'): ?>
                                         <span class="badge badge-danger">
                                             <i class="fas fa-times"></i> Failed
                                         </span>
-                                    @else
-                                        <span class="badge badge-secondary">{{ $transaction->ssl_status }}</span>
-                                    @endif
-                                @else
+                                    <?php else: ?>
+                                        <span class="badge badge-secondary"><?php echo e($transaction->ssl_status); ?></span>
+                                    <?php endif; ?>
+                                <?php else: ?>
                                     <span class="text-muted">N/A</span>
-                                @endif
+                                <?php endif; ?>
                             </td>
-                            <td>{{ $transaction->created_at->format('M d, Y H:i') }}</td>
+                            <td><?php echo e($transaction->created_at->format('M d, Y H:i')); ?></td>
                             <td>
-                                @if($transaction->status == 'completed')
+                                <?php if($transaction->status == 'completed'): ?>
                                     <span class="badge badge-success">Completed</span>
-                                @elseif($transaction->status == 'pending')
+                                <?php elseif($transaction->status == 'pending'): ?>
                                     <span class="badge badge-warning">Pending</span>
-                                @elseif($transaction->status == 'failed')
+                                <?php elseif($transaction->status == 'failed'): ?>
                                     <span class="badge badge-danger">Failed</span>
-                                @elseif($transaction->status == 'cancelled')
+                                <?php elseif($transaction->status == 'cancelled'): ?>
                                     <span class="badge badge-secondary">Cancelled</span>
-                                @else
-                                    <span class="badge badge-info">{{ ucfirst($transaction->status) }}</span>
-                                @endif
+                                <?php else: ?>
+                                    <span class="badge badge-info"><?php echo e(ucfirst($transaction->status)); ?></span>
+                                <?php endif; ?>
                             </td>
                             <td>
                                 <div class="btn-group" role="group">
-                                    <a href="{{ route('admin.transactions.show', $transaction) }}" class="btn btn-sm btn-info">
+                                    <a href="<?php echo e(route('admin.transactions.show', $transaction)); ?>" class="btn btn-sm btn-info">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    <a href="{{ route('admin.transactions.edit', $transaction) }}" class="btn btn-sm btn-warning">
+                                    <a href="<?php echo e(route('admin.transactions.edit', $transaction)); ?>" class="btn btn-sm btn-warning">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    @if($transaction->payment_method == 'SSL Payment')
+                                    <?php if($transaction->payment_method == 'SSL Payment'): ?>
                                         <button type="button" class="btn btn-sm btn-primary ssl-verify-btn" 
-                                                data-transaction-id="{{ $transaction->id }}"
-                                                data-ssl-id="{{ $transaction->ssl_transaction_id }}"
+                                                data-transaction-id="<?php echo e($transaction->id); ?>"
+                                                data-ssl-id="<?php echo e($transaction->ssl_transaction_id); ?>"
                                                 title="Verify with SSL">
                                             <i class="fas fa-shield-alt"></i>
                                         </button>
                                         <button type="button" class="btn btn-sm btn-success ssl-update-btn" 
-                                                data-transaction-id="{{ $transaction->id }}"
-                                                data-current-status="{{ $transaction->ssl_status }}"
+                                                data-transaction-id="<?php echo e($transaction->id); ?>"
+                                                data-current-status="<?php echo e($transaction->ssl_status); ?>"
                                                 title="Update SSL Status">
                                             <i class="fas fa-sync"></i>
                                         </button>
-                                    @endif
+                                    <?php endif; ?>
                                 </div>
                             </td>
                         </tr>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>
                             <td colspan="12" class="text-center">No transactions found.</td>
                         </tr>
-                    @endforelse
+                    <?php endif; ?>
                 </tbody>
             </table>
             
             <div class="d-flex justify-content-center">
-                {{ $transactions->links() }}
+                <?php echo e($transactions->links()); ?>
+
             </div>
         </div>
     </div>
@@ -363,17 +366,17 @@
             </div>
         </div>
     </div>
-@stop
+<?php $__env->stopSection(); ?>
 
-@section('css')
+<?php $__env->startSection('css'); ?>
     <style>
         .btn-group .btn {
             margin-right: 5px;
         }
     </style>
-@stop
+<?php $__env->stopSection(); ?>
 
-@section('js')
+<?php $__env->startSection('js'); ?>
 <script>
 $(document).ready(function() {
     // Initialize DataTable
@@ -563,4 +566,6 @@ $(document).ready(function() {
     });
 });
 </script>
-@stop
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('adminlte::page', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH F:\laragon\www\wisedynamic\resources\views/admin/transactions/index.blade.php ENDPATH**/ ?>

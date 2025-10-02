@@ -2,6 +2,10 @@
 
 @section('title', 'WiseDynamic Admin')
 
+@push('meta')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+@endpush
+
 @section('css')
   <style>
     /* Theme gradient (blue → purple) for sidebar */

@@ -1,0 +1,48 @@
+DEPLOYMENT INSTRUCTIONS FOR SERVER
+=====================================
+
+PROBLEM: When you double-click deploy.bat on the server, it opens in text editor instead of running.
+
+SOLUTIONS:
+
+Option 1: Use run-deploy.cmd (RECOMMENDED)
+------------------------------------------
+- Double-click "run-deploy.cmd" instead of "deploy.bat"
+- This file will properly execute the deployment script
+
+Option 2: Run from Command Prompt
+----------------------------------
+1. Right-click in the folder where deploy.bat is located
+2. Select "Open command window here" or "Open PowerShell window here"
+3. Type: deploy.bat
+4. Press Enter
+
+Option 3: Change File Association (Advanced)
+--------------------------------------------
+1. Right-click on deploy.bat
+2. Select "Open with" > "Choose another app"
+3. Select "Command Prompt" or "Windows Command Processor"
+4. Check "Always use this app to open .bat files"
+
+Option 4: For Linux Servers
+---------------------------
+- Use deploy.sh instead of deploy.bat
+- Make it executable: chmod +x deploy.sh
+- Run: ./deploy.sh
+
+WHAT THE SCRIPT DOES:
+====================
+✓ Clears all Laravel caches
+✓ Optimizes for production (caches config, routes, views)
+✓ Runs database migrations
+✓ Creates storage symbolic link
+✓ Shows completion status
+
+IMPORTANT NOTES:
+===============
+- Make sure PHP is installed and accessible from command line
+- Ensure you have proper file permissions
+- Update your .env file with production settings before running
+- Test the deployment script in a staging environment first
+
+For support, contact your system administrator.

@@ -120,11 +120,14 @@ class CustomServiceRequest extends Model
      */
     public function getServiceTypeLabel()
     {
-        return match($this->service_type) {
-            self::TYPE_MARKETING => 'Marketing Services',
-            self::TYPE_WEB_APP => 'Web/App Development',
-            default => 'Unknown'
-        };
+        switch($this->service_type) {
+            case self::TYPE_MARKETING:
+                return 'Marketing Services';
+            case self::TYPE_WEB_APP:
+                return 'Web/App Development';
+            default:
+                return 'Unknown';
+        }
     }
     
     /**
@@ -132,13 +135,18 @@ class CustomServiceRequest extends Model
      */
     public function getStatusLabel()
     {
-        return match($this->status) {
-            self::STATUS_PENDING => 'Pending',
-            self::STATUS_IN_PROGRESS => 'In Progress',
-            self::STATUS_COMPLETED => 'Completed',
-            self::STATUS_CANCELLED => 'Cancelled',
-            default => 'Unknown'
-        };
+        switch($this->status) {
+            case self::STATUS_PENDING:
+                return 'Pending';
+            case self::STATUS_IN_PROGRESS:
+                return 'In Progress';
+            case self::STATUS_COMPLETED:
+                return 'Completed';
+            case self::STATUS_CANCELLED:
+                return 'Cancelled';
+            default:
+                return 'Unknown';
+        }
     }
     
     /**
@@ -146,12 +154,17 @@ class CustomServiceRequest extends Model
      */
     public function getStatusColorClass()
     {
-        return match($this->status) {
-            self::STATUS_PENDING => 'warning',
-            self::STATUS_IN_PROGRESS => 'info',
-            self::STATUS_COMPLETED => 'success',
-            self::STATUS_CANCELLED => 'danger',
-            default => 'secondary'
-        };
+        switch($this->status) {
+            case self::STATUS_PENDING:
+                return 'warning';
+            case self::STATUS_IN_PROGRESS:
+                return 'info';
+            case self::STATUS_COMPLETED:
+                return 'success';
+            case self::STATUS_CANCELLED:
+                return 'danger';
+            default:
+                return 'secondary';
+        }
     }
 }

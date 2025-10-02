@@ -9,6 +9,7 @@ use App\Models\CustomServiceRequest;
 use App\Models\FundRequest;
 use App\Models\ManualPayment;
 use App\Models\Transaction;
+use App\Http\Controllers\Api\TransactionController as ApiTransactionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -102,6 +103,15 @@ class PaymentController extends Controller
         $id = $request->get('value_b');
         $transactionId = $request->get('tran_id');
 
+        // Log IPN callback for debugging
+        Log::info('SSL IPN Callback Received', [
+            'transaction_id' => $transactionId,
+            'type' => $type,
+            'id' => $id,
+            'status' => $request->get('status'),
+            'amount' => $request->get('amount'),
+        ]);
+
         // Validate with SSLCommerz validator API
         $sslConfig = config('sslcommerz');
         $validationUrl = $sslConfig['sandbox'] ? $sslConfig['validation_url']['sandbox'] : $sslConfig['validation_url']['live'];
@@ -131,70 +141,70 @@ class PaymentController extends Controller
             return response('Validation Failed', 422);
         }
 
-        if (!in_array($validationResponse['status'], ['VALID', 'VALIDATED'])) {
-            Log::warning('SSL IPN status not valid', $validationResponse);
-            return response('Ignored', 200);
-        }
-
-        // Process order update similar to success flow
-        $order = $this->getOrder($type, $id);
-        if (!$order) {
-            Log::error('SSL IPN order not found', ['type' => $type, 'id' => $id]);
-            return response('Order Not Found', 404);
-        }
-
-        DB::beginTransaction();
-        try {
-            if ($type === 'custom-service') {
-                $order->update([
-                    'ssl_transaction_id' => $transactionId,
-                    'ssl_response' => $validationResponse,
-                ]);
-            } elseif ($type === 'fund') {
-                $order->update([
-                    'ssl_transaction_id' => $transactionId,
-                    'ssl_response' => $validationResponse,
-                    'status' => 'approved',
-                    'approved_at' => now(),
-                ]);
-                $order->user->addBalance($order->amount);
-            } else {
-                $amount = $validationResponse['amount'] ?? ($order->amount ?? 0);
-                $newPaidAmount = ($order->paid_amount ?? 0) + $amount;
-                $newDueAmount = ($order->amount ?? 0) - $newPaidAmount;
-                $order->update([
-                    'payment_status' => $newDueAmount <= 0 ? 'paid' : 'pending_verification',
-                    'payment_method' => 'SSL Payment',
-                    'paid_amount' => $newPaidAmount,
-                    'due_amount' => $newDueAmount,
-                ]);
-            }
-
-            $transactionData = [
-                'transaction_number' => Transaction::generateTransactionNumber(),
-                'amount' => $validationResponse['amount'] ?? ($order->amount ?? 0),
-                'payment_method' => 'SSL Payment',
-                'status' => 'completed',
-                'notes' => 'SSL IPN payment processed. Transaction ID: ' . $transactionId,
+        // Use API controller to update transaction status
+        $apiController = new ApiTransactionController();
+        
+        if (in_array($validationResponse['status'], ['VALID', 'VALIDATED'])) {
+            // Prepare data for successful transaction update
+            $statusUpdateData = [
+                'ssl_transaction_id' => $transactionId,
+                'status' => 'success',
+                'gateway_response' => $validationResponse,
+                'bank_transaction_id' => $validationResponse['bank_tran_id'] ?? null,
+                'card_type' => $validationResponse['card_type'] ?? null,
+                'card_no' => $validationResponse['card_no'] ?? null,
+                'card_issuer' => $validationResponse['card_issuer'] ?? null,
+                'currency_type' => $validationResponse['currency_type'] ?? 'BDT',
+                'currency_amount' => $validationResponse['amount'] ?? null,
             ];
+            
+            Log::info('SSL IPN: Updating transaction status to success', [
+                'transaction_id' => $transactionId,
+                'validation_response' => $validationResponse
+            ]);
+        } else {
+            // Prepare data for failed transaction update
+            $statusUpdateData = [
+                'ssl_transaction_id' => $transactionId,
+                'status' => 'failed',
+                'fail_reason' => 'SSL validation failed: ' . ($validationResponse['status'] ?? 'Unknown error'),
+                'gateway_response' => $validationResponse,
+            ];
+            
+            Log::warning('SSL IPN: Updating transaction status to failed', [
+                'transaction_id' => $transactionId,
+                'validation_response' => $validationResponse
+            ]);
+        }
 
-            if ($type === 'package') {
-                $transactionData['package_order_id'] = $order->id;
-            } elseif ($type === 'service') {
-                $transactionData['service_order_id'] = $order->id;
-            } elseif ($type === 'custom-service') {
-                $transactionData['custom_service_request_id'] = $order->id;
-            } elseif ($type === 'fund') {
-                $transactionData['fund_request_id'] = $order->id;
+        // Create a mock request for the API controller
+        $mockRequest = new \Illuminate\Http\Request();
+        $mockRequest->merge($statusUpdateData);
+        
+        try {
+            $apiResponse = $apiController->updateStatus($mockRequest);
+            $responseData = json_decode($apiResponse->getContent(), true);
+            
+            if ($apiResponse->getStatusCode() === 200) {
+                Log::info('SSL IPN: Transaction status updated successfully', [
+                    'transaction_id' => $transactionId,
+                    'api_response' => $responseData
+                ]);
+                return response('OK', 200);
+            } else {
+                Log::error('SSL IPN: Failed to update transaction status', [
+                    'transaction_id' => $transactionId,
+                    'api_response' => $responseData,
+                    'status_code' => $apiResponse->getStatusCode()
+                ]);
+                return response('Update Failed', 422);
             }
-
-            Transaction::create($transactionData);
-
-            DB::commit();
-            return response('OK', 200);
         } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('SSL IPN processing error: '.$e->getMessage());
+            Log::error('SSL IPN: Exception during status update', [
+                'transaction_id' => $transactionId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return response('Server Error', 500);
         }
     }
@@ -372,6 +382,13 @@ class PaymentController extends Controller
     {
         $transactionId = $request->get('tran_id');
         
+        Log::info('SSL Success Callback Received', [
+            'transaction_id' => $transactionId,
+            'type' => $type,
+            'id' => $id,
+            'request_data' => $request->all()
+        ]);
+        
         // For SSL callbacks, we can't rely on session data as these come from external gateway
         // Instead, we'll validate the transaction directly with SSL Commerz
         
@@ -404,6 +421,9 @@ class PaymentController extends Controller
         
         $validationResponse = json_decode($response, true);
         
+        // Use API controller to update transaction status
+        $apiController = new ApiTransactionController();
+        
         // Check if validation response is valid
         if (!$validationResponse || !isset($validationResponse['status'])) {
             Log::error('Invalid SSL validation response', [
@@ -411,18 +431,63 @@ class PaymentController extends Controller
                 'curl_error' => $curlError
             ]);
             
-            // For testing purposes, if SSL validation fails, we'll still process the payment
-            // In production, you should handle this more strictly
-            if ($request->get('status') === 'VALID') {
-                Log::info('Processing payment despite validation failure for testing');
-                $validationResponse = ['status' => 'VALID', 'tran_id' => $transactionId];
-            } else {
-                return redirect()->route('customer.payment.options', ['type' => $type, 'id' => $id])
-                    ->with('error', 'Payment validation failed. Please try again.');
+            // Update transaction status to failed
+            $statusUpdateData = [
+                'ssl_transaction_id' => $transactionId,
+                'status' => 'failed',
+                'fail_reason' => 'SSL validation response invalid or empty',
+                'gateway_response' => ['error' => 'Invalid validation response', 'curl_error' => $curlError],
+            ];
+            
+            $mockRequest = new \Illuminate\Http\Request();
+            $mockRequest->merge($statusUpdateData);
+            
+            try {
+                $apiController->updateStatus($mockRequest);
+            } catch (\Exception $e) {
+                Log::error('Failed to update transaction status to failed: ' . $e->getMessage());
             }
+            
+            return redirect()->route('customer.payment.options', ['type' => $type, 'id' => $id])
+                ->with('error', 'Payment validation failed. Please try again.');
         }
         
         if ($validationResponse['status'] === 'VALID' && $validationResponse['tran_id'] === $transactionId) {
+            // Update transaction status to success
+            $statusUpdateData = [
+                'ssl_transaction_id' => $transactionId,
+                'status' => 'success',
+                'gateway_response' => $validationResponse,
+                'bank_transaction_id' => $validationResponse['bank_tran_id'] ?? null,
+                'card_type' => $validationResponse['card_type'] ?? null,
+                'card_no' => $validationResponse['card_no'] ?? null,
+                'card_issuer' => $validationResponse['card_issuer'] ?? null,
+                'currency_type' => $validationResponse['currency_type'] ?? 'BDT',
+                'currency_amount' => $validationResponse['amount'] ?? null,
+            ];
+            
+            $mockRequest = new \Illuminate\Http\Request();
+            $mockRequest->merge($statusUpdateData);
+            
+            try {
+                $apiResponse = $apiController->updateStatus($mockRequest);
+                $responseData = json_decode($apiResponse->getContent(), true);
+                
+                if ($apiResponse->getStatusCode() === 200) {
+                    Log::info('SSL Success: Transaction status updated successfully', [
+                        'transaction_id' => $transactionId,
+                        'api_response' => $responseData
+                    ]);
+                } else {
+                    Log::error('SSL Success: Failed to update transaction status', [
+                        'transaction_id' => $transactionId,
+                        'api_response' => $responseData
+                    ]);
+                }
+            } catch (\Exception $e) {
+                Log::error('SSL Success: Exception during status update: ' . $e->getMessage());
+            }
+            
             // Payment is valid, process the order
             $order = $this->getOrder($type, $id);
             
@@ -474,13 +539,53 @@ class PaymentController extends Controller
                     $redirectRoute = $type === 'package' ? 'customer.package-orders.show' : 'customer.service-orders.show';
                 }
                 
-                // Create transaction record
+                // Create comprehensive transaction record with SSL data
                 $transactionData = [
                     'transaction_number' => Transaction::generateTransactionNumber(),
                     'amount' => $validationResponse['amount'] ?? $order->amount,
                     'payment_method' => 'SSL Payment',
-                    'status' => 'completed',
+                    'status' => Transaction::STATUS_COMPLETED,
                     'notes' => 'SSL payment completed successfully. Transaction ID: ' . $transactionId . ', Amount: BDT ' . number_format($validationResponse['amount'] ?? $order->amount, 2),
+                    
+                    // SSL Commerz specific fields
+                    'ssl_transaction_id' => $validationResponse['tran_id'] ?? $transactionId,
+                    'ssl_session_id' => $validationResponse['sessionkey'] ?? null,
+                    'ssl_bank_transaction_id' => $validationResponse['bank_tran_id'] ?? null,
+                    'ssl_card_type' => $validationResponse['card_type'] ?? null,
+                    'ssl_card_no' => $validationResponse['card_no'] ?? null,
+                    'ssl_card_issuer' => $validationResponse['card_issuer'] ?? null,
+                    'ssl_card_brand' => $validationResponse['card_brand'] ?? null,
+                    'ssl_card_issuer_country' => $validationResponse['card_issuer_country'] ?? null,
+                    'ssl_card_issuer_country_code' => $validationResponse['card_issuer_country_code'] ?? null,
+                    'ssl_currency_type' => $validationResponse['currency_type'] ?? 'BDT',
+                    'ssl_amount' => $validationResponse['amount'] ?? null,
+                    'ssl_currency_amount' => $validationResponse['currency_amount'] ?? null,
+                    'ssl_currency_rate' => $validationResponse['currency_rate'] ?? null,
+                    'ssl_base_fair' => $validationResponse['base_fair'] ?? null,
+                    'ssl_value_a' => $validationResponse['value_a'] ?? $type,
+                    'ssl_value_b' => $validationResponse['value_b'] ?? $id,
+                    'ssl_value_c' => $validationResponse['value_c'] ?? null,
+                    'ssl_value_d' => $validationResponse['value_d'] ?? null,
+                    'ssl_risk_level' => $validationResponse['risk_level'] ?? null,
+                    'ssl_risk_title' => $validationResponse['risk_title'] ?? null,
+                    
+                    // New SSL status fields
+                    'ssl_status' => 'VALID',
+                    
+                    // Customer information
+                    'customer_name' => $validationResponse['cus_name'] ?? Auth::user()->name,
+                    'customer_email' => $validationResponse['cus_email'] ?? Auth::user()->email,
+                    'customer_phone' => $validationResponse['cus_phone'] ?? Auth::user()->phone,
+                    'customer_address' => $validationResponse['cus_add1'] ?? Auth::user()->address,
+                    'customer_city' => $validationResponse['cus_city'] ?? 'Dhaka',
+                    'customer_state' => $validationResponse['cus_state'] ?? null,
+                    'customer_postcode' => $validationResponse['cus_postcode'] ?? null,
+                    'customer_country' => $validationResponse['cus_country'] ?? 'Bangladesh',
+                    
+                    // Order details
+                    'order_type' => $type,
+                    'order_details' => $this->getOrderDetails($order, $type),
+                    'ssl_response_data' => $validationResponse,
                 ];
                 
                 // Set the appropriate foreign key based on order type
@@ -498,14 +603,36 @@ class PaymentController extends Controller
                 
                 DB::commit();
                 
-                // Redirect to appropriate route based on order type
-                return redirect()->route($redirectRoute, $order->id)->with('success', $message);
+                // Store success message in session for display after login
+                session()->flash('payment_success', $message);
+                session()->flash('payment_order_type', $type);
+                session()->flash('payment_order_id', $order->id);
+                
+                // Redirect to payment success page that doesn't require auth
+                return redirect()->route('payment.success.page');
                     
             } catch (\Exception $e) {
                 DB::rollback();
                 return redirect()->route('customer.dashboard')->with('error', 'Payment processing failed.');
             }
         } else {
+            // Update transaction status to failed
+            $statusUpdateData = [
+                'ssl_transaction_id' => $transactionId,
+                'status' => 'failed',
+                'fail_reason' => 'SSL validation failed or transaction ID mismatch',
+                'gateway_response' => $validationResponse,
+            ];
+            
+            $mockRequest = new \Illuminate\Http\Request();
+            $mockRequest->merge($statusUpdateData);
+            
+            try {
+                $apiController->updateStatus($mockRequest);
+            } catch (\Exception $e) {
+                Log::error('Failed to update transaction status to failed: ' . $e->getMessage());
+            }
+            
             return redirect()->route('customer.dashboard')->with('error', 'Payment verification failed.');
         }
     }
@@ -515,12 +642,68 @@ class PaymentController extends Controller
      */
     public function sslFail(Request $request, $type, $id)
     {
+        $transactionId = $request->get('tran_id');
+        
         // Log the failure for debugging
-        Log::info('SSL Payment Failed', [
+        Log::info('SSL Payment Failed Callback', [
             'type' => $type,
             'id' => $id,
+            'transaction_id' => $transactionId,
             'request_data' => $request->all()
         ]);
+        
+        // Get order to create failed transaction record
+        $order = $this->getOrder($type, $id);
+        
+        if ($order) {
+            DB::beginTransaction();
+            try {
+                // Create failed transaction record
+                $transactionData = [
+                    'transaction_number' => Transaction::generateTransactionNumber(),
+                    'amount' => $request->get('amount') ?? $order->amount,
+                    'payment_method' => 'SSL Payment',
+                    'status' => Transaction::STATUS_FAILED,
+                    'notes' => 'SSL payment failed. Transaction ID: ' . $transactionId . '. Reason: ' . ($request->get('failedreason') ?? 'Payment gateway failure'),
+                    
+                    // SSL specific fields for failed transaction
+                    'ssl_transaction_id' => $transactionId,
+                    'ssl_status' => 'FAILED',
+                    'ssl_fail_reason' => $request->get('failedreason') ?? 'Payment gateway failure',
+                    'ssl_response_data' => $request->all(),
+                    
+                    // Customer information
+                    'customer_name' => Auth::user()->name,
+                    'customer_email' => Auth::user()->email,
+                    'customer_phone' => Auth::user()->phone,
+                    'customer_address' => Auth::user()->address,
+                    'customer_city' => 'Dhaka',
+                    'customer_country' => 'Bangladesh',
+                    
+                    // Order details
+                    'order_type' => $type,
+                    'order_details' => $this->getOrderDetails($order, $type),
+                ];
+                
+                // Set the appropriate foreign key based on order type
+                if ($type === 'package') {
+                    $transactionData['package_order_id'] = $order->id;
+                } elseif ($type === 'service') {
+                    $transactionData['service_order_id'] = $order->id;
+                } elseif ($type === 'custom-service') {
+                    $transactionData['custom_service_request_id'] = $order->id;
+                } elseif ($type === 'fund') {
+                    $transactionData['fund_request_id'] = $order->id;
+                }
+                
+                Transaction::create($transactionData);
+                
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollback();
+                Log::error('Failed to create failed transaction record: ' . $e->getMessage());
+            }
+        }
         
         return redirect()->route('customer.payment.options', [$type, $id])
             ->with('error', 'Payment failed. Please try again.');
@@ -531,12 +714,67 @@ class PaymentController extends Controller
      */
     public function sslCancel(Request $request, $type, $id)
     {
+        $transactionId = $request->get('tran_id');
+        
         // Log the cancellation for debugging
         Log::info('SSL Payment Cancelled', [
             'type' => $type,
             'id' => $id,
+            'transaction_id' => $transactionId,
             'request_data' => $request->all()
         ]);
+        
+        // Get order to create cancelled transaction record
+        $order = $this->getOrder($type, $id);
+        
+        if ($order) {
+            DB::beginTransaction();
+            try {
+                // Create cancelled transaction record
+                $transactionData = [
+                    'transaction_number' => Transaction::generateTransactionNumber(),
+                    'amount' => $request->get('amount') ?? $order->amount,
+                    'payment_method' => 'SSL Payment',
+                    'status' => Transaction::STATUS_CANCELLED,
+                    'notes' => 'SSL payment cancelled by user. Transaction ID: ' . $transactionId,
+                    
+                    // SSL specific fields for cancelled transaction
+                    'ssl_transaction_id' => $transactionId,
+                    'ssl_status' => 'CANCELLED',
+                    'ssl_response_data' => $request->all(),
+                    
+                    // Customer information
+                    'customer_name' => Auth::user()->name,
+                    'customer_email' => Auth::user()->email,
+                    'customer_phone' => Auth::user()->phone,
+                    'customer_address' => Auth::user()->address,
+                    'customer_city' => 'Dhaka',
+                    'customer_country' => 'Bangladesh',
+                    
+                    // Order details
+                    'order_type' => $type,
+                    'order_details' => $this->getOrderDetails($order, $type),
+                ];
+                
+                // Set the appropriate foreign key based on order type
+                if ($type === 'package') {
+                    $transactionData['package_order_id'] = $order->id;
+                } elseif ($type === 'service') {
+                    $transactionData['service_order_id'] = $order->id;
+                } elseif ($type === 'custom-service') {
+                    $transactionData['custom_service_request_id'] = $order->id;
+                } elseif ($type === 'fund') {
+                    $transactionData['fund_request_id'] = $order->id;
+                }
+                
+                Transaction::create($transactionData);
+                
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollback();
+                Log::error('Failed to create cancelled transaction record: ' . $e->getMessage());
+            }
+        }
         
         return redirect()->route('customer.payment.options', [$type, $id])
             ->with('info', 'Payment was cancelled.');
@@ -695,5 +933,58 @@ class PaymentController extends Controller
         }
         
         return null;
+    }
+    
+    /**
+     * Get comprehensive order details for transaction record.
+     */
+    private function getOrderDetails($order, $type)
+    {
+        $details = [
+            'order_id' => $order->id,
+            'order_type' => $type,
+            'amount' => $order->amount ?? $order->total_amount,
+        ];
+        
+        switch ($type) {
+            case 'package':
+                $details['package_id'] = $order->package_id;
+                $details['package_name'] = $order->package->title ?? 'Unknown Package';
+                $details['package_category'] = $order->package->category->name ?? 'Unknown Category';
+                $details['duration'] = $order->duration;
+                $details['start_date'] = $order->start_date;
+                $details['end_date'] = $order->end_date;
+                break;
+                
+            case 'service':
+                $details['service_id'] = $order->service_id;
+                $details['service_name'] = $order->service->title ?? 'Unknown Service';
+                $details['service_category'] = $order->service->category->name ?? 'Unknown Category';
+                $details['quantity'] = $order->quantity;
+                $details['requirements'] = $order->requirements;
+                break;
+                
+            case 'custom-service':
+                $details['title'] = $order->title;
+                $details['description'] = $order->description;
+                $details['requirements'] = $order->requirements;
+                $details['deadline'] = $order->deadline;
+                $details['items'] = $order->items->map(function($item) {
+                    return [
+                        'title' => $item->title,
+                        'description' => $item->description,
+                        'price' => $item->price,
+                        'duration_days' => $item->duration_days,
+                    ];
+                })->toArray();
+                break;
+                
+            case 'fund':
+                $details['fund_type'] = 'Account Balance Top-up';
+                $details['description'] = $order->description ?? 'Fund request for account balance';
+                break;
+        }
+        
+        return $details;
     }
 }

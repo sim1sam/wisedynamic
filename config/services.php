@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'ssl_gateway' => [
+        'api_key' => env('SSL_GATEWAY_API_KEY'),
+        'base_url' => env('SSL_GATEWAY_BASE_URL', 'https://sandbox.sslcommerz.com'),
+        'timeout' => env('SSL_GATEWAY_TIMEOUT', 30),
+    ],
+
 ];

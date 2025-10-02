@@ -28,5 +28,7 @@ class VerifyCsrfToken extends Middleware
         'customer/payment/ssl/success/*',
         'customer/payment/ssl/fail/*',
         'customer/payment/ssl/cancel/*',
+        'api/ssl-gateway/*',
+        'api/gateway/*',
     ];
 }

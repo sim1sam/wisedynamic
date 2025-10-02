@@ -86,12 +86,16 @@ class ManualPayment extends Model
      */
     public function getStatusLabel()
     {
-        return match($this->status) {
-            self::STATUS_PENDING => 'Pending Verification',
-            self::STATUS_APPROVED => 'Approved',
-            self::STATUS_REJECTED => 'Rejected',
-            default => 'Unknown'
-        };
+        switch($this->status) {
+            case self::STATUS_PENDING:
+                return 'Pending Verification';
+            case self::STATUS_APPROVED:
+                return 'Approved';
+            case self::STATUS_REJECTED:
+                return 'Rejected';
+            default:
+                return 'Unknown';
+        }
     }
     
     /**
@@ -99,12 +103,16 @@ class ManualPayment extends Model
      */
     public function getStatusColorClass()
     {
-        return match($this->status) {
-            self::STATUS_PENDING => 'warning',
-            self::STATUS_APPROVED => 'success',
-            self::STATUS_REJECTED => 'danger',
-            default => 'secondary'
-        };
+        switch($this->status) {
+            case self::STATUS_PENDING:
+                return 'warning';
+            case self::STATUS_APPROVED:
+                return 'success';
+            case self::STATUS_REJECTED:
+                return 'danger';
+            default:
+                return 'secondary';
+        }
     }
     
     /**

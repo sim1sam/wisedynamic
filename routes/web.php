@@ -59,7 +59,6 @@ Route::post('/contact', [ContactController::class, 'submitForm'])->name('contact
 // Admin routes (protected)
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('requests', [AdminCustomerRequestController::class, 'index'])->name('requests.index');
     Route::get('requests/create', [AdminCustomerRequestController::class, 'create'])->name('requests.create');
     Route::post('requests', [AdminCustomerRequestController::class, 'store'])->name('requests.store');
@@ -267,6 +266,12 @@ Route::match(['get','post'], '/customer/payment/ssl/cancel/{type}/{id}', [\App\H
 Route::match(['get','post'], '/customer/payment/ssl/ipn', [\App\Http\Controllers\Customer\PaymentController::class, 'sslIpn'])
     ->name('customer.payment.ssl.ipn');
 
+// Payment success page (no auth required)
+Route::get('/payment/success', [\App\Http\Controllers\PaymentSuccessController::class, 'show'])
+    ->name('payment.success.page');
+Route::get('/payment/success/redirect', [\App\Http\Controllers\PaymentSuccessController::class, 'redirectToDashboard'])
+    ->name('payment.success.redirect');
+
 // Admin Fund Request Management Routes
  Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
      Route::get('/fund-requests', [\App\Http\Controllers\Admin\FundRequestController::class, 'index'])->name('admin.fund-requests.index');
@@ -284,8 +289,16 @@ Route::match(['get','post'], '/customer/payment/ssl/ipn', [\App\Http\Controllers
      Route::post('/custom-service-requests/{customServiceRequest}/assign', [\App\Http\Controllers\Admin\CustomServiceRequestController::class, 'assign'])->name('admin.custom-service-requests.assign');
      Route::get('/custom-service-requests/stats', [\App\Http\Controllers\Admin\CustomServiceRequestController::class, 'getStats'])->name('admin.custom-service-requests.stats');
      
-     // Admin Transaction Routes
-     Route::get('/transactions', [\App\Http\Controllers\Admin\TransactionController::class, 'index'])->name('admin.transactions.index');
-     Route::get('/transactions/{transaction}', [\App\Http\Controllers\Admin\TransactionController::class, 'show'])->name('admin.transactions.show');
+    // Admin Transaction Routes
+   Route::get('/transactions', [\App\Http\Controllers\Admin\TransactionController::class, 'index'])->name('admin.transactions.index');
+   Route::get('/transactions/{transaction}', [\App\Http\Controllers\Admin\TransactionController::class, 'show'])->name('admin.transactions.show');
+   Route::get('/transactions/{transaction}/edit', [\App\Http\Controllers\Admin\TransactionController::class, 'edit'])->name('admin.transactions.edit');
+   Route::put('/transactions/{transaction}', [\App\Http\Controllers\Admin\TransactionController::class, 'update'])->name('admin.transactions.update');
+   Route::post('/transactions/bulk-update', [\App\Http\Controllers\Admin\TransactionController::class, 'bulkUpdate'])->name('admin.transactions.bulk-update');
+   
+   // SSL Verification Routes
+   Route::post('/transactions/{transactionId}/verify-ssl', [\App\Http\Controllers\Admin\TransactionController::class, 'verifyIndividualSsl'])->name('admin.transactions.verify-ssl');
+   Route::post('/transactions/{transactionId}/update-status', [\App\Http\Controllers\Admin\TransactionController::class, 'updateSslStatus'])->name('admin.transactions.update-status');
+   Route::post('/transactions/bulk-verify-ssl', [\App\Http\Controllers\Admin\TransactionController::class, 'bulkVerifySsl'])->name('admin.transactions.bulk-verify-ssl');
  });
 

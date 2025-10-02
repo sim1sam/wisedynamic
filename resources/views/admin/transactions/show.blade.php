@@ -6,6 +6,9 @@
     <div class="d-flex justify-content-between">
         <h1>Transaction #{{ $transaction->transaction_number }}</h1>
         <div>
+            <a href="{{ route('admin.transactions.edit', $transaction) }}" class="btn btn-warning">
+                <i class="fas fa-edit"></i> Edit Transaction
+            </a>
             <a href="{{ route('admin.transactions.index') }}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Back to Transactions
             </a>
@@ -54,10 +57,9 @@
                         <tr>
                             <th>Status</th>
                             <td>
-                                @if($transaction->status === 'completed')
-                                    <span class="badge badge-success">Completed</span>
-                                @else
-                                    <span class="badge badge-warning">{{ ucfirst($transaction->status) }}</span>
+                                <span class="badge {{ $transaction->getStatusBadgeClass() }}">{{ $transaction->getStatusDisplayName() }}</span>
+                                @if($transaction->updated_by_admin)
+                                    <br><small class="text-muted">Last updated by admin on {{ $transaction->admin_updated_at->format('M d, Y h:i A') }}</small>
                                 @endif
                             </td>
                         </tr>
@@ -67,9 +69,115 @@
                             <td>{{ $transaction->notes }}</td>
                         </tr>
                         @endif
+                        @if($transaction->admin_notes)
+                        <tr>
+                            <th>Admin Notes</th>
+                            <td>{{ $transaction->admin_notes }}</td>
+                        </tr>
+                        @endif
                     </table>
                 </div>
             </div>
+
+            {{-- SSL Payment Details - Only show for SSL transactions --}}
+            @if($transaction->isSSLTransaction())
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h3 class="card-title">SSL Payment Details</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>SSL Transaction ID</th>
+                                    <td>{{ $transaction->ssl_transaction_id }}</td>
+                                </tr>
+                                @if($transaction->ssl_session_id)
+                                <tr>
+                                    <th>SSL Session ID</th>
+                                    <td>{{ $transaction->ssl_session_id }}</td>
+                                </tr>
+                                @endif
+                                @if($transaction->ssl_bank_transaction_id)
+                                <tr>
+                                    <th>Bank Transaction ID</th>
+                                    <td>{{ $transaction->ssl_bank_transaction_id }}</td>
+                                </tr>
+                                @endif
+                                @if($transaction->ssl_card_type)
+                                <tr>
+                                    <th>Card Type</th>
+                                    <td>{{ $transaction->ssl_card_type }}</td>
+                                </tr>
+                                @endif
+                                @if($transaction->ssl_card_no)
+                                <tr>
+                                    <th>Card Number</th>
+                                    <td>{{ $transaction->ssl_card_no }}</td>
+                                </tr>
+                                @endif
+                                @if($transaction->ssl_card_issuer)
+                                <tr>
+                                    <th>Card Issuer</th>
+                                    <td>{{ $transaction->ssl_card_issuer }}</td>
+                                </tr>
+                                @endif
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-bordered">
+                                @if($transaction->customer_name)
+                                <tr>
+                                    <th>Customer Name</th>
+                                    <td>{{ $transaction->customer_name }}</td>
+                                </tr>
+                                @endif
+                                @if($transaction->customer_email)
+                                <tr>
+                                    <th>Customer Email</th>
+                                    <td>{{ $transaction->customer_email }}</td>
+                                </tr>
+                                @endif
+                                @if($transaction->customer_phone)
+                                <tr>
+                                    <th>Customer Phone</th>
+                                    <td>{{ $transaction->customer_phone }}</td>
+                                </tr>
+                                @endif
+                                @if($transaction->customer_address)
+                                <tr>
+                                    <th>Customer Address</th>
+                                    <td>{{ $transaction->customer_address }}</td>
+                                </tr>
+                                @endif
+                                @if($transaction->ssl_currency_type && $transaction->ssl_currency_type !== 'BDT')
+                                <tr>
+                                    <th>Currency</th>
+                                    <td>{{ $transaction->ssl_currency_type }}</td>
+                                </tr>
+                                @endif
+                                @if($transaction->ssl_currency_amount)
+                                <tr>
+                                    <th>Currency Amount</th>
+                                    <td>{{ $transaction->ssl_currency_amount }}</td>
+                                </tr>
+                                @endif
+                            </table>
+                        </div>
+                    </div>
+                    
+                    @if($transaction->ssl_response_data)
+                    <div class="mt-3">
+                        <h5>Full SSL Response Data</h5>
+                        <div class="bg-light p-3 rounded">
+                            <pre class="mb-0" style="max-height: 300px; overflow-y: auto;">{{ json_encode($transaction->ssl_response_data, JSON_PRETTY_PRINT) }}</pre>
+                        </div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+            @endif
         </div>
         
         <div class="col-md-4">
