@@ -6,6 +6,9 @@
     <div class="d-flex justify-content-between">
         <h1>Fund Requests</h1>
         <div>
+            <a href="{{ route('admin.fund-requests.create') }}" class="btn btn-primary btn-sm mr-2">
+                <i class="fas fa-plus"></i> Create Fund Request
+            </a>
             <span class="badge badge-warning">{{ $fundRequests->where('status', 'pending')->count() }} Pending</span>
             <span class="badge badge-success">{{ $fundRequests->where('status', 'approved')->count() }} Approved</span>
             <span class="badge badge-danger">{{ $fundRequests->where('status', 'rejected')->count() }} Rejected</span>

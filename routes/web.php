@@ -275,6 +275,8 @@ Route::get('/payment/success/redirect', [\App\Http\Controllers\PaymentSuccessCon
 // Admin Fund Request Management Routes
  Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
      Route::get('/fund-requests', [\App\Http\Controllers\Admin\FundRequestController::class, 'index'])->name('admin.fund-requests.index');
+     Route::get('/fund-requests/create', [\App\Http\Controllers\Admin\FundRequestController::class, 'create'])->name('admin.fund-requests.create');
+     Route::post('/fund-requests', [\App\Http\Controllers\Admin\FundRequestController::class, 'store'])->name('admin.fund-requests.store');
      Route::get('/fund-requests/{fundRequest}', [\App\Http\Controllers\Admin\FundRequestController::class, 'show'])->name('admin.fund-requests.show');
      Route::get('/fund-requests/{fundRequest}/edit', [\App\Http\Controllers\Admin\FundRequestController::class, 'edit'])->name('admin.fund-requests.edit');
      Route::put('/fund-requests/{fundRequest}', [\App\Http\Controllers\Admin\FundRequestController::class, 'update'])->name('admin.fund-requests.update');

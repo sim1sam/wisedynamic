@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\FundRequest;
 use App\Models\Transaction;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class FundRequestController extends Controller
 {
@@ -32,6 +34,83 @@ class FundRequestController extends Controller
         return view('admin.fund-requests.index', compact('fundRequests'));
     }
     
+    /**
+     * Show the form for creating a new fund request.
+     */
+    public function create()
+    {
+        $users = User::where('is_admin', false)->orderBy('name')->get(['id', 'name', 'email']);
+        return view('admin.fund-requests.create', compact('users'));
+    }
+
+    /**
+     * Store a newly created fund request.
+     */
+    public function store(Request $request)
+    {
+        // Debug: Log the incoming request data
+        Log::info('Fund request form submitted', $request->all());
+        
+        try {
+            $validated = $request->validate([
+                'user_id' => ['required', 'exists:users,id'],
+                'amount' => ['required', 'numeric', 'min:1', 'max:100000'],
+                'service_info' => ['nullable', 'string', 'max:1000'],
+                'payment_method' => ['required', 'in:ssl,manual'],
+                'bank_name' => ['nullable', 'required_if:payment_method,manual', 'string', 'max:255'],
+                'account_number' => ['nullable', 'required_if:payment_method,manual', 'string', 'max:255'],
+                'admin_notes' => ['nullable', 'string', 'max:1000'],
+                'auto_approve' => ['nullable', 'boolean'],
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Fund request validation failed', [
+                'errors' => $e->validator->errors()->toArray(),
+                'input' => $request->all()
+            ]);
+            return redirect()->back()->withErrors($e->validator)->withInput();
+        }
+
+        try {
+            $fundRequest = FundRequest::create([
+                'user_id' => $validated['user_id'],
+                'amount' => $validated['amount'],
+                'service_info' => $validated['service_info'],
+                'payment_method' => $validated['payment_method'],
+                'bank_name' => $validated['bank_name'] ?? null,
+                'account_number' => $validated['account_number'] ?? null,
+                'admin_notes' => $validated['admin_notes'],
+                'status' => $request->boolean('auto_approve') ? FundRequest::STATUS_APPROVED : FundRequest::STATUS_PENDING,
+                'approved_at' => $request->boolean('auto_approve') ? now() : null,
+                'approved_by' => $request->boolean('auto_approve') ? Auth::id() : null,
+            ]);
+
+            // If auto-approved, add balance to user and create transaction
+            if ($request->boolean('auto_approve')) {
+                $user = User::find($validated['user_id']);
+                $user->addBalance($validated['amount']);
+
+                Transaction::create([
+                    'transaction_number' => Transaction::generateTransactionNumber(),
+                    'fund_request_id' => $fundRequest->id,
+                    'amount' => $validated['amount'],
+                    'payment_method' => $validated['payment_method'] === 'ssl' ? 'SSL Payment' : 'Bank Transfer',
+                    'status' => 'completed',
+                    'notes' => 'Fund request created and auto-approved by admin. ' . ($validated['admin_notes'] ? 'Admin notes: ' . $validated['admin_notes'] : ''),
+                ]);
+            }
+
+            $message = $request->boolean('auto_approve') 
+                ? 'Fund request created and approved successfully. User balance updated.'
+                : 'Fund request created successfully.';
+
+            return redirect()->route('admin.fund-requests.index')->with('success', $message);
+            
+        } catch (\Exception $e) {
+            Log::error('Fund request creation failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to create fund request: ' . $e->getMessage())->withInput();
+        }
+    }
+
     /**
      * Display the specified fund request.
      */
