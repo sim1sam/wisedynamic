@@ -308,9 +308,9 @@ return [
         // Sidebar items:
         [
             'text' => 'Dashboard',
-            'url' => 'admin/dashboard',
+            'route' => 'admin.dashboard',
             'icon' => 'fas fa-fw fa-tachometer-alt',
-            'active' => ['admin/dashboard*'],
+            'active' => ['admin.dashboard*'],
         ],
         [
             'text' => 'Customer Messages',
