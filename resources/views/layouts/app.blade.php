@@ -105,5 +105,5 @@
     @include('frontend.home.sections.footer')
 
     @stack('scripts')
-  </body>
-</html>
+   </body>
+ </html>

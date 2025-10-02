@@ -91,8 +91,8 @@ $(document).ready(function() {
         });
     });
 });
-</script>
-@stop
+ </script>
+ @stop
 
 @php
 function getNotificationIcon($type) {

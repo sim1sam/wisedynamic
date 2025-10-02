@@ -155,18 +155,4 @@
             });
         }
     </script>
-    
-    <style>
-        .notification-item {
-            white-space: normal !important;
-        }
-        .notification-item:hover {
-            background-color: #f8f9fa;
-        }
-        .dropdown-item-title {
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-    </style>
 @stop

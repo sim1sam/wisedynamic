@@ -194,4 +194,10 @@
         }
     </style>
 <?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('scripts'); ?>
+    <script>
+        // ...
+    </script>
+<?php $__env->stopSection(); ?>
 <?php echo $__env->make('adminlte::page', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH F:\laragon\www\wisedynamic\resources\views/admin/fund-requests/index.blade.php ENDPATH**/ ?>

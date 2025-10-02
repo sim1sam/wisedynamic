@@ -194,3 +194,9 @@
         }
     </style>
 @stop
+
+@section('scripts')
+    <script>
+        // ...
+    </script>
+@stop

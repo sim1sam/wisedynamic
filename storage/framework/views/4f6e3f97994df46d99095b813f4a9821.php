@@ -106,6 +106,6 @@
     <?php echo $__env->make('frontend.home.sections.footer', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
     <?php echo $__env->yieldPushContent('scripts'); ?>
-  </body>
-</html>
+   </body>
+ </html>
 <?php /**PATH F:\laragon\www\wisedynamic\resources\views/layouts/app.blade.php ENDPATH**/ ?>

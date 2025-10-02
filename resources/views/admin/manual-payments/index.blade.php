@@ -183,7 +183,6 @@
         @endif
     </div>
 @stop
-
 @section('js')
 <script>
 function approvePayment(paymentId) {
