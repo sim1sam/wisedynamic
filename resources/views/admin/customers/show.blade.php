@@ -208,7 +208,8 @@
                 </div>
                 <div class="card-body">
                     @if($fundRequests->count() > 0)
-                        <table class="table table-bordered table-striped">
+                        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                            <table class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -252,6 +253,7 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        </div>
                     @else
                         <div class="text-muted">No fund requests found</div>
                     @endif
@@ -269,7 +271,8 @@
                 </div>
                 <div class="card-body">
                     @if($packageOrders->count() > 0)
-                        <table class="table table-bordered table-striped">
+                        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                            <table class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -309,6 +312,7 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        </div>
                     @else
                         <div class="text-muted">No package orders found</div>
                     @endif
@@ -326,7 +330,8 @@
                 </div>
                 <div class="card-body">
                     @if($serviceOrders->count() > 0)
-                        <table class="table table-bordered table-striped">
+                        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                            <table class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -366,6 +371,7 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        </div>
                     @else
                         <div class="text-muted">No service orders found</div>
                     @endif

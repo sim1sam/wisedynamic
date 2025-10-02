@@ -99,6 +99,16 @@ class FundRequestController extends Controller
                 ]);
             }
 
+            // Create notification for the user
+            \App\Models\Notification::createNotification(
+                'fund_request',
+                'Fund Request Created',
+                "A fund request for ৳{$validated['amount']} has been " . ($request->boolean('auto_approve') ? 'created and approved' : 'created') . " by admin.",
+                route('customer.fund.show', $fundRequest->id),
+                $fundRequest->id,
+                'App\\Models\\FundRequest'
+            );
+
             $message = $request->boolean('auto_approve') 
                 ? 'Fund request created and approved successfully. User balance updated.'
                 : 'Fund request created successfully.';
@@ -155,6 +165,16 @@ class FundRequestController extends Controller
             'notes' => 'Fund request approved - Balance added to customer account. ' . ($request->admin_notes ? 'Admin notes: ' . $request->admin_notes : ''),
         ]);
         
+        // Create notification for the user
+        \App\Models\Notification::createNotification(
+            'fund_approved',
+            'Fund Request Approved',
+            "Your fund request for ৳{$fundRequest->amount} has been approved and added to your balance.",
+            route('customer.fund.show', $fundRequest->id),
+            $fundRequest->id,
+            'App\\Models\\FundRequest'
+        );
+        
         return redirect()->route('admin.fund-requests.index')
             ->with('success', 'Fund request approved successfully. User balance updated.');
     }
@@ -178,6 +198,16 @@ class FundRequestController extends Controller
             'admin_notes' => $request->admin_notes,
             'approved_by' => Auth::id(),
         ]);
+        
+        // Create notification for the user
+        \App\Models\Notification::createNotification(
+            'fund_rejected',
+            'Fund Request Rejected',
+            "Your fund request for ৳{$fundRequest->amount} has been rejected. Reason: {$request->admin_notes}",
+            route('customer.fund.show', $fundRequest->id),
+            $fundRequest->id,
+            'App\\Models\\FundRequest'
+        );
         
         return redirect()->route('admin.fund-requests.index')
             ->with('success', 'Fund request rejected successfully.');
