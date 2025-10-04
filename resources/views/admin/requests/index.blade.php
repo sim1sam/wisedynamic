@@ -38,7 +38,7 @@
             </div>
           </div>
           <div class="card-body table-responsive p-0">
-            <table class="table table-striped table-hover">
+            <table id="requestsTable" class="table table-striped table-hover">
               <thead>
                 <tr>
                   <th style="width: 220px;">Customer</th>
@@ -116,9 +116,22 @@
               </tbody>
             </table>
           </div>
-          <div class="card-footer clearfix">
-            {{ $requests->links() }}
-          </div>
+          @section('js')
+          <script>
+            $(function(){
+              $('#requestsTable').DataTable({
+                paging: true,
+                lengthChange: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                autoWidth: false,
+                responsive: true,
+                order: [[0, 'desc']]
+              });
+            });
+          </script>
+          @endsection
         </div>
       </div>
     </div>

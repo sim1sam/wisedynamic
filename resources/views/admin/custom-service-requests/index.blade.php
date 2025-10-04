@@ -100,11 +100,11 @@
     <!-- Custom Service Requests Table -->
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title"><i class="fas fa-cogs"></i> Custom Service Requests ({{ $customServiceRequests->total() }})</h3>
+            <h3 class="card-title"><i class="fas fa-cogs"></i> Custom Service Requests ({{ $customServiceRequests->count() }})</h3>
         </div>
         <div class="card-body table-responsive p-0">
             @if($customServiceRequests->count() > 0)
-                <table class="table table-hover text-nowrap">
+                <table id="customServiceRequestsTable" class="table table-hover text-nowrap">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -228,11 +228,7 @@
                 </div>
             @endif
         </div>
-        @if($customServiceRequests->hasPages())
-            <div class="card-footer">
-                {{ $customServiceRequests->appends(request()->query())->links() }}
-            </div>
-        @endif
+        
     </div>
 @stop
 
@@ -254,6 +250,18 @@
             setTimeout(function() {
                 $('.alert').fadeOut('slow');
             }, 5000);
+
+            // Initialize DataTables for client-side pagination and features
+            $('#customServiceRequestsTable').DataTable({
+                paging: true,
+                lengthChange: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                autoWidth: false,
+                responsive: true,
+                order: [[0, 'desc']]
+            });
         });
     </script>
 @stop

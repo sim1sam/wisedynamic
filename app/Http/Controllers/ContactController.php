@@ -44,7 +44,8 @@ class ContactController extends Controller
      */
     public function index()
     {
-        $messages = CustomerMessage::orderBy('created_at', 'desc')->paginate(10);
+        // Use client-side DataTables pagination; return full collection
+        $messages = CustomerMessage::orderBy('created_at', 'desc')->get();
         return view('admin.messages.index', compact('messages'));
     }
 

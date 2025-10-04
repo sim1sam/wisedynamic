@@ -61,7 +61,7 @@
         <div class="card-body p-0">
             @if($payments->count() > 0)
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover mb-0">
+                    <table id="manualPaymentsTable" class="table table-striped table-hover mb-0">
                         <thead class="thead-light">
                             <tr>
                                 <th>ID</th>
@@ -176,11 +176,7 @@
                 </div>
             @endif
         </div>
-        @if($payments->hasPages())
-            <div class="card-footer">
-                {{ $payments->appends(request()->query())->links() }}
-            </div>
-        @endif
+        
     </div>
 @stop
 @section('js')
@@ -269,5 +265,18 @@ function rejectPayment(paymentId) {
         }
     });
 }
+
+$(document).ready(function() {
+    $('#manualPaymentsTable').DataTable({
+        paging: true,
+        lengthChange: true,
+        searching: true,
+        ordering: true,
+        info: true,
+        autoWidth: false,
+        responsive: true,
+        order: [[0, 'desc']]
+    });
+});
 </script>
 @stop

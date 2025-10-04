@@ -26,8 +26,9 @@ class ManualPaymentController extends Controller
             $query->where('status', $status);
         }
         
-        $payments = $query->paginate(20);
-        
+        // Use client-side DataTables pagination by loading full result set
+        $payments = $query->get();
+
         return view('admin.manual-payments.index', compact('payments', 'status'));
     }
 

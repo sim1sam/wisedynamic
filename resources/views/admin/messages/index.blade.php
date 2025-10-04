@@ -18,7 +18,7 @@
                 </div>
             @endif
 
-            <table class="table table-bordered table-striped">
+            <table id="messagesTable" class="table table-bordered table-striped">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -66,9 +66,7 @@
                 </tbody>
             </table>
 
-            <div class="mt-4">
-                {{ $messages->links() }}
-            </div>
+            
         </div>
     </div>
 @stop
@@ -83,6 +81,17 @@
 
 @section('js')
     <script>
-        console.log('Customer Messages page loaded.');
+        $(document).ready(function() {
+            $('#messagesTable').DataTable({
+                paging: true,
+                lengthChange: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                autoWidth: false,
+                responsive: true,
+                order: [[0, 'desc']]
+            });
+        });
     </script>
 @stop

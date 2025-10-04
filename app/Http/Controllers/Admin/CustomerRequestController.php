@@ -14,7 +14,8 @@ class CustomerRequestController extends Controller
 {
     public function index(Request $request)
     {
-        $requests = CustomerRequest::with('user')->latest()->paginate(20);
+        // Use DataTables-style client-side pagination: load full dataset
+        $requests = CustomerRequest::with('user')->latest()->get();
         return view('admin.requests.index', compact('requests'));
     }
 

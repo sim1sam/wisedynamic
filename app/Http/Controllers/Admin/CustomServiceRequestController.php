@@ -38,7 +38,8 @@ class CustomServiceRequestController extends Controller
                 });
             }
             
-            $customServiceRequests = $query->paginate(15);
+            // Switch to client-side DataTables pagination by returning full collection
+            $customServiceRequests = $query->get();
             
             return view('admin.custom-service-requests.index', compact('customServiceRequests'));
             
