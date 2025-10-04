@@ -20,8 +20,8 @@ class CustomerController extends Controller
             // Debug log to see if this method is being called
             Log::info('CustomerController@index method called');
             
-            // Get all customers (users with role 'customer')
-            $customers = User::where('role', 'customer')
+            // Get all non-admin users (show only real customers)
+            $customers = User::where('is_admin', false)
                 ->orderBy('created_at', 'desc')
                 ->get();
             
