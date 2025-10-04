@@ -29,7 +29,8 @@ class FundRequestController extends Controller
             $query->where('payment_method', $request->payment_method);
         }
         
-        $fundRequests = $query->paginate(20);
+        // Switch to client-side DataTables pagination by returning full collection
+        $fundRequests = $query->get();
         
         return view('admin.fund-requests.index', compact('fundRequests'));
     }

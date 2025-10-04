@@ -52,7 +52,7 @@
             @endif
             
             @if($fundRequests->count() > 0)
-                <table class="table table-striped">
+                <table id="fundRequestsTable" class="table table-striped">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -172,10 +172,7 @@
                     </tbody>
                 </table>
                 
-                <!-- Pagination -->
-                <div class="d-flex justify-content-center mt-3">
-                    {{ $fundRequests->appends(request()->query())->links() }}
-                </div>
+                <!-- Client-side pagination handled by DataTables -->
             @else
                 <div class="text-center p-4">
                     <i class="fas fa-money-bill-wave fa-3x text-muted mb-3"></i>
@@ -198,8 +195,19 @@
     </style>
 @stop
 
-@section('scripts')
+@section('js')
     <script>
-        // ...
+        $(document).ready(function() {
+            $('#fundRequestsTable').DataTable({
+                paging: true,
+                lengthChange: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                autoWidth: false,
+                responsive: true,
+                order: [[0, 'desc']]
+            });
+        });
     </script>
 @stop
