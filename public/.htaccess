@@ -13,6 +13,22 @@
     RewriteCond %{HTTP:x-xsrf-token} .
     RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
 
+    # Special handling for SSL payment callbacks to bypass CSRF protection
+    # Match all SSL payment callback URLs and direct them to our special handler
+    RewriteCond %{QUERY_STRING} (^|&)tran_id= [NC,OR]
+    RewriteCond %{QUERY_STRING} (^|&)status=(VALID|SUCCESS|FAILED|CANCELLED) [NC]
+    RewriteCond %{REQUEST_URI} ^/(customer/payment/ssl/(success|fail|cancel)|success|fail|cancel|ssl-callback) [NC]
+    RewriteRule ^ ssl_callback.php [L,QSA]
+    
+    # Also catch POST requests to these endpoints
+    RewriteCond %{REQUEST_METHOD} POST
+    RewriteCond %{REQUEST_URI} ^/(customer/payment/ssl/(success|fail|cancel)|success|fail|cancel|ssl-callback) [NC]
+    RewriteRule ^ ssl_callback.php [L,QSA]
+    
+    # Redirect payment success page requests to our direct payment success page
+    RewriteCond %{REQUEST_URI} ^/payment/success [NC]
+    RewriteRule ^ payment_success.php [L,QSA]
+
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$

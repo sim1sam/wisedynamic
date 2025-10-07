@@ -867,4 +867,87 @@ class TransactionController extends Controller
             ], 500);
         }
     }
+    
+    /**
+     * Get payment status by transaction ID for public access
+     * Used by the payment success page to check status when order details are not available
+     */
+    public function getPaymentStatusByTransaction($transactionId)
+    {
+        try {
+            // Find transaction by SSL transaction ID
+            $transaction = Transaction::where('ssl_transaction_id', $transactionId)->first();
+            
+            if (!$transaction) {
+                Log::warning('Transaction not found for status check', [
+                    'transaction_id' => $transactionId
+                ]);
+                
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Transaction not found'
+                ], 404);
+            }
+            
+            // Get current status
+            $currentStatus = $transaction->status;
+            $sslStatus = $transaction->ssl_status;
+            
+            // If status is still pending, try to verify with SSL
+            if ($currentStatus === 'pending' || $sslStatus === 'pending') {
+                try {
+                    $sslChecker = new SslGatewayStatusChecker();
+                    $sslResponse = $sslChecker->checkTransactionStatus($transaction->ssl_transaction_id);
+                    
+                    if ($sslResponse && isset($sslResponse['status'])) {
+                        $newSslStatus = strtolower($sslResponse['status']);
+                        $newStatus = $this->mapGatewayStatus($newSslStatus);
+                        
+                        // Update status if it changed
+                        if ($newSslStatus !== $sslStatus) {
+                            $oldStatus = $transaction->status;
+                            $transaction->ssl_status = $newSslStatus;
+                            $transaction->status = $newStatus;
+                            $transaction->save();
+                            
+                            // Handle status change effects
+                            $this->handleStatusChange($transaction, $oldStatus, $newStatus);
+                        }
+                    }
+                } catch (\Exception $e) {
+                    // Log error but don't fail the request
+                    Log::error('SSL status check failed for transaction', [
+                        'transaction_id' => $transaction->id,
+                        'ssl_transaction_id' => $transaction->ssl_transaction_id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
+            
+            // Get fresh data after possible updates
+            $transaction = $transaction->fresh();
+            
+            return response()->json([
+                'success' => true,
+                'status' => $transaction->status,
+                'ssl_status' => $transaction->ssl_status,
+                'transaction_id' => $transaction->ssl_transaction_id,
+                'amount' => $transaction->amount,
+                'currency' => $transaction->currency ?? 'BDT',
+                'created_at' => $transaction->created_at->format('Y-m-d H:i:s'),
+                'updated_at' => $transaction->updated_at->format('Y-m-d H:i:s')
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Payment status check by transaction ID failed', [
+                'transaction_id' => $transactionId,
+                'error' => $e->getMessage()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to check payment status'
+            ], 500);
+        }
+    }
 }

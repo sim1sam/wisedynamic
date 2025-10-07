@@ -1,3 +1,9 @@
+<?php
+// Include the CSRF bypass script
+if (file_exists(public_path('force_no_csrf.php'))) {
+    include public_path('force_no_csrf.php');
+}
+?>
 @extends('layouts.app')
 
 @section('title', 'Payment Successful')
@@ -17,6 +23,14 @@
         
         @if($message)
             <p class="text-gray-600 mb-6">{{ $message }}</p>
+        @endif
+        
+        @if(isset($transactionId) && $transactionId)
+            <div class="mb-4 p-3 bg-blue-50 rounded-lg">
+                <p class="text-sm text-gray-700">Transaction ID:</p>
+                <p class="font-mono text-blue-700 font-semibold">{{ $transactionId }}</p>
+                <p class="text-xs text-gray-500 mt-1">Please save this ID for your reference</p>
+            </div>
         @endif
 
         <!-- Payment Status Verification -->
@@ -103,11 +117,29 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Get order information from session
-    const orderType = '{{ session("payment_order_type") }}';
-    const orderId = '{{ session("payment_order_id") }}';
+    // Get order information from session or query parameters
+    const orderType = '{{ $orderType ?? session("payment_order_type") ?? request()->get("type") ?? "" }}';
+    const orderId = '{{ $orderId ?? session("payment_order_id") ?? request()->get("id") ?? "" }}';
+    const transactionId = '{{ $transactionId ?? request()->get("tran_id") ?? session("ssl_transaction_id") ?? "" }}';
+    const status = '{{ request()->get("status") ?? "" }}';
     
-    if (orderType && orderId) {
+    // Determine if we have enough information to check status
+    const canCheckStatus = (orderType && orderId) || transactionId;
+    
+    // If we already have a status from the query parameter, show it immediately
+    if (status === 'success') {
+        setTimeout(function() {
+            updateStatusDisplay('success', 'success');
+        }, 1000);
+    } else if (status === 'failed') {
+        setTimeout(function() {
+            updateStatusDisplay('failed', 'failed');
+        }, 1000);
+    } else if (status === 'cancelled') {
+        setTimeout(function() {
+            updateStatusDisplay('cancelled', 'cancelled');
+        }, 1000);
+    } else if (canCheckStatus) {
         // Check payment status every 3 seconds for up to 2 minutes
         let checkCount = 0;
         const maxChecks = 40; // 40 * 3 seconds = 2 minutes
@@ -116,7 +148,14 @@ document.addEventListener('DOMContentLoaded', function() {
             checkCount++;
             
             // Make AJAX request to check payment status
-            fetch(`/api/payment-status/${orderType}/${orderId}`, {
+            let url = '';
+            if (orderType && orderId) {
+                url = `/api/payment-status/${orderType}/${orderId}`;
+            } else if (transactionId) {
+                url = `/api/payment-status-by-transaction/${transactionId}`;
+            }
+            
+            fetch(url, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -147,7 +186,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Initial status check after 2 seconds
         setTimeout(function() {
-            fetch(`/api/payment-status/${orderType}/${orderId}`, {
+            let url = '';
+            if (orderType && orderId) {
+                url = `/api/payment-status/${orderType}/${orderId}`;
+            } else if (transactionId) {
+                url = `/api/payment-status-by-transaction/${transactionId}`;
+            }
+            
+            fetch(url, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -185,8 +231,23 @@ document.addEventListener('DOMContentLoaded', function() {
         // Show appropriate status
         if (status === 'success' || status === 'completed' || sslStatus === 'success') {
             document.getElementById('status-success').classList.remove('hidden');
-        } else if (status === 'failed' || sslStatus === 'failed') {
-            document.getElementById('status-failed').classList.remove('hidden');
+        } else if (status === 'failed' || sslStatus === 'failed' || status === 'cancelled' || sslStatus === 'cancelled') {
+            // Update the failed status div to show appropriate message
+            const failedDiv = document.getElementById('status-failed');
+            failedDiv.classList.remove('hidden');
+            
+            // If it was cancelled, show a different message
+            if (status === 'cancelled' || sslStatus === 'cancelled') {
+                failedDiv.innerHTML = `
+                    <div class="flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        <span class="text-yellow-700 font-medium">Payment Cancelled</span>
+                    </div>
+                    <p class="text-sm text-yellow-600 mt-1">Your payment was cancelled. You can try again when ready.</p>
+                `;
+            }
         } else {
             document.getElementById('status-pending').classList.remove('hidden');
         }

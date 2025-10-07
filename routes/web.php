@@ -5,12 +5,40 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PageController;
+
+// Test routes for debugging
+Route::get('/test-route', function() {
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Server is working!',
+        'timestamp' => now()->toDateTimeString(),
+    ]);
+});
+
+Route::get('/test-customer-dashboard', function() {
+    if (auth()->check()) {
+        return response()->json([
+            'status' => 'success',
+            'message' => 'You are authenticated!',
+            'user' => auth()->user()->name,
+            'timestamp' => now()->toDateTimeString(),
+        ]);
+    } else {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'You are not authenticated!',
+            'timestamp' => now()->toDateTimeString(),
+        ], 401);
+    }
+});
 use App\Http\Controllers\Admin\SlideController as AdminSlideController;
 use App\Http\Controllers\Admin\FooterSettingController;
 use App\Http\Controllers\Admin\HomeSettingController;
 use App\Http\Controllers\Admin\AboutSettingController;
 use App\Http\Controllers\Admin\ContactSettingController;
 use App\Http\Controllers\Admin\WebsiteSettingController;
+use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\Admin\CustomerRequestController as AdminCustomerRequestController;
@@ -56,6 +84,9 @@ Route::get('/services/{slug}', [\App\Http\Controllers\Frontend\ServiceController
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 Route::post('/contact', [ContactController::class, 'submitForm'])->name('contact.submit');
 
+// Custom Pages
+Route::get('/page/{slug}', [PageController::class, 'show'])->name('page.show');
+
 // Admin routes (protected)
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
@@ -67,7 +98,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('requests/{customerRequest}/edit', [AdminCustomerRequestController::class, 'edit'])->name('requests.edit');
     Route::put('requests/{customerRequest}', [AdminCustomerRequestController::class, 'update'])->name('requests.update');
     Route::post('requests/{customerRequest}/convert', [AdminCustomerRequestController::class, 'convertToServiceOrder'])->name('requests.convert');
-    Route::resource('slides', AdminSlideController::class);
+    Route::resource('slides', \App\Http\Controllers\Admin\SlideController::class);
+    Route::post('slides/{slide}/toggle-active', [\App\Http\Controllers\Admin\SlideController::class, 'toggleActive'])->name('slides.toggle-active');
     Route::get('settings/footer', [FooterSettingController::class, 'edit'])->name('settings.footer.edit');
     Route::put('settings/footer', [FooterSettingController::class, 'update'])->name('settings.footer.update');
     Route::get('settings/home', [HomeSettingController::class, 'edit'])->name('settings.home.edit');
@@ -78,6 +110,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('settings/contact', [ContactSettingController::class, 'update'])->name('settings.contact.update');
     Route::get('settings/website', [WebsiteSettingController::class, 'edit'])->name('settings.website');
     Route::put('settings/website', [WebsiteSettingController::class, 'update'])->name('settings.website.update');
+    
+    // Pages Management
+    Route::resource('pages', AdminPageController::class);
     
     // Customer Messages
     Route::get('messages', [ContactController::class, 'index'])->name('messages.index');
@@ -193,6 +228,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 // Customer dashboard (protected)
 Route::middleware('auth')->group(function(){
     Route::get('/customer', [\App\Http\Controllers\Customer\DashboardController::class, 'index'])->name('customer.dashboard');
+    // Alias path for dashboard to avoid 404 on /customer/dashboard
+    Route::get('/customer/dashboard', [\App\Http\Controllers\Customer\DashboardController::class, 'index']);
 
     // Customer Requests
     Route::get('/customer/requests', [RequestController::class, 'index'])->name('customer.requests.index');
@@ -257,20 +294,101 @@ Route::middleware('auth')->group(function(){
    });
 
 // SSL Commerz callback routes (outside of any middleware group to avoid CSRF issues)
-Route::match(['get','post'], '/customer/payment/ssl/success/{type}/{id}', [\App\Http\Controllers\Customer\PaymentController::class, 'sslSuccess'])
-    ->name('customer.payment.ssl.success');
-Route::match(['get','post'], '/customer/payment/ssl/fail/{type}/{id}', [\App\Http\Controllers\Customer\PaymentController::class, 'sslFail'])
-    ->name('customer.payment.ssl.fail');
-Route::match(['get','post'], '/customer/payment/ssl/cancel/{type}/{id}', [\App\Http\Controllers\Customer\PaymentController::class, 'sslCancel'])
-    ->name('customer.payment.ssl.cancel');
-Route::match(['get','post'], '/customer/payment/ssl/ipn', [\App\Http\Controllers\Customer\PaymentController::class, 'sslIpn'])
-    ->name('customer.payment.ssl.ipn');
+Route::middleware([])->group(function() {
+    Route::match(['get','post'], '/customer/payment/ssl/success/{type}/{id}', [\App\Http\Controllers\Customer\PaymentController::class, 'sslSuccess'])
+        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])
+        ->name('customer.payment.ssl.success');
+    Route::match(['get','post'], '/customer/payment/ssl/fail/{type}/{id}', [\App\Http\Controllers\Customer\PaymentController::class, 'sslFail'])
+        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])
+        ->name('customer.payment.ssl.fail');
+    Route::match(['get','post'], '/customer/payment/ssl/cancel/{type}/{id}', [\App\Http\Controllers\Customer\PaymentController::class, 'sslCancel'])
+        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])
+        ->name('customer.payment.ssl.cancel');
+    Route::match(['get','post'], '/customer/payment/ssl/ipn', [\App\Http\Controllers\Customer\PaymentController::class, 'sslIpn'])
+        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])
+        ->name('customer.payment.ssl.ipn');
+});
+
+// Additional SSL callback routes without parameters to handle direct redirects from payment gateway
+Route::middleware([])->group(function() {
+    Route::match(['get','post'], '/customer/payment/ssl/success', [\App\Http\Controllers\Customer\PaymentController::class, 'handleGenericSSLCallback'])
+        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])
+        ->name('customer.payment.ssl.generic.success');
+    Route::match(['get','post'], '/customer/payment/ssl/fail', [\App\Http\Controllers\Customer\PaymentController::class, 'handleGenericSSLCallback'])
+        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])
+        ->name('customer.payment.ssl.generic.fail');
+    Route::match(['get','post'], '/customer/payment/ssl/cancel', [\App\Http\Controllers\Customer\PaymentController::class, 'handleGenericSSLCallback'])
+        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])
+        ->name('customer.payment.ssl.generic.cancel');
+    
+    // Fallback route for any SSL callback that doesn't match the above routes
+    Route::match(['get', 'post'], '/success', [\App\Http\Controllers\Customer\PaymentController::class, 'handleGenericSSLCallback'])
+        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+    Route::match(['get', 'post'], '/fail', [\App\Http\Controllers\Customer\PaymentController::class, 'handleGenericSSLCallback'])
+        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+    Route::match(['get', 'post'], '/cancel', [\App\Http\Controllers\Customer\PaymentController::class, 'handleGenericSSLCallback'])
+        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+    
+    // Ultimate fallback route for any SSL callback
+    Route::match(['get', 'post'], '/ssl-callback', [\App\Http\Controllers\Customer\PaymentController::class, 'handleGenericSSLCallback'])
+        ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])
+        ->name('ssl.fallback');
+});
 
 // Payment success page (no auth required)
 Route::get('/payment/success', [\App\Http\Controllers\PaymentSuccessController::class, 'show'])
     ->name('payment.success.page');
 Route::get('/payment/success/redirect', [\App\Http\Controllers\PaymentSuccessController::class, 'redirectToDashboard'])
     ->name('payment.success.redirect');
+
+// Test routes for SSL callbacks - can be accessed directly for testing
+Route::get('/test/ssl-success', function() {
+    return redirect()->route('customer.payment.ssl.generic.success', [
+        'tran_id' => 'TEST_' . time(),
+        'value_a' => 'package',
+        'value_b' => '1',
+        'status' => 'VALID'
+    ]);
+});
+
+Route::get('/test/ssl-fail', function() {
+    return redirect()->route('customer.payment.ssl.generic.fail', [
+        'tran_id' => 'TEST_' . time(),
+        'value_a' => 'package',
+        'value_b' => '1',
+        'status' => 'FAILED'
+    ]);
+});
+
+Route::get('/test/ssl-cancel', function() {
+    return redirect()->route('customer.payment.ssl.generic.cancel', [
+        'tran_id' => 'TEST_' . time(),
+        'value_a' => 'package',
+        'value_b' => '1'
+    ]);
+});
+
+// Fallback route for SSL callbacks to prevent 419 errors
+Route::match(['get', 'post'], '/ssl-callback', function (\Illuminate\Http\Request $request) {
+    // Log the fallback callback
+    \Illuminate\Support\Facades\Log::warning('SSL Fallback Callback Received', [
+        'path' => $request->path(),
+        'method' => $request->method(),
+        'request_data' => $request->all()
+    ]);
+    
+    // Extract transaction ID if available
+    $transactionId = $request->get('tran_id');
+    
+    // Store transaction ID in session for reference
+    if ($transactionId) {
+        session(['ssl_transaction_id' => $transactionId]);
+    }
+    
+    // Redirect to a safe page
+    return redirect()->route('customer.dashboard')
+        ->with('warning', 'Your payment process was completed, but we encountered an issue with the callback. Please contact support with your transaction ID: ' . ($transactionId ?? 'Unknown'));
+})->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])->name('ssl.fallback');
 
 // Admin Fund Request Management Routes
  Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {

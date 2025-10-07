@@ -14,6 +14,7 @@ return [
     'store_password' => env('SSLCOMMERZ_STORE_PASSWORD'),
     'sandbox' => env('SSLCOMMERZ_SANDBOX', true),
     
+    // Using generic URLs for callbacks to avoid CSRF issues
     'success_url' => env('APP_URL') . '/customer/payment/ssl/success',
     'fail_url' => env('APP_URL') . '/customer/payment/ssl/fail',
     'cancel_url' => env('APP_URL') . '/customer/payment/ssl/cancel',

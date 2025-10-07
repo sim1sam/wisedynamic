@@ -52,11 +52,16 @@
             @endif
           </td>
           <td>
-            @if($slide->active)
-              <span class="badge badge-success">Active</span>
-            @else
-              <span class="badge badge-secondary">Hidden</span>
-            @endif
+            <form action="{{ route('admin.slides.toggle-active', $slide) }}" method="post" class="d-inline">
+              @csrf
+              <button type="submit" class="btn btn-sm {{ $slide->active ? 'btn-success' : 'btn-secondary' }}">
+                @if($slide->active)
+                  <i class="fas fa-eye"></i> Active
+                @else
+                  <i class="fas fa-eye-slash"></i> Hidden
+                @endif
+              </button>
+            </form>
           </td>
           <td>
             <a href="{{ route('admin.slides.edit',$slide) }}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>

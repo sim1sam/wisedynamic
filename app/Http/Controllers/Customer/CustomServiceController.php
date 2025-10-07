@@ -19,9 +19,18 @@ class CustomServiceController extends Controller
     {
         $user = Auth::user();
         $customServiceRequests = $user->customServiceRequests()
-            ->with('items')
+            ->with(['items', 'transaction'])
             ->latest()
             ->paginate(10);
+            
+        // Check for requests with completed transactions but no payment_status
+        foreach ($customServiceRequests as $request) {
+            if ($request->transaction && $request->transaction->status === 'completed' && ($request->payment_status !== 'paid' || $request->payment_status === null)) {
+                $request->update([
+                    'payment_status' => 'paid'
+                ]);
+            }
+        }
         
         return view('frontend.customer.custom-service.index', compact('customServiceRequests'));
     }
@@ -121,6 +130,11 @@ class CustomServiceController extends Controller
                     'notes' => 'Custom service request payment - Balance deducted from customer account.',
                 ]);
                 
+                // Update payment status
+                $customServiceRequest->update([
+                    'payment_status' => 'paid'
+                ]);
+                
                 DB::commit();
                 
                 return redirect()->route('customer.custom-service.show', $customServiceRequest)
@@ -154,6 +168,13 @@ class CustomServiceController extends Controller
         
         $customServiceRequest->load(['items', 'transaction']);
         
+        // Check if there's a completed transaction but payment_status is not set
+        if ($customServiceRequest->transaction && $customServiceRequest->transaction->status === 'completed' && ($customServiceRequest->payment_status !== 'paid' || $customServiceRequest->payment_status === null)) {
+            $customServiceRequest->update([
+                'payment_status' => 'paid'
+            ]);
+        }
+        
         return view('frontend.customer.custom-service.show', compact('customServiceRequest'));
     }
     
@@ -168,7 +189,7 @@ class CustomServiceController extends Controller
         }
         
         // Check if payment is already completed
-        if ($customServiceRequest->ssl_transaction_id) {
+        if ($customServiceRequest->ssl_transaction_id || $customServiceRequest->payment_status === 'paid' || ($customServiceRequest->transaction && $customServiceRequest->transaction->status === 'completed')) {
             return redirect()->route('customer.custom-service.show', $customServiceRequest)
                 ->with('info', 'Payment has already been completed for this request.');
         }
@@ -200,6 +221,7 @@ class CustomServiceController extends Controller
         $customServiceRequest->update([
             'ssl_transaction_id' => $request->get('transaction_id', 'SSL_' . time()),
             'ssl_response' => $request->all(),
+            'payment_status' => 'paid',
         ]);
         
         // Create transaction record

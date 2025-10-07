@@ -30,7 +30,7 @@
                 <a href="{{ route('customer.custom-service.index') }}" class="inline-flex items-center px-4 py-2 rounded-md bg-gray-600 text-white hover:bg-gray-700 shadow">
                     <i class="fas fa-arrow-left mr-2"></i> Back to Requests
                 </a>
-                @if($customServiceRequest->status === 'pending' && $customServiceRequest->payment_method === 'ssl' && !$customServiceRequest->ssl_transaction_id)
+                @if($customServiceRequest->status === 'pending' && $customServiceRequest->payment_method === 'ssl' && !$customServiceRequest->ssl_transaction_id && $customServiceRequest->payment_status !== 'paid' && !($customServiceRequest->transaction && $customServiceRequest->transaction->status === 'completed'))
                     <a href="{{ route('customer.custom-service.ssl-payment', $customServiceRequest) }}" class="inline-flex items-center px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700 shadow">
                         <i class="fas fa-credit-card mr-2"></i> Complete Payment
                     </a>
@@ -79,19 +79,37 @@
                     </div>
                 </div>
                 <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Payment Status</label>
+                    <div class="flex items-center">
+                        @if($customServiceRequest->payment_status === 'paid' || ($customServiceRequest->transaction && $customServiceRequest->transaction->status === 'completed'))
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                <i class="fas fa-check-circle mr-1"></i>Paid
+                            </span>
+                        @elseif($customServiceRequest->payment_status === 'pending_verification')
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                <i class="fas fa-clock mr-1"></i>Pending Verification
+                            </span>
+                        @else
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                                <i class="fas fa-times-circle mr-1"></i>Not Paid
+                            </span>
+                        @endif
+                    </div>
+                </div>
+                <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Created Date</label>
-                    <p class="text-sm text-gray-900">{{ $customServiceRequest->created_at->format('M d, Y H:i') }}</p>
+                    <p class="text-sm text-gray-900">@formatDateTime($customServiceRequest->created_at)</p>
                 </div>
                 @if($customServiceRequest->started_at)
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Started Date</label>
-                        <p class="text-sm text-gray-900">{{ $customServiceRequest->started_at->format('M d, Y H:i') }}</p>
+                        <p class="text-sm text-gray-900">@formatDateTime($customServiceRequest->started_at)</p>
                     </div>
                 @endif
                 @if($customServiceRequest->completed_at)
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Completed Date</label>
-                        <p class="text-sm text-gray-900">{{ $customServiceRequest->completed_at->format('M d, Y H:i') }}</p>
+                        <p class="text-sm text-gray-900">@formatDateTime($customServiceRequest->completed_at)</p>
                     </div>
                 @endif
             </div>
@@ -193,7 +211,7 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Payment Date</label>
-                            <p class="text-sm text-gray-900">{{ $customServiceRequest->transaction->created_at->format('M d, Y H:i') }}</p>
+                            <p class="text-sm text-gray-900">@formatDateTime($customServiceRequest->transaction->created_at)</p>
                         </div>
                         @if($customServiceRequest->transaction->notes)
                             <div class="md:col-span-2">

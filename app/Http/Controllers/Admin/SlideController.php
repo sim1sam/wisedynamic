@@ -31,7 +31,8 @@ class SlideController extends Controller
             'image_url' => ['nullable','url','max:2048'],
             'image_file' => ['nullable','image','max:4096'],
             'position' => ['nullable','integer','min:0'],
-            'active' => ['nullable','boolean'],
+            // Change validation rule to accept checkbox value properly
+            'active' => ['sometimes'],
         ]);
 
         $payload = [
@@ -42,7 +43,8 @@ class SlideController extends Controller
             'image_source' => $data['image_source'],
             'image_url' => $data['image_source'] === 'url' ? ($data['image_url'] ?? null) : null,
             'position' => $data['position'] ?? 0,
-            'active' => (bool)($data['active'] ?? false),
+            // Fix for active field: use request->has() to check if checkbox was submitted
+            'active' => $request->has('active'),
         ];
 
         if ($data['image_source'] === 'upload' && $request->hasFile('image_file')) {
@@ -71,7 +73,8 @@ class SlideController extends Controller
             'image_url' => ['nullable','url','max:2048'],
             'image_file' => ['nullable','image','max:4096'],
             'position' => ['nullable','integer','min:0'],
-            'active' => ['nullable','boolean'],
+            // Change validation rule to accept checkbox value properly
+            'active' => ['sometimes'],
         ]);
 
         $slide->title = $data['title'];
@@ -79,7 +82,8 @@ class SlideController extends Controller
         $slide->price_text = $data['price_text'] ?? null;
         $slide->link_url = $data['link_url'] ?? null;
         $slide->position = $data['position'] ?? 0;
-        $slide->active = (bool)($data['active'] ?? false);
+        // Fix for active field: use request->has() to check if checkbox was submitted
+        $slide->active = $request->has('active');
         $slide->image_source = $data['image_source'];
 
         if ($data['image_source'] === 'url') {
@@ -107,5 +111,17 @@ class SlideController extends Controller
         }
         $slide->delete();
         return redirect()->route('admin.slides.index')->with('success','Slide deleted');
+    }
+    
+    /**
+     * Toggle the active status of a slide.
+     */
+    public function toggleActive(Slide $slide)
+    {
+        $slide->active = !$slide->active;
+        $slide->save();
+        
+        return redirect()->route('admin.slides.index')
+            ->with('success', 'Slide ' . ($slide->active ? 'activated' : 'deactivated'));
     }
 }

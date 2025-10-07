@@ -52,14 +52,14 @@
                         </tr>
                         <tr>
                             <th>Date</th>
-                            <td>{{ $transaction->created_at->format('M d, Y h:i A') }}</td>
+                            <td>@formatDateTime12Hour($transaction->created_at)</td>
                         </tr>
                         <tr>
                             <th>Status</th>
                             <td>
                                 <span class="badge {{ $transaction->getStatusBadgeClass() }}">{{ $transaction->getStatusDisplayName() }}</span>
                                 @if($transaction->updated_by_admin)
-                                    <br><small class="text-muted">Last updated by admin on {{ $transaction->admin_updated_at->format('M d, Y h:i A') }}</small>
+                                    <br><small class="text-muted">Last updated by admin on @formatDateTime12Hour($transaction->admin_updated_at)</small>
                                 @endif
                             </td>
                         </tr>

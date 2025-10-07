@@ -278,6 +278,9 @@ class PaymentController extends Controller
         // Generate unique transaction ID
         $transactionId = 'WD' . time() . rand(1000, 9999);
         
+        // Get the current domain from the request
+        $currentDomain = $request->getSchemeAndHttpHost();
+        
         // Enhanced SSL payment data
         $postData = [
             'store_id' => $sslConfig['store_id'],
@@ -285,10 +288,11 @@ class PaymentController extends Controller
             'total_amount' => $paymentAmount,
             'currency' => 'BDT',
             'tran_id' => $transactionId,
-            'success_url' => route('customer.payment.ssl.success', ['type' => $type, 'id' => $id]),
-            'fail_url' => route('customer.payment.ssl.fail', ['type' => $type, 'id' => $id]),
-            'cancel_url' => route('customer.payment.ssl.cancel', ['type' => $type, 'id' => $id]),
-            'ipn_url' => $sslConfig['ipn_url'],
+            // Use generic callback URLs to ensure proper handling
+            'success_url' => $currentDomain . "/customer/payment/ssl/success",
+            'fail_url' => $currentDomain . "/customer/payment/ssl/fail",
+            'cancel_url' => $currentDomain . "/customer/payment/ssl/cancel",
+            'ipn_url' => $currentDomain . '/customer/payment/ssl/ipn',
             
             // Customer information
             'cus_name' => Auth::user()->name,
@@ -380,6 +384,23 @@ class PaymentController extends Controller
      */
     public function sslSuccess(Request $request, $type, $id)
     {
+        // No need to manually disable CSRF here - we've added these routes to the except array in VerifyCsrfToken middleware
+        
+        // If the user refreshes the page or hits the URL directly without
+        // gateway payload, gracefully redirect to a safe page.
+        if (!$request->has('tran_id')) {
+            Log::warning('SSL Success callback missing tran_id', [
+                'path' => $request->path(),
+                'method' => $request->method(),
+                'request_data' => $request->all(),
+                'type' => $type,
+                'id' => $id
+            ]);
+            
+            return redirect()->route('customer.dashboard')
+                ->with('info', 'Payment result already processed or no gateway data available.');
+        }
+
         $transactionId = $request->get('tran_id');
         
         Log::info('SSL Success Callback Received', [
@@ -492,7 +513,21 @@ class PaymentController extends Controller
             $order = $this->getOrder($type, $id);
             
             if (!$order) {
-                return redirect()->route('customer.dashboard')->with('error', 'Order not found.');
+                Log::warning('SSL Success: Order not found', [
+                    'transaction_id' => $transactionId,
+                    'type' => $type,
+                    'id' => $id
+                ]);
+                
+                // Store transaction ID and success message in session
+                $message = 'Your payment with transaction ID: ' . $transactionId . ' has been processed, but we could not find the associated order. Please contact support.';
+                session([
+                    'ssl_transaction_id' => $transactionId,
+                    'payment_success' => $message
+                ]);
+                
+                // Redirect to success page
+                return redirect()->route('payment.success.page');
             }
             
             DB::beginTransaction();
@@ -573,10 +608,10 @@ class PaymentController extends Controller
                     'ssl_status' => 'VALID',
                     
                     // Customer information
-                    'customer_name' => $validationResponse['cus_name'] ?? Auth::user()->name,
-                    'customer_email' => $validationResponse['cus_email'] ?? Auth::user()->email,
-                    'customer_phone' => $validationResponse['cus_phone'] ?? Auth::user()->phone,
-                    'customer_address' => $validationResponse['cus_add1'] ?? Auth::user()->address,
+                    'customer_name' => $validationResponse['cus_name'] ?? optional(Auth::user())->name,
+                    'customer_email' => $validationResponse['cus_email'] ?? optional(Auth::user())->email,
+                    'customer_phone' => $validationResponse['cus_phone'] ?? optional(Auth::user())->phone,
+                    'customer_address' => $validationResponse['cus_add1'] ?? optional(Auth::user())->address,
                     'customer_city' => $validationResponse['cus_city'] ?? 'Dhaka',
                     'customer_state' => $validationResponse['cus_state'] ?? null,
                     'customer_postcode' => $validationResponse['cus_postcode'] ?? null,
@@ -608,7 +643,13 @@ class PaymentController extends Controller
                 session()->flash('payment_order_type', $type);
                 session()->flash('payment_order_id', $order->id);
                 
-                // Redirect to payment success page that doesn't require auth
+                // Store success message in session for display on success page
+                session(['payment_success' => $message]);
+                
+                // Redirect to dashboard if logged in, otherwise to public success page
+                if (\Illuminate\Support\Facades\Auth::check()) {
+                    return redirect()->route('customer.dashboard')->with('success', $message);
+                }
                 return redirect()->route('payment.success.page');
                     
             } catch (\Exception $e) {
@@ -642,6 +683,22 @@ class PaymentController extends Controller
      */
     public function sslFail(Request $request, $type, $id)
     {
+        // No need to manually disable CSRF here - we've added these routes to the except array in VerifyCsrfToken middleware
+        
+        // Handle requests without transaction ID
+        if (!$request->has('tran_id')) {
+            Log::warning('SSL Fail callback missing tran_id', [
+                'path' => $request->path(),
+                'method' => $request->method(),
+                'request_data' => $request->all(),
+                'type' => $type,
+                'id' => $id
+            ]);
+            
+            return redirect()->route('customer.payment.options', ['type' => $type, 'id' => $id])
+                ->with('error', 'Payment failed. If you were attempting to make a payment, please try again or contact support.');
+        }
+
         $transactionId = $request->get('tran_id');
         
         // Log the failure for debugging
@@ -655,7 +712,23 @@ class PaymentController extends Controller
         // Get order to create failed transaction record
         $order = $this->getOrder($type, $id);
         
-        if ($order) {
+        if (!$order) {
+            Log::warning('SSL Fail: Order not found', [
+                'transaction_id' => $transactionId,
+                'type' => $type,
+                'id' => $id
+            ]);
+            
+            // Store transaction ID and error message in session
+            $errorMessage = 'Payment failed with transaction ID: ' . $transactionId . '. We could not find the associated order. Please contact support.';
+            session([
+                'ssl_transaction_id' => $transactionId,
+                'payment_error' => $errorMessage
+            ]);
+            
+            // Redirect to home with error message
+            return redirect()->route('home')->with('error', $errorMessage);
+        } else {
             DB::beginTransaction();
             try {
                 // Create failed transaction record
@@ -671,12 +744,12 @@ class PaymentController extends Controller
                     'ssl_status' => 'FAILED',
                     'ssl_fail_reason' => $request->get('failedreason') ?? 'Payment gateway failure',
                     'ssl_response_data' => $request->all(),
-                    
+
                     // Customer information
-                    'customer_name' => Auth::user()->name,
-                    'customer_email' => Auth::user()->email,
-                    'customer_phone' => Auth::user()->phone,
-                    'customer_address' => Auth::user()->address,
+                    'customer_name' => optional(Auth::user())->name,
+                    'customer_email' => optional(Auth::user())->email,
+                    'customer_phone' => optional(Auth::user())->phone,
+                    'customer_address' => optional(Auth::user())->address,
                     'customer_city' => 'Dhaka',
                     'customer_country' => 'Bangladesh',
                     
@@ -705,8 +778,14 @@ class PaymentController extends Controller
             }
         }
         
-        return redirect()->route('customer.payment.options', [$type, $id])
-            ->with('error', 'Payment failed. Please try again.');
+        // Store error message in session
+        $errorMessage = 'Payment failed. Please try again or contact support with your transaction ID: ' . $transactionId;
+        session(['payment_error' => $errorMessage]);
+        
+        if (\Illuminate\Support\Facades\Auth::check()) {
+            return redirect()->route('customer.dashboard')->with('error', $errorMessage);
+        }
+        return redirect()->route('home')->with('error', $errorMessage);
     }
     
     /**
@@ -714,6 +793,22 @@ class PaymentController extends Controller
      */
     public function sslCancel(Request $request, $type, $id)
     {
+        // No need to manually disable CSRF here - we've added these routes to the except array in VerifyCsrfToken middleware
+        
+        // Handle requests without transaction ID
+        if (!$request->has('tran_id')) {
+            Log::warning('SSL Cancel callback missing tran_id', [
+                'path' => $request->path(),
+                'method' => $request->method(),
+                'request_data' => $request->all(),
+                'type' => $type,
+                'id' => $id
+            ]);
+            
+            return redirect()->route('customer.payment.options', ['type' => $type, 'id' => $id])
+                ->with('info', 'Payment was cancelled or the process was interrupted. You can try again when ready.');
+        }
+
         $transactionId = $request->get('tran_id');
         
         // Log the cancellation for debugging
@@ -727,7 +822,23 @@ class PaymentController extends Controller
         // Get order to create cancelled transaction record
         $order = $this->getOrder($type, $id);
         
-        if ($order) {
+        if (!$order) {
+            Log::warning('SSL Cancel: Order not found', [
+                'transaction_id' => $transactionId,
+                'type' => $type,
+                'id' => $id
+            ]);
+            
+            // Store transaction ID and cancel message in session
+            $cancelMessage = 'Payment was cancelled with transaction ID: ' . $transactionId . '. We could not find the associated order. You can try again when ready.';
+            session([
+                'ssl_transaction_id' => $transactionId,
+                'payment_cancel' => $cancelMessage
+            ]);
+            
+            // Redirect to home with info message
+            return redirect()->route('home')->with('info', $cancelMessage);
+        } else {
             DB::beginTransaction();
             try {
                 // Create cancelled transaction record
@@ -742,12 +853,12 @@ class PaymentController extends Controller
                     'ssl_transaction_id' => $transactionId,
                     'ssl_status' => 'CANCELLED',
                     'ssl_response_data' => $request->all(),
-                    
+
                     // Customer information
-                    'customer_name' => Auth::user()->name,
-                    'customer_email' => Auth::user()->email,
-                    'customer_phone' => Auth::user()->phone,
-                    'customer_address' => Auth::user()->address,
+                    'customer_name' => optional(Auth::user())->name,
+                    'customer_email' => optional(Auth::user())->email,
+                    'customer_phone' => optional(Auth::user())->phone,
+                    'customer_address' => optional(Auth::user())->address,
                     'customer_city' => 'Dhaka',
                     'customer_country' => 'Bangladesh',
                     
@@ -776,8 +887,14 @@ class PaymentController extends Controller
             }
         }
         
-        return redirect()->route('customer.payment.options', [$type, $id])
-            ->with('info', 'Payment was cancelled.');
+        // Store cancel message in session
+        $cancelMessage = 'Payment was cancelled. You can try again when ready.';
+        session(['payment_cancel' => $cancelMessage]);
+        
+        if (\Illuminate\Support\Facades\Auth::check()) {
+            return redirect()->route('customer.dashboard')->with('info', $cancelMessage);
+        }
+        return redirect()->route('home')->with('info', $cancelMessage);
     }
     
     /**
@@ -933,6 +1050,139 @@ class PaymentController extends Controller
         }
         
         return null;
+    }
+    
+    /**
+     * Handle generic SSL callbacks without type and ID parameters.
+     * This method extracts the type and ID from the request data and redirects to the appropriate handler.
+     */
+    public function handleGenericSSLCallback(Request $request)
+    {
+        // No need to manually disable CSRF here - we've added these routes to the except array in VerifyCsrfToken middleware
+        
+        // Log the callback for debugging
+        Log::info('Generic SSL Callback Received', [
+            'path' => $request->path(),
+            'request_data' => $request->all(),
+            'method' => $request->method(),
+            'url' => $request->url(),
+            'full_url' => $request->fullUrl(),
+        ]);
+        
+        // Extract all possible parameters from the request data
+        $type = $request->get('value_a');
+        $id = $request->get('value_b');
+        $transactionId = $request->get('tran_id');
+        $amount = $request->get('amount');
+        $status = $request->get('status');
+        $valId = $request->get('val_id');
+        
+        // Log all parameters for debugging
+        Log::info('SSL Callback Parameters', [
+            'type' => $type,
+            'id' => $id,
+            'transaction_id' => $transactionId,
+            'amount' => $amount,
+            'status' => $status,
+            'val_id' => $valId,
+        ]);
+        
+        // If we can't determine the type and ID, handle based on callback type
+        if (!$type || !$id) {
+            Log::warning('SSL Callback missing type or ID', [
+                'path' => $request->path(),
+                'request_data' => $request->all()
+            ]);
+            
+            // Determine which type of callback this is
+            $path = $request->path();
+            
+            if (strpos($path, 'success') !== false) {
+                // Create a generic success message
+                $message = 'Your payment with transaction ID: ' . ($transactionId ?? 'Unknown') . ' has been processed. Please check your order status in your account.';
+                
+                // Try to find the transaction in the database if we have a transaction ID
+                if ($transactionId) {
+                    $transaction = \App\Models\Transaction::where('ssl_transaction_id', $transactionId)->first();
+                    
+                    if ($transaction) {
+                        // If we found the transaction, we can determine the type and ID
+                        if ($transaction->package_order_id) {
+                            $type = 'package';
+                            $id = $transaction->package_order_id;
+                        } elseif ($transaction->service_order_id) {
+                            $type = 'service';
+                            $id = $transaction->service_order_id;
+                        } elseif ($transaction->custom_service_request_id) {
+                            $type = 'custom-service';
+                            $id = $transaction->custom_service_request_id;
+                        } elseif ($transaction->fund_request_id) {
+                            $type = 'fund';
+                            $id = $transaction->fund_request_id;
+                        }
+                        
+                        // If we found the type and ID, we can redirect to the success handler
+                        if ($type && $id) {
+                            return $this->sslSuccess($request, $type, $id);
+                        }
+                    }
+                }
+                
+                // Store in session and redirect to success page
+                session([
+                    'payment_success' => $message,
+                    'ssl_transaction_id' => $transactionId
+                ]);
+                
+                // Redirect directly to the success page with query parameters
+                return redirect()->to(route('payment.success.page') . '?message=' . urlencode($message) . '&tran_id=' . urlencode($transactionId) . '&status=success');
+            } elseif (strpos($path, 'fail') !== false) {
+                // Create a failure message
+                $errorMessage = 'Payment failed. If you were attempting to make a payment, please try again or contact support with your transaction ID: ' . ($transactionId ?? 'Unknown');
+                
+                // Store in session and redirect
+                session([
+                    'payment_error' => $errorMessage,
+                    'ssl_transaction_id' => $transactionId
+                ]);
+                
+                // Redirect directly with query parameters
+                return redirect()->to(route('home') . '?tran_id=' . urlencode($transactionId) . '&status=failed&error=' . urlencode($errorMessage));
+            } elseif (strpos($path, 'cancel') !== false) {
+                // Create a cancellation message
+                $cancelMessage = 'Payment was cancelled. You can try again when ready.';
+                
+                // Store in session and redirect
+                session([
+                    'payment_cancel' => $cancelMessage,
+                    'ssl_transaction_id' => $transactionId
+                ]);
+                
+                // Redirect directly with query parameters
+                return redirect()->to(route('home') . '?tran_id=' . urlencode($transactionId) . '&status=cancelled&info=' . urlencode($cancelMessage));
+            } else {
+                // Fallback to a safe redirect
+                $warningMessage = 'Unknown payment callback received. Please contact support with your transaction ID: ' . ($transactionId ?? 'Unknown');
+                
+                // Redirect directly with query parameters
+                return redirect()->to(route('home') . '?warning=' . urlencode($warningMessage));
+            }
+        }
+        
+        // Determine which callback method to use based on the request path
+        $path = $request->path();
+        
+        if (strpos($path, 'success') !== false) {
+            return $this->sslSuccess($request, $type, $id);
+        } elseif (strpos($path, 'fail') !== false) {
+            return $this->sslFail($request, $type, $id);
+        } elseif (strpos($path, 'cancel') !== false) {
+            return $this->sslCancel($request, $type, $id);
+        } else {
+            // Fallback to a safe redirect
+            return redirect()->route('customer.dashboard')
+                ->with('warning', 'Unknown payment callback received. Please contact support with your transaction ID: ' . ($transactionId ?? 'Unknown'));
+        }
     }
     
     /**

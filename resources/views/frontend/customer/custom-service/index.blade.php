@@ -128,7 +128,7 @@
                                         <i class="fas fa-eye mr-1"></i> View Details
                                     </a>
                                     
-                                    @if($request->status === 'pending' && $request->payment_method === 'ssl' && !$request->ssl_transaction_id)
+                                    @if($request->status === 'pending' && $request->payment_method === 'ssl' && !$request->ssl_transaction_id && $request->payment_status !== 'paid' && !($request->transaction && $request->transaction->status === 'completed'))
                                         <a href="{{ route('customer.custom-service.ssl-payment', $request) }}" class="inline-flex items-center px-3 py-1 rounded-md bg-green-600 text-white hover:bg-green-700 text-sm">
                                             <i class="fas fa-credit-card mr-1"></i> Pay Now
                                         </a>

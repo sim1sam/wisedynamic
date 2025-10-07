@@ -26,6 +26,7 @@
                         <th>Customer</th>
                         <th>Amount</th>
                         <th>Status</th>
+                        <th>Payment</th>
                         <th>Date</th>
                         <th>Actions</th>
                     </tr>
@@ -48,6 +49,19 @@
                                     <span class="badge badge-danger">Cancelled</span>
                                 @endif
                             </td>
+                            <td>
+                                @if($order->payment_status === 'pending_verification')
+                                    <span class="badge badge-warning">Pending Verification</span>
+                                @elseif($order->payment_status === 'paid')
+                                    <span class="badge badge-success">Paid</span>
+                                @elseif(($order->paid_amount ?? 0) <= 0)
+                                    <span class="badge badge-danger">Not Paid</span>
+                                @elseif(($order->due_amount ?? $order->amount) <= 0)
+                                    <span class="badge badge-success">Fully Paid</span>
+                                @else
+                                    <span class="badge badge-warning">Partially Paid</span>
+                                @endif
+                            </td>
                             <td>{{ $order->created_at->format('M d, Y') }}</td>
                             <td>
                                 <a href="{{ route('admin.service-orders.show', $order) }}" class="btn btn-sm btn-info">
@@ -57,7 +71,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center">No service orders found.</td>
+                            <td colspan="8" class="text-center">No service orders found.</td>
                         </tr>
                     @endforelse
                 </tbody>

@@ -90,11 +90,15 @@
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div>
                                                 <p class="mb-1"><strong>Total Amount:</strong> BDT {{ number_format($order->amount) }}</p>
-                                                <p class="mb-1"><strong>Paid Amount:</strong> BDT {{ number_format($order->paid_amount ?? 0) }}</p>
-                                                <p class="mb-1"><strong>Due Amount:</strong> BDT {{ number_format($order->due_amount ?? $order->amount) }}</p>
+                                                <p class="mb-1"><strong>Paid Amount:</strong> BDT {{ $order->payment_status === 'paid' ? number_format($order->amount) : number_format($order->paid_amount ?? 0) }}</p>
+                                                <p class="mb-1"><strong>Due Amount:</strong> BDT {{ $order->payment_status === 'paid' ? '0' : number_format($order->due_amount ?? $order->amount) }}</p>
                                                 <p class="mb-1">
                                                     <strong>Payment Status:</strong>
-                                                    @if(($order->paid_amount ?? 0) <= 0)
+                                                    @if($order->payment_status === 'pending_verification')
+                                                        <span class="badge badge-warning">Pending Verification</span>
+                                                    @elseif($order->payment_status === 'paid')
+                                                        <span class="badge badge-success">Paid</span>
+                                                    @elseif(($order->paid_amount ?? 0) <= 0)
                                                         <span class="badge badge-danger">Not Paid</span>
                                                     @elseif(($order->due_amount ?? $order->amount) <= 0)
                                                         <span class="badge badge-success">Fully Paid</span>
@@ -107,7 +111,7 @@
                                     </td>
                                 </tr>
                                 
-                                @if($order->status === 'processing')
+                                @if($order->status === 'processing' && $order->payment_status !== 'paid' && ($order->due_amount ?? $order->amount) > 0)
                                 <tr>
                                     <th>Process Payment</th>
                                     <td>
@@ -247,11 +251,11 @@
                                         <tfoot>
                                             <tr>
                                                 <th colspan="2" class="text-right">Total Paid:</th>
-                                                <th colspan="3">BDT {{ number_format($order->paid_amount ?? 0) }}</th>
+                                                <th colspan="3">BDT {{ $order->payment_status === 'paid' ? number_format($order->amount) : number_format($order->paid_amount ?? 0) }}</th>
                                             </tr>
                                             <tr>
                                                 <th colspan="2" class="text-right">Remaining:</th>
-                                                <th colspan="3">BDT {{ number_format($order->due_amount ?? $order->amount) }}</th>
+                                                <th colspan="3">BDT {{ $order->payment_status === 'paid' ? '0' : number_format($order->due_amount ?? $order->amount) }}</th>
                                             </tr>
                                         </tfoot>
                                     </table>

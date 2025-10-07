@@ -15,7 +15,9 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             AdminUserSeeder::class,
+            // Use SlideSeeder (without the 's')
             SlideSeeder::class,
+            WebsiteSettingSeeder::class,
             AboutPageSeeder::class,
             ContactPageSeeder::class,
             ServiceCategorySeeder::class,

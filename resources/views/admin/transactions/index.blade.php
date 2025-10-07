@@ -118,21 +118,24 @@
                             <td>{{ $transaction->id }}</td>
                             <td>{{ $transaction->transaction_number }}</td>
                             <td>
-                                @if($transaction->fund_request_id && $transaction->fundRequest && $transaction->fundRequest->user)
+                                @if($transaction->customer_name && $transaction->customer_email)
+                                    <strong>{{ $transaction->customer_name }}</strong><br>
+                                    <small class="text-muted">{{ $transaction->customer_email }}</small>
+                                @elseif($transaction->fund_request_id && $transaction->fundRequest && $transaction->fundRequest->user)
                                     <strong>{{ $transaction->fundRequest->user->name }}</strong><br>
                                     <small class="text-muted">{{ $transaction->fundRequest->user->email }}</small>
                                 @elseif($transaction->custom_service_request_id && $transaction->customServiceRequest && $transaction->customServiceRequest->user)
                                     <strong>{{ $transaction->customServiceRequest->user->name }}</strong><br>
                                     <small class="text-muted">{{ $transaction->customServiceRequest->user->email }}</small>
-                                @elseif($transaction->package_order_id && $transaction->packageOrder)
-                                    <strong>{{ $transaction->packageOrder->full_name }}</strong><br>
-                                    <small class="text-muted">{{ $transaction->packageOrder->email }}</small>
-                                @elseif($transaction->service_order_id && $transaction->serviceOrder)
-                                    <strong>{{ $transaction->serviceOrder->full_name }}</strong><br>
-                                    <small class="text-muted">{{ $transaction->serviceOrder->email }}</small>
-                                @elseif($transaction->isSSLTransaction() && $transaction->customer_name)
-                                    <strong>{{ $transaction->customer_name }}</strong><br>
-                                    <small class="text-muted">{{ $transaction->customer_email }}</small>
+                                @elseif($transaction->package_order_id && $transaction->packageOrder && $transaction->packageOrder->user)
+                                    <strong>{{ $transaction->packageOrder->user->name ?? $transaction->packageOrder->full_name }}</strong><br>
+                                    <small class="text-muted">{{ $transaction->packageOrder->user->email ?? $transaction->packageOrder->email }}</small>
+                                @elseif($transaction->service_order_id && $transaction->serviceOrder && $transaction->serviceOrder->user)
+                                    <strong>{{ $transaction->serviceOrder->user->name ?? $transaction->serviceOrder->full_name }}</strong><br>
+                                    <small class="text-muted">{{ $transaction->serviceOrder->user->email ?? $transaction->serviceOrder->email }}</small>
+                                @elseif($transaction->isSSLTransaction())
+                                    <strong>{{ $transaction->ssl_transaction_id }}</strong><br>
+                                    <small class="text-muted">SSL Transaction</small>
                                 @else
                                     <span class="text-muted">N/A</span>
                                 @endif

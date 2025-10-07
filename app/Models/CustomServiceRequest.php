@@ -17,6 +17,7 @@ class CustomServiceRequest extends Model
         'status',
         'ssl_transaction_id',
         'ssl_response',
+        'payment_status',
         'admin_notes',
         'started_at',
         'completed_at',

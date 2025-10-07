@@ -343,6 +343,12 @@ return [
             'active' => ['admin/custom-service-requests*'],
         ],
         [
+            'text' => 'Pages',
+            'url' => 'admin/pages',
+            'icon' => 'fas fa-fw fa-file-alt',
+            'active' => ['admin/pages*'],
+        ],
+        [
             'text' => 'Services',
             'icon' => 'fas fa-fw fa-cogs',
             'submenu' => [
@@ -441,6 +447,12 @@ return [
                     'url' => 'admin/settings/website',
                     'icon' => 'far fa-fw fa-image',
                     'active' => ['admin/settings/website*'],
+                ],
+                [
+                    'text' => 'Pages',
+                    'url' => 'admin/pages',
+                    'icon' => 'far fa-fw fa-file-alt',
+                    'active' => ['admin/pages*'],
                 ],
             ],
         ],

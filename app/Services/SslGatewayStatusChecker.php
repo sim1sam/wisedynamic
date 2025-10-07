@@ -180,6 +180,23 @@ class SslGatewayStatusChecker
     }
 
     /**
+     * Simple method to check status by SSL transaction ID
+     */
+    public function checkStatus($sslTransactionId)
+    {
+        try {
+            $result = $this->checkTransactionStatus($sslTransactionId);
+            return $result['status'] ?? 'failed';
+        } catch (\Exception $e) {
+            Log::error('Error checking SSL status by transaction ID', [
+                'ssl_transaction_id' => $sslTransactionId,
+                'error' => $e->getMessage()
+            ]);
+            return 'failed';
+        }
+    }
+    
+    /**
      * Bulk check and update multiple transactions
      */
     public function bulkUpdateTransactionStatuses($transactionIds = null)

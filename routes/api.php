@@ -62,5 +62,6 @@ Route::middleware('ssl.gateway.auth')->prefix('gateway')->group(function () {
         ->name('api.gateway.transaction.get');
 });
 
-// Public route for payment status checking (used by success page)
+// Public routes for payment status checking (used by success page)
 Route::get('/payment-status/{orderType}/{orderId}', [TransactionController::class, 'getPaymentStatus']);
+Route::get('/payment-status-by-transaction/{transactionId}', [TransactionController::class, 'getPaymentStatusByTransaction']);

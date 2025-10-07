@@ -6,6 +6,8 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\View\ViewException;
 use Throwable;
 use Illuminate\Http\Response;
+use Illuminate\Session\TokenMismatchException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -38,6 +40,53 @@ class Handler extends ExceptionHandler
         // Handle ViewException specifically to avoid the problematic markdown renderer
         if ($exception instanceof ViewException) {
             return $this->renderViewException($request, $exception);
+        }
+
+        // Convert CSRF token mismatch (419) into a friendly redirect
+        if ($exception instanceof TokenMismatchException || ($exception instanceof HttpException && $exception->getStatusCode() === 419)) {
+            // Check if this is an SSL payment callback
+            $path = $request->path();
+            $isSSLCallback = false;
+            
+            // Check if this is related to SSL payment
+            if (strpos($path, 'ssl') !== false || 
+                strpos($path, 'payment') !== false || 
+                $request->has('tran_id')) {
+                $isSSLCallback = true;
+            }
+            
+            // Store transaction ID in session if available
+            if ($request->has('tran_id')) {
+                session(['ssl_transaction_id' => $request->get('tran_id')]);
+            }
+            
+            // If it's an SSL callback, redirect to a more specific page
+            if ($isSSLCallback) {
+                // Log the error for debugging
+                \Illuminate\Support\Facades\Log::warning('SSL Payment 419 Error', [
+                    'path' => $request->path(),
+                    'method' => $request->method(),
+                    'request_data' => $request->all()
+                ]);
+                
+                // Extract type and ID if available
+                $type = $request->get('value_a');
+                $id = $request->get('value_b');
+                
+                if ($type && $id) {
+                    // If we have type and ID, redirect to payment options
+                    return redirect()->route('customer.payment.options', ['type' => $type, 'id' => $id])
+                        ->with('warning', 'Your payment session expired. Please check your transaction status or try again.');
+                }
+                
+                // Fallback to dashboard with warning
+                return redirect()->route('customer.dashboard')
+                    ->with('warning', 'Your payment process was completed, but we encountered a session issue. Please check your transaction status or contact support.');
+            }
+            
+            // For non-payment related CSRF issues, use the general message
+            return redirect()->guest(url('/'))
+                ->with('error', 'Your session has expired. Please try again.');
         }
 
         return parent::render($request, $exception);

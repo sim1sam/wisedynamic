@@ -58,7 +58,10 @@ class ServiceCategorySeeder extends Seeder
         ];
 
         foreach ($categories as $category) {
-            ServiceCategory::create($category);
+            // Check if category with this slug already exists
+            if (!ServiceCategory::where('slug', $category['slug'])->exists()) {
+                ServiceCategory::create($category);
+            }
         }
     }
 }

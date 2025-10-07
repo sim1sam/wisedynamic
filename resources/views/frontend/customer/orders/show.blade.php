@@ -42,7 +42,7 @@
                                     <p class="text-gray-900 text-2xl font-bold mb-2">BDT {{ number_format($order->amount) }}</p>
                                     
                                     <p class="text-gray-700 font-medium">Order Date:</p>
-                                    <p class="text-gray-900 mb-2">{{ $order->created_at->format('M d, Y h:i A') }}</p>
+                                    <p class="text-gray-900 mb-2">@formatDateTime12Hour($order->created_at)</p>
                                     
                                     <p class="text-gray-700 font-medium">Status:</p>
                                     <p class="mb-2">
@@ -69,7 +69,7 @@
                                         @endif
                                     </p>
                                     
-                                    @if(($order->status === 'accepted' || $order->status === 'processing') && ($order->payment_status ?? 'unpaid') !== 'paid')
+                                    @if(($order->status === 'accepted' || $order->status === 'processing') && $order->payment_status !== 'paid')
                                         <div class="mt-4">
                                             <a href="{{ route('customer.payment.options', ['package', $order->id]) }}" class="w-full inline-block text-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold">
                                                 <i class="fas fa-credit-card mr-2"></i>Pay Now
@@ -86,11 +86,11 @@
                                             </div>
                                             <div class="flex justify-between mb-1">
                                                 <span>Paid Amount:</span>
-                                                <span class="font-bold">BDT {{ number_format($order->paid_amount ?? 0) }}</span>
+                                                <span class="font-bold">BDT {{ $order->payment_status === 'paid' ? number_format($order->amount) : number_format($order->paid_amount ?? 0) }}</span>
                                             </div>
                                             <div class="flex justify-between mb-1">
                                                 <span>Due Amount:</span>
-                                                <span class="font-bold">BDT {{ number_format($order->due_amount ?? $order->amount) }}</span>
+                                                <span class="font-bold">BDT {{ $order->payment_status === 'paid' ? '0' : number_format($order->due_amount ?? $order->amount) }}</span>
                                             </div>
                                             <div class="flex justify-between mb-1">
                                                 <span>Payment Status:</span>
@@ -98,6 +98,10 @@
                                                     @if($order->payment_status === 'pending_verification')
                                                         <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800">
                                                             <i class="fas fa-clock mr-1"></i>Pending Verification
+                                                        </span>
+                                                    @elseif($order->payment_status === 'paid')
+                                                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                            Paid
                                                         </span>
                                                     @elseif(($order->paid_amount ?? 0) <= 0)
                                                         <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
@@ -142,7 +146,7 @@
                                                                 </p>
                                                                 @if($order->manualPayment)
                                                                     <div class="mt-2 text-sm text-orange-700">
-                                                                        <strong>Submitted:</strong> {{ $order->manualPayment->created_at->format('M d, Y H:i') }}<br>
+                                                                        <strong>Submitted:</strong> @formatDateTime($order->manualPayment->created_at)<br>
                                                                         <strong>Amount:</strong> BDT {{ number_format($order->manualPayment->amount, 2) }}
                                                                     </div>
                                                                 @endif
@@ -238,7 +242,7 @@
                                                     @foreach($transactions as $transaction)
                                                         <tr>
                                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $transaction->transaction_number }}</td>
-                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $transaction->created_at->format('M d, Y') }}</td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">@formatDateOnly($transaction->created_at)</td>
                                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">BDT {{ number_format($transaction->amount) }}</td>
                                                             <td class="px-6 py-4 whitespace-nowrap">
                                                                 <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
@@ -251,11 +255,11 @@
                                                 <tfoot class="bg-gray-50">
                                                     <tr>
                                                         <td colspan="2" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right">Total Paid:</td>
-                                                        <td colspan="2" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">BDT {{ number_format($order->paid_amount ?? 0) }}</td>
+                                                        <td colspan="2" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">BDT {{ $order->payment_status === 'paid' ? number_format($order->amount) : number_format($order->paid_amount ?? 0) }}</td>
                                                     </tr>
                                                     <tr>
                                                         <td colspan="2" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right">Remaining:</td>
-                                                        <td colspan="2" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">BDT {{ number_format($order->due_amount ?? $order->amount) }}</td>
+                                                        <td colspan="2" class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">BDT {{ $order->payment_status === 'paid' ? '0' : number_format($order->due_amount ?? $order->amount) }}</td>
                                                     </tr>
                                                 </tfoot>
                                             </table>
@@ -294,7 +298,7 @@
                                 </div>
                                 <div class="ml-6">
                                     <h3 class="text-sm font-semibold text-gray-900">Order Placed</h3>
-                                    <p class="text-xs text-gray-500">{{ $order->created_at->format('M d, Y h:i A') }}</p>
+                                    <p class="text-xs text-gray-500">@formatDateTime12Hour($order->created_at)</p>
                                     <p class="mt-1 text-sm text-gray-700">Your order has been placed successfully.</p>
                                 </div>
                             </div>

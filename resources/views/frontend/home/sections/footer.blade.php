@@ -51,6 +51,27 @@
                     @endif
                 </div>
 
+                <!-- Footer Pages Links -->
+                <div class="mb-6">
+                    <div class="flex flex-wrap justify-center gap-4">
+                        @php
+                            $footerPages = \App\Models\Page::where('show_in_footer', true)
+                                ->where('is_active', true)
+                                ->orderBy('order')
+                                ->get();
+                        @endphp
+                        
+                        @foreach($footerPages as $page)
+                            <a href="{{ route('page.show', $page->slug) }}" class="text-white hover:text-yellow-300 transition">
+                                {{ $page->title }}
+                            </a>
+                            @if(!$loop->last)
+                                <span class="text-white text-opacity-50">|</span>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+                
                 <div class="border-t border-white border-opacity-20 pt-6">
                     @php $copy = $footerSettings->copyright_text ?? ('© '.date('Y').' Wise Dynamic. All rights reserved.'); @endphp
                     <p class="opacity-75">{{ $copy }}</p>

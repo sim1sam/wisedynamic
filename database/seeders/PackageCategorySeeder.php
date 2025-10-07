@@ -32,7 +32,10 @@ class PackageCategorySeeder extends Seeder
         ];
 
         foreach ($categories as $category) {
-            PackageCategory::create($category);
+            // Check if category with this slug already exists
+            if (!PackageCategory::where('slug', $category['slug'])->exists()) {
+                PackageCategory::create($category);
+            }
         }
     }
 }

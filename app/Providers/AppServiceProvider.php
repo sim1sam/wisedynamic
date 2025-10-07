@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use App\Models\FooterSetting;
 use App\Models\WebsiteSetting;
+use App\Providers\HelperServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,7 +15,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Register our HelperServiceProvider
+        $this->app->register(HelperServiceProvider::class);
     }
 
     /**
