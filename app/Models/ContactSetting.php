@@ -11,6 +11,7 @@ class ContactSetting extends Model
         'subtitle',
         'address',
         'phone',
+        'whatsapp',
         'email',
         'map_embed',
         'office_hours',

@@ -31,6 +31,7 @@ class ContactSettingController extends Controller
             'subtitle' => 'nullable|string|max:255',
             'address' => 'nullable|string',
             'phone' => 'nullable|string|max:255',
+            'whatsapp' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255',
             'map_embed' => 'nullable|string',
             'form_title' => 'nullable|string|max:255',

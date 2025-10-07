@@ -64,6 +64,16 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="whatsapp">WhatsApp Number</label>
+                        <input type="text" name="whatsapp" id="whatsapp" class="form-control @error('whatsapp') is-invalid @enderror" 
+                            value="{{ old('whatsapp', $contactSetting->whatsapp ?? '+8801805081012') }}">
+                        @error('whatsapp')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <small class="form-text text-muted">Use international format without spaces (e.g., +8801805081012)</small>
+                    </div>
+
+                    <div class="form-group">
                         <label for="email">Email</label>
                         <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" 
                             value="{{ old('email', $contactSetting->email ?? 'info@wisedynamic.com') }}">

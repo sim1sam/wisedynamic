@@ -21,6 +21,7 @@ class HomeController extends Controller
     {
         $slides = Slide::where('active', true)->orderBy('position')->get();
         $homeSetting = HomeSetting::first() ?? new HomeSetting();
+        $contactSetting = ContactSetting::first() ?? new ContactSetting();
         
         // Get service categories for homepage
         $categories = ServiceCategory::where('status', true)->get();
@@ -56,7 +57,7 @@ class HomeController extends Controller
                 ->get();
         }
         
-        return view('frontend.home.index', compact('slides', 'homeSetting', 'categories', 'featuredServices', 'webDevPackages', 'marketingPackages'));
+        return view('frontend.home.index', compact('slides', 'homeSetting', 'contactSetting', 'categories', 'featuredServices', 'webDevPackages', 'marketingPackages'));
     }
     
     /**
