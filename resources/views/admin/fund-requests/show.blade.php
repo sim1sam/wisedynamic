@@ -65,8 +65,25 @@
                             @if($fundRequest->approvedBy)
                                 <strong>Approved By:</strong> {{ $fundRequest->approvedBy->name }}<br>
                             @endif
-                            @if($fundRequest->ssl_transaction_id)
-                                <strong>SSL Transaction ID:</strong> {{ $fundRequest->ssl_transaction_id }}<br>
+                            @if($fundRequest->payment_method === 'ssl')
+                                <div class="mt-2 p-2 bg-light rounded">
+                                    <strong>SSL Transaction ID:</strong> 
+                                    @if($fundRequest->ssl_transaction_id)
+                                        <span class="text-monospace">{{ $fundRequest->ssl_transaction_id }}</span>
+                                    @else
+                                        <span class="text-muted">Not initiated</span>
+                                    @endif
+                                    <br>
+                                    
+                                    <strong>SSL Payment Status:</strong> 
+                                    @if($fundRequest->transaction)
+                                        <span class="badge badge-success">Completed</span>
+                                    @elseif($fundRequest->ssl_transaction_id)
+                                        <span class="badge badge-warning">Initiated</span>
+                                    @else
+                                        <span class="badge badge-secondary">Not Started</span>
+                                    @endif
+                                </div>
                             @endif
                         </div>
                     </div>
@@ -117,13 +134,121 @@
             @endif
             
             <!-- SSL Payment Details -->
-            @if($fundRequest->payment_method === 'ssl' && $fundRequest->ssl_response)
+            @if($fundRequest->payment_method === 'ssl')
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">SSL Payment Response</h3>
+                        <h3 class="card-title">SSL Payment Details</h3>
+                        @if($fundRequest->transaction)
+                            <div class="card-tools">
+                                <span class="badge badge-success">Payment Verified</span>
+                            </div>
+                        @elseif($fundRequest->ssl_transaction_id)
+                            <div class="card-tools">
+                                <span class="badge badge-warning">Payment Pending Verification</span>
+                            </div>
+                        @endif
                     </div>
                     <div class="card-body">
-                        <pre class="bg-light p-3">{{ json_encode($fundRequest->ssl_response, JSON_PRETTY_PRINT) }}</pre>
+                        @if($fundRequest->transaction)
+                            <!-- Transaction exists, payment is complete -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <strong>Transaction ID:</strong> <span class="text-monospace">{{ $fundRequest->transaction->transaction_number }}</span><br>
+                                    <strong>Amount:</strong> BDT {{ number_format($fundRequest->amount, 2) }}<br>
+                                    @if($fundRequest->ssl_response && isset($fundRequest->ssl_response['card_type']))
+                                        <strong>Card Type:</strong> {{ $fundRequest->ssl_response['card_type'] ?? 'N/A' }}<br>
+                                    @endif
+                                    @if($fundRequest->ssl_response && isset($fundRequest->ssl_response['card_brand']))
+                                        <strong>Card Brand:</strong> {{ $fundRequest->ssl_response['card_brand'] ?? 'N/A' }}<br>
+                                    @endif
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Payment Status:</strong> <span class="badge badge-success">COMPLETED</span><br>
+                                    <strong>Transaction Date:</strong> {{ $fundRequest->transaction->created_at->format('M d, Y H:i A') }}<br>
+                                    @if($fundRequest->ssl_transaction_id)
+                                        <strong>SSL Transaction ID:</strong> <span class="text-monospace">{{ $fundRequest->ssl_transaction_id }}</span><br>
+                                    @endif
+                                    @if($fundRequest->ssl_response && isset($fundRequest->ssl_response['tran_date']))
+                                        <strong>Gateway Date:</strong> {{ $fundRequest->ssl_response['tran_date'] ?? 'N/A' }}<br>
+                                    @endif
+                                </div>
+                            </div>
+                            
+                            @if($fundRequest->ssl_response)
+                                <div class="mt-3">
+                                    <strong>Full Response:</strong>
+                                    <div class="mt-2">
+                                        <button class="btn btn-sm btn-info" type="button" data-toggle="collapse" data-target="#sslResponseCollapse" aria-expanded="false">
+                                            <i class="fas fa-code mr-1"></i> View Raw Response
+                                        </button>
+                                    </div>
+                                    <div class="collapse mt-2" id="sslResponseCollapse">
+                                        <pre class="bg-light p-3 mb-0" style="max-height: 300px; overflow-y: auto;">{{ json_encode($fundRequest->ssl_response, JSON_PRETTY_PRINT) }}</pre>
+                                    </div>
+                                </div>
+                            @endif
+                        @elseif($fundRequest->ssl_transaction_id)
+                            <!-- SSL transaction initiated but not completed -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <strong>SSL Transaction ID:</strong> <span class="text-monospace">{{ $fundRequest->ssl_transaction_id }}</span><br>
+                                    <strong>Amount:</strong> BDT {{ number_format($fundRequest->amount, 2) }}<br>
+                                    @if($fundRequest->ssl_response && isset($fundRequest->ssl_response['card_type']))
+                                        <strong>Card Type:</strong> {{ $fundRequest->ssl_response['card_type'] ?? 'N/A' }}<br>
+                                    @endif
+                                    @if($fundRequest->ssl_response && isset($fundRequest->ssl_response['card_brand']))
+                                        <strong>Card Brand:</strong> {{ $fundRequest->ssl_response['card_brand'] ?? 'N/A' }}<br>
+                                    @endif
+                                </div>
+                                <div class="col-md-6">
+                                    @if($fundRequest->ssl_response && isset($fundRequest->ssl_response['status']))
+                                        <strong>Gateway Status:</strong> 
+                                        @if(strtoupper($fundRequest->ssl_response['status']) === 'VALID' || strtoupper($fundRequest->ssl_response['status']) === 'VALIDATED')
+                                            <span class="badge badge-success">{{ strtoupper($fundRequest->ssl_response['status']) }}</span>
+                                        @elseif(strtoupper($fundRequest->ssl_response['status']) === 'FAILED')
+                                            <span class="badge badge-danger">{{ strtoupper($fundRequest->ssl_response['status']) }}</span>
+                                        @else
+                                            <span class="badge badge-info">{{ strtoupper($fundRequest->ssl_response['status']) }}</span>
+                                        @endif
+                                        <br>
+                                    @endif
+                                    @if($fundRequest->ssl_response && isset($fundRequest->ssl_response['tran_date']))
+                                        <strong>Transaction Date:</strong> {{ $fundRequest->ssl_response['tran_date'] ?? 'N/A' }}<br>
+                                    @endif
+                                    @if($fundRequest->ssl_response && isset($fundRequest->ssl_response['error']))
+                                        <strong>Error:</strong> <span class="text-danger">{{ $fundRequest->ssl_response['error'] }}</span><br>
+                                    @endif
+                                </div>
+                            </div>
+                            
+                            @if($fundRequest->ssl_response)
+                                <div class="mt-3">
+                                    <strong>Full Response:</strong>
+                                    <div class="mt-2">
+                                        <button class="btn btn-sm btn-info" type="button" data-toggle="collapse" data-target="#sslResponseCollapse" aria-expanded="false">
+                                            <i class="fas fa-code mr-1"></i> View Raw Response
+                                        </button>
+                                        
+                                        @if($fundRequest->status === 'pending')
+                                            <form action="{{ route('admin.transactions.verify-ssl', $fundRequest->ssl_transaction_id) }}" method="POST" class="d-inline ml-2">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-warning">
+                                                    <i class="fas fa-sync-alt mr-1"></i> Verify Payment Status
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                    <div class="collapse mt-2" id="sslResponseCollapse">
+                                        <pre class="bg-light p-3 mb-0" style="max-height: 300px; overflow-y: auto;">{{ json_encode($fundRequest->ssl_response, JSON_PRETTY_PRINT) }}</pre>
+                                    </div>
+                                </div>
+                            @endif
+                        @else
+                            <!-- No SSL transaction initiated -->
+                            <div class="alert alert-info mb-0">
+                                <i class="fas fa-info-circle mr-2"></i> No SSL payment has been initiated for this fund request yet.
+                            </div>
+                        @endif
                     </div>
                 </div>
             @endif
