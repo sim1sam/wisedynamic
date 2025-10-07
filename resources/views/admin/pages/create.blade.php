@@ -3,8 +3,7 @@
 @section('title', 'Create Page')
 
 @section('styles')
-    <!-- Summernote -->
-    <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.min.css') }}">
+    <!-- CKEditor does not require CSS; keep section for consistency -->
 @endsection
 
 @section('content_header')
@@ -163,27 +162,17 @@
     </div>
 @endsection
 
-@section('scripts')
-    <!-- TinyMCE -->
-    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+@section('js')
+    <!-- CKEditor 5 Classic -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/35.0.1/classic/ckeditor.js"></script>
     <script>
         $(function () {
-            // Initialize TinyMCE for content
-            tinymce.init({
-                selector: '#content',
-                height: 400,
-                menubar: true,
-                plugins: [
-                    'advlist autolink lists link image charmap print preview anchor',
-                    'searchreplace visualblocks code fullscreen',
-                    'insertdatetime media table paste code help wordcount'
-                ],
-                toolbar: 'undo redo | formatselect | ' +
-                    'bold italic backcolor | alignleft aligncenter ' +
-                    'alignright alignjustify | bullist numlist outdent indent | ' +
-                    'removeformat | help',
-                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-            });
+            // Initialize CKEditor for content
+            ClassicEditor
+                .create(document.querySelector('#content'))
+                .catch(error => {
+                    console.error(error);
+                });
 
             // Auto-generate slug from title
             $('#title').on('blur', function() {
@@ -201,35 +190,6 @@
             // BS-custom-file-input
             bsCustomFileInput.init();
         });
-        
-        // Image preview function
-        function previewImage(input) {
-            const previewContainer = document.getElementById('image-preview-container');
-            const preview = document.getElementById('image-preview');
-            
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    previewContainer.classList.remove('d-none');
-                }
-                
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-        
-        // Remove image function
-        function removeImage() {
-            const input = document.getElementById('image');
-            const previewContainer = document.getElementById('image-preview-container');
-            const preview = document.getElementById('image-preview');
-            
-            input.value = '';
-            preview.src = '#';
-            previewContainer.classList.add('d-none');
-            document.querySelector('.custom-file-label').innerHTML = 'Choose file';
-        }
         
         // Image preview function
         function previewImage(input) {
