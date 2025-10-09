@@ -1088,10 +1088,15 @@ class PaymentController extends Controller
         DB::beginTransaction();
         
         try {
-            // Store the screenshot
+            // Store the screenshot in public/images/payment-screenshots
             $file = $request->file('payment_screenshot');
-            $fileName = 'receipt_' . time() . '_' . $file->getClientOriginalName();
-            $screenshotPath = $file->storeAs('payment-screenshots', $fileName, 'public');
+            $dir = public_path('images/payment-screenshots');
+            if (!is_dir($dir)) {
+                mkdir($dir, 0755, true);
+            }
+            $fileName = 'receipt_' . time() . '_' . \Illuminate\Support\Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $file->move($dir, $fileName);
+            $screenshotPath = 'images/payment-screenshots/' . $fileName;
             
             // Create or update manual payment record
             $order->manualPayment()->updateOrCreate(
@@ -1140,9 +1145,9 @@ class PaymentController extends Controller
             
             Log::error('Manual Payment Processing Error: ' . $e->getMessage());
             
-            // Delete uploaded file if payment creation failed
-            if (isset($screenshotPath) && Storage::disk('public')->exists($screenshotPath)) {
-                Storage::disk('public')->delete($screenshotPath);
+            // Delete uploaded file if payment creation failed (public path)
+            if (isset($screenshotPath) && file_exists(public_path($screenshotPath))) {
+                @unlink(public_path($screenshotPath));
             }
             
             return redirect()->back()

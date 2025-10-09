@@ -153,7 +153,7 @@
                 <div class="mt-6 pt-6 border-t">
                     <h4 class="text-sm font-medium text-gray-500 mb-2">Payment Screenshot</h4>
                     <div class="mt-2">
-                        <img src="{{ asset('storage/' . $fundRequest->payment_screenshot) }}" alt="Payment Screenshot" class="max-w-full h-auto rounded-lg border border-gray-200 shadow-sm" style="max-height: 400px;">
+            <img src="{{ asset($fundRequest->payment_screenshot) }}" alt="Payment Screenshot" class="max-w-full h-auto rounded-lg border border-gray-200 shadow-sm" style="max-height: 400px;">
                     </div>
                 </div>
             @endif

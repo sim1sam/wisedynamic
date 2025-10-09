@@ -26,7 +26,7 @@
                 <div class="bg-white rounded-lg shadow p-6 md:p-8">
                     @if($page->image)
                         <div class="text-center mb-6">
-                            <img src="{{ asset('storage/' . $page->image) }}" alt="{{ $page->title }}" class="mx-auto rounded-lg shadow max-h-96">
+        <img src="{{ asset($page->image) }}" alt="{{ $page->title }}" class="mx-auto rounded-lg shadow max-h-96">
                         </div>
                     @endif
                     <div class="prose max-w-none page-content">

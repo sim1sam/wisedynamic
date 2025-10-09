@@ -40,23 +40,27 @@ class WebsiteSettingController extends Controller
         // Handle logo upload
         if ($request->hasFile('site_logo')) {
             // Delete old logo if exists
-            if ($websiteSetting->site_logo) {
-                Storage::disk('public')->delete($websiteSetting->site_logo);
+            if ($websiteSetting->site_logo && file_exists(public_path($websiteSetting->site_logo))) {
+                unlink(public_path($websiteSetting->site_logo));
             }
             
-            $logoPath = $request->file('site_logo')->store('logos', 'public');
-            $validated['site_logo'] = $logoPath;
+            $file = $request->file('site_logo');
+            $filename = time() . '_site_logo.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images/logos'), $filename);
+            $validated['site_logo'] = 'images/logos/' . $filename;
         }
         
         // Handle favicon upload
         if ($request->hasFile('site_favicon')) {
             // Delete old favicon if exists
-            if ($websiteSetting->site_favicon) {
-                Storage::disk('public')->delete($websiteSetting->site_favicon);
+            if ($websiteSetting->site_favicon && file_exists(public_path($websiteSetting->site_favicon))) {
+                unlink(public_path($websiteSetting->site_favicon));
             }
             
-            $faviconPath = $request->file('site_favicon')->store('logos', 'public');
-            $validated['site_favicon'] = $faviconPath;
+            $file = $request->file('site_favicon');
+            $filename = time() . '_favicon.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images/logos'), $filename);
+            $validated['site_favicon'] = 'images/logos/' . $filename;
         }
         
         $websiteSetting->fill($validated);

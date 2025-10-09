@@ -42,7 +42,7 @@
           <td>
             @php
               $img = $slide->image_source === 'upload' && $slide->image_path
-                ? asset('storage/'.$slide->image_path)
+                ? asset($slide->image_path)
                 : ($slide->image_url ?: null);
             @endphp
             @if($img)

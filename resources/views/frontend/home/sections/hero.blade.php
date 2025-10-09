@@ -10,7 +10,7 @@
             @foreach($slides as $i => $s)
                 @php
                     $bg = $s->image_source === 'upload' && $s->image_path
-                        ? asset('storage/'.$s->image_path)
+                        ? asset($s->image_path)
                         : ($s->image_url ?: '');
                 @endphp
                 <div class="slide {{ $i === 0 ? 'active' : '' }} h-full">

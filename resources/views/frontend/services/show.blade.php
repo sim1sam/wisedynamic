@@ -24,7 +24,7 @@
                 <!-- Visual -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-4 lg:mr-3">
                     @if($service->image)
-                        <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->title }}" class="w-full h-64 md:h-80 object-cover">
+        <img src="{{ asset($service->image) }}" alt="{{ $service->title }}" class="w-full h-64 md:h-80 object-cover">
                     @else
                         <div class="w-full h-64 md:h-80 theme-gradient"></div>
                     @endif

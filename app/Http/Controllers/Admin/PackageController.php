@@ -52,9 +52,16 @@ class PackageController extends Controller
             $validated['status'] = $request->has('status');
             $validated['featured'] = $request->has('featured');
 
-            // Handle image upload
+            // Handle image upload (store in public/images/packages)
             if ($request->hasFile('image')) {
-                $imagePath = $request->file('image')->store('packages', 'public');
+                $file = $request->file('image');
+                $dir = public_path('images/packages');
+                if (!is_dir($dir)) {
+                    mkdir($dir, 0755, true);
+                }
+                $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+                $file->move($dir, $filename);
+                $imagePath = 'images/packages/' . $filename;
                 $validated['image'] = $imagePath;
                 Log::info('Image uploaded', ['path' => $imagePath]);
             }
@@ -143,14 +150,21 @@ class PackageController extends Controller
             $validated['status'] = $request->has('status');
             $validated['featured'] = $request->has('featured');
 
-            // Handle image upload
+            // Handle image upload (store in public/images/packages)
             if ($request->hasFile('image')) {
                 // Delete old image if exists
-                if ($package->image) {
-                    Storage::disk('public')->delete($package->image);
+                if ($package->image && file_exists(public_path($package->image))) {
+                    @unlink(public_path($package->image));
                 }
-                
-                $imagePath = $request->file('image')->store('packages', 'public');
+
+                $file = $request->file('image');
+                $dir = public_path('images/packages');
+                if (!is_dir($dir)) {
+                    mkdir($dir, 0755, true);
+                }
+                $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+                $file->move($dir, $filename);
+                $imagePath = 'images/packages/' . $filename;
                 $validated['image'] = $imagePath;
                 Log::info('Image updated', ['path' => $imagePath]);
             }
@@ -182,9 +196,9 @@ class PackageController extends Controller
     public function destroy(Package $package)
     {
         try {
-            // Delete image if exists
-            if ($package->image) {
-                Storage::disk('public')->delete($package->image);
+            // Delete image if exists (public path)
+            if ($package->image && file_exists(public_path($package->image))) {
+                @unlink(public_path($package->image));
             }
             
             $package->delete();

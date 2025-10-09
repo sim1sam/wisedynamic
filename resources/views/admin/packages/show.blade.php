@@ -27,7 +27,7 @@
                     <div class="row mb-4">
                         @if($package->image)
                             <div class="col-md-4">
-                                <img src="{{ asset('storage/' . $package->image) }}" class="img-fluid rounded" alt="{{ $package->title }}">
+            <img src="{{ asset($package->image) }}" class="img-fluid rounded" alt="{{ $package->title }}">
                             </div>
                         @endif
                         <div class="col-md-{{ $package->image ? '8' : '12' }}">

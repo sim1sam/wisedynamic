@@ -48,12 +48,19 @@ class ServiceController extends Controller
         $validated['status'] = $request->has('status');
         $validated['featured'] = $request->has('featured');
 
-        // Handle image upload
+        // Handle image upload (store in public/images/services)
         if ($request->hasFile('image')) {
             try {
-                $path = $request->file('image')->store('services', 'public');
+                $file = $request->file('image');
+                $dir = public_path('images/services');
+                if (!is_dir($dir)) {
+                    mkdir($dir, 0755, true);
+                }
+                $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+                $file->move($dir, $filename);
+                $path = 'images/services/' . $filename;
                 $validated['image'] = $path;
-                
+
                 // Log success information
                 \Log::info('Image uploaded successfully during creation', [
                     'path' => $path
@@ -63,7 +70,7 @@ class ServiceController extends Controller
                 \Log::error('Failed to upload image during creation', [
                     'error' => $e->getMessage()
                 ]);
-                
+
                 return redirect()->back()
                     ->withInput()
                     ->withErrors(['image' => 'Failed to upload image: ' . $e->getMessage()]);
@@ -112,17 +119,24 @@ class ServiceController extends Controller
             
             \Log::info('Validated data for service update', ['data' => $validated]);
 
-        // Handle image upload
+        // Handle image upload (store in public/images/services)
         if ($request->hasFile('image')) {
             // Delete old image if exists
-            if ($service->image) {
-                Storage::disk('public')->delete($service->image);
+            if ($service->image && file_exists(public_path($service->image))) {
+                @unlink(public_path($service->image));
             }
-            
+
             try {
-                $path = $request->file('image')->store('services', 'public');
+                $file = $request->file('image');
+                $dir = public_path('images/services');
+                if (!is_dir($dir)) {
+                    mkdir($dir, 0755, true);
+                }
+                $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+                $file->move($dir, $filename);
+                $path = 'images/services/' . $filename;
                 $validated['image'] = $path;
-                
+
                 // Log success information
                 \Log::info('Image uploaded successfully', [
                     'path' => $path,
@@ -134,7 +148,7 @@ class ServiceController extends Controller
                     'error' => $e->getMessage(),
                     'service_id' => $service->id
                 ]);
-                
+
                 return redirect()->back()
                     ->withInput()
                     ->withErrors(['image' => 'Failed to upload image: ' . $e->getMessage()]);
@@ -185,9 +199,9 @@ class ServiceController extends Controller
      */
     public function destroy(Service $service)
     {
-        // Delete image if exists
-        if ($service->image) {
-            Storage::disk('public')->delete($service->image);
+        // Delete image if exists (public path)
+        if ($service->image && file_exists(public_path($service->image))) {
+            @unlink(public_path($service->image));
         }
 
         $service->delete();

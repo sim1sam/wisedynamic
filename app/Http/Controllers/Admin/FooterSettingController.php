@@ -29,6 +29,7 @@ class FooterSettingController extends Controller
             'instagram_url' => ['nullable','url','max:2048'],
             'copyright_text' => ['nullable','string','max:255'],
             'ssl_logo' => ['nullable','image','mimes:jpeg,png,jpg,gif,svg','max:2048'],
+            'footer_logo' => ['nullable','image','mimes:jpeg,png,jpg,gif,svg','max:2048'],
         ]);
 
         // Handle SSL logo upload
@@ -39,11 +40,23 @@ class FooterSettingController extends Controller
             $data['ssl_logo'] = 'images/' . $filename;
         }
 
+        // Handle Footer logo upload (company logo for footer only)
+        if ($request->hasFile('footer_logo')) {
+            $file = $request->file('footer_logo');
+            $filename = time() . '_footer_logo.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images/logos'), $filename);
+            $data['footer_logo'] = 'images/logos/' . $filename;
+        }
+
         $setting = FooterSetting::query()->latest('id')->first();
         if ($setting) {
             // If updating and new SSL logo uploaded, delete old one
             if ($request->hasFile('ssl_logo') && $setting->ssl_logo && file_exists(public_path($setting->ssl_logo))) {
                 unlink(public_path($setting->ssl_logo));
+            }
+            // If updating and new Footer logo uploaded, delete old one
+            if ($request->hasFile('footer_logo') && $setting->footer_logo && file_exists(public_path($setting->footer_logo))) {
+                unlink(public_path($setting->footer_logo));
             }
             $setting->update($data);
         } else {

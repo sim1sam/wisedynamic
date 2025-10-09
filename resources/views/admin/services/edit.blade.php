@@ -93,7 +93,7 @@
                             <label for="image">Service Image</label>
                             @if($service->image)
                                 <div class="mb-2">
-                                    <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->title }}" class="img-thumbnail" style="max-height: 150px;">
+                    <img src="{{ asset($service->image) }}" alt="{{ $service->title }}" class="img-thumbnail" style="max-height: 150px;">
                                 </div>
                             @endif
                             <div class="input-group">

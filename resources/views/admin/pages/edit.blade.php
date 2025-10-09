@@ -95,7 +95,7 @@
                                         @if($page->image)
                                             <div class="mb-3 text-center">
                                                 <h6 class="text-muted">Current Image:</h6>
-                                                <img src="{{ asset('storage/' . $page->image) }}" alt="{{ $page->title }}" class="img-thumbnail" style="max-height: 200px;">
+                    <img src="{{ asset($page->image) }}" alt="{{ $page->title }}" class="img-thumbnail" style="max-height: 200px;">
                                             </div>
                                         @endif
                                         

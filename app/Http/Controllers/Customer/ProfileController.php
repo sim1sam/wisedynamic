@@ -72,13 +72,20 @@ class ProfileController extends Controller
 
         $user = Auth::user();
         
-        // Delete old image if exists
-        if ($user->profile_image) {
-            Storage::disk('public')->delete($user->profile_image);
+        // Delete old image if exists (public path)
+        if ($user->profile_image && file_exists(public_path($user->profile_image))) {
+            @unlink(public_path($user->profile_image));
         }
 
-        // Store new image
-        $imagePath = $request->file('profile_image')->store('profile-images', 'public');
+        // Store new image in public/images/profile-images
+        $file = $request->file('profile_image');
+        $dir = public_path('images/profile-images');
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+        $filename = time() . '_' . \Str::random(8) . '.' . $file->getClientOriginalExtension();
+        $file->move($dir, $filename);
+        $imagePath = 'images/profile-images/' . $filename;
         
         $user->update([
             'profile_image' => $imagePath,
@@ -95,8 +102,8 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         
-        if ($user->profile_image) {
-            Storage::disk('public')->delete($user->profile_image);
+        if ($user->profile_image && file_exists(public_path($user->profile_image))) {
+            @unlink(public_path($user->profile_image));
             $user->update(['profile_image' => null]);
         }
 

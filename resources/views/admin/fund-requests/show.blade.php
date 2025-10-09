@@ -120,7 +120,7 @@
                             <hr>
                             <strong>Payment Screenshot:</strong>
                             <div class="mt-2">
-                                <img src="{{ asset('storage/' . $fundRequest->payment_screenshot) }}" 
+                                <img src="{{ asset($fundRequest->payment_screenshot) }}" 
                                      alt="Payment Screenshot" 
                                      class="img-fluid" 
                                      style="max-width: 500px; cursor: pointer;" 
@@ -263,7 +263,7 @@
                 <div class="card-body">
                     <div class="text-center mb-3">
                         @if($fundRequest->user->profile_image)
-                            <img src="{{ asset('storage/' . $fundRequest->user->profile_image) }}" 
+                            <img src="{{ asset($fundRequest->user->profile_image) }}" 
                                  alt="Profile Image" 
                                  class="img-circle" 
                                  style="width: 80px; height: 80px; object-fit: cover;">
@@ -305,7 +305,7 @@
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <div class="modal-body text-center">
-                        <img src="{{ asset('storage/' . $fundRequest->payment_screenshot) }}" 
+                        <img src="{{ asset($fundRequest->payment_screenshot) }}" 
                              alt="Payment Screenshot" 
                              class="img-fluid">
                     </div>

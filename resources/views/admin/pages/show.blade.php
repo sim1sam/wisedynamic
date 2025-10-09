@@ -113,7 +113,7 @@
                                 @if($page->image)
                                     <div class="mb-4">
                                         <h5>Featured Image</h5>
-                                        <img src="{{ asset('storage/' . $page->image) }}" alt="{{ $page->title }}" class="img-fluid img-thumbnail">
+                                        <img src="{{ asset($page->image) }}" alt="{{ $page->title }}" class="img-fluid img-thumbnail">
                                     </div>
                                 @endif
                             </div>

@@ -56,9 +56,16 @@ class FundController extends Controller
             $fundRequest->bank_name = $validated['bank_name'];
             $fundRequest->account_number = $validated['account_number'];
             
-            // Store payment screenshot
+            // Store payment screenshot in public/images/fund-screenshots
             if ($request->hasFile('payment_screenshot')) {
-                $path = $request->file('payment_screenshot')->store('fund-screenshots', 'public');
+                $file = $request->file('payment_screenshot');
+                $dir = public_path('images/fund-screenshots');
+                if (!is_dir($dir)) {
+                    mkdir($dir, 0755, true);
+                }
+                $filename = time() . '_' . \Illuminate\Support\Str::random(8) . '.' . $file->getClientOriginalExtension();
+                $file->move($dir, $filename);
+                $path = 'images/fund-screenshots/' . $filename;
                 $fundRequest->payment_screenshot = $path;
             }
             

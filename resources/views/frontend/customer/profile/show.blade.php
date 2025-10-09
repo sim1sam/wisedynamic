@@ -35,7 +35,7 @@
                 <div class="text-center">
                     <div class="mb-4">
                         @if($user->profile_image)
-                            <img src="{{ asset('storage/' . $user->profile_image) }}" alt="Profile Image" class="w-32 h-32 rounded-full mx-auto object-cover border-4 border-blue-200">
+        <img src="{{ asset($user->profile_image) }}" alt="Profile Image" class="w-32 h-32 rounded-full mx-auto object-cover border-4 border-blue-200">
                         @else
                             <div class="w-32 h-32 rounded-full mx-auto bg-gray-200 flex items-center justify-center border-4 border-gray-300">
                                 <i class="fas fa-user text-4xl text-gray-500"></i>

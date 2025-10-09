@@ -66,7 +66,7 @@
                         
                         @if($websiteSetting->site_logo ?? null)
                             <div class="mt-2">
-                                <img src="{{ asset('storage/' . $websiteSetting->site_logo) }}" alt="Current Logo" class="img-thumbnail" style="max-height: 100px;">
+                                <img src="{{ asset($websiteSetting->site_logo) }}" alt="Current Logo" class="img-thumbnail" style="max-height: 100px;">
                                 <p class="text-muted">Current logo</p>
                             </div>
                         @endif
@@ -89,7 +89,7 @@
                         
                         @if($websiteSetting->site_favicon ?? null)
                             <div class="mt-2">
-                                <img src="{{ asset('storage/' . $websiteSetting->site_favicon) }}" alt="Current Favicon" class="img-thumbnail" style="max-height: 32px;">
+                                <img src="{{ asset($websiteSetting->site_favicon) }}" alt="Current Favicon" class="img-thumbnail" style="max-height: 32px;">
                                 <p class="text-muted">Current favicon</p>
                             </div>
                         @endif

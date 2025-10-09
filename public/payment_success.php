@@ -283,7 +283,7 @@ try {
     
     if ($settings) {
         if (!empty($settings['site_logo'])) {
-            $websiteLogo = '/storage/' . $settings['site_logo'];
+            $websiteLogo = '/' . $settings['site_logo'];
         }
         if (!empty($settings['logo_alt_text'])) {
             $logoAlt = $settings['logo_alt_text'];

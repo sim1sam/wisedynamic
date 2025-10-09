@@ -13,8 +13,11 @@
             
             <div class="text-center">
                 <div class="flex items-center justify-center mb-4">
-                    @if(!empty($websiteSettings->site_logo))
-                        <img src="{{ asset('storage/' . $websiteSettings->site_logo) }}" alt="{{ $websiteSettings->logo_alt_text ?? 'Company Logo' }}" class="h-12 w-auto">
+                    @php $footerLogo = $footerSettings->footer_logo ?? null; @endphp
+                    @if(!empty($footerLogo))
+                        <img src="{{ asset($footerLogo) }}" alt="{{ $websiteSettings->logo_alt_text ?? 'Company Logo' }}" class="h-12 w-auto">
+                    @elseif(!empty($websiteSettings->site_logo))
+                        <img src="{{ asset($websiteSettings->site_logo) }}" alt="{{ $websiteSettings->logo_alt_text ?? 'Company Logo' }}" class="h-12 w-auto">
                     @endif
                 </div>
                 @php $tagline = $footerSettings->tagline ?? 'Your Technology Partner for Innovation, Affordability & Results'; @endphp

@@ -95,8 +95,10 @@ class AboutSettingController extends Controller
 
         // Save image if uploaded
         if ($request->hasFile('who_we_are_image_file')) {
-            $path = $request->file('who_we_are_image_file')->store('images/about', 'public');
-            $validated['who_we_are_image'] = '/storage/' . $path;
+            $file = $request->file('who_we_are_image_file');
+            $filename = time() . '_about_image.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images/about'), $filename);
+            $validated['who_we_are_image'] = '/images/about/' . $filename;
         }
 
         $aboutSetting = \App\Models\AboutSetting::first();

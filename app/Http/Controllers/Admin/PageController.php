@@ -49,9 +49,16 @@ class PageController extends Controller
             $validated['slug'] = Str::slug($validated['title']);
         }
         
-        // Handle image upload
+        // Handle image upload (store in public/images/pages)
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('pages', 'public');
+            $file = $request->file('image');
+            $dir = public_path('images/pages');
+            if (!is_dir($dir)) {
+                mkdir($dir, 0755, true);
+            }
+            $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $file->move($dir, $filename);
+            $imagePath = 'images/pages/' . $filename;
             $validated['image'] = $imagePath;
         }
         
@@ -104,14 +111,21 @@ class PageController extends Controller
             $validated['slug'] = Str::slug($validated['title']);
         }
         
-        // Handle image upload
+        // Handle image upload (store in public/images/pages)
         if ($request->hasFile('image')) {
             // Delete old image if exists
-            if ($page->image && Storage::disk('public')->exists($page->image)) {
-                Storage::disk('public')->delete($page->image);
+            if ($page->image && file_exists(public_path($page->image))) {
+                @unlink(public_path($page->image));
             }
-            
-            $imagePath = $request->file('image')->store('pages', 'public');
+
+            $file = $request->file('image');
+            $dir = public_path('images/pages');
+            if (!is_dir($dir)) {
+                mkdir($dir, 0755, true);
+            }
+            $filename = time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+            $file->move($dir, $filename);
+            $imagePath = 'images/pages/' . $filename;
             $validated['image'] = $imagePath;
         }
         
@@ -131,9 +145,9 @@ class PageController extends Controller
      */
     public function destroy(Page $page)
     {
-        // Delete image if exists
-        if ($page->image && Storage::disk('public')->exists($page->image)) {
-            Storage::disk('public')->delete($page->image);
+        // Delete image if exists (public path)
+        if ($page->image && file_exists(public_path($page->image))) {
+            @unlink(public_path($page->image));
         }
         
         $page->delete();

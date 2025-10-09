@@ -80,6 +80,18 @@
         <small class="form-text text-muted">Upload an image file (JPEG, PNG, JPG, GIF, SVG). Max size: 2MB</small>
       </div>
 
+      <div class="form-group">
+        <label>Footer Logo (optional)</label>
+        <input type="file" class="form-control-file" name="footer_logo" accept="image/*"/>
+        @if(!empty($setting->footer_logo))
+          <div class="mt-2">
+            <small class="text-muted">Current Footer Logo:</small><br>
+            <img src="{{ asset($setting->footer_logo) }}" alt="Current Footer Logo" class="img-thumbnail" style="max-width: 200px; max-height: 100px;">
+          </div>
+        @endif
+        <small class="form-text text-muted">Upload an image file (JPEG, PNG, JPG, GIF, SVG). Max size: 2MB</small>
+      </div>
+
     </div>
     <div class="card-footer text-right">
       <button class="btn btn-primary">Save</button>

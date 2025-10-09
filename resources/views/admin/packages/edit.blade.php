@@ -93,7 +93,7 @@
                             <label for="image">Package Image</label>
                             @if($package->image)
                                 <div class="mb-2">
-                                    <img src="{{ asset('storage/' . $package->image) }}" alt="{{ $package->title }}" class="img-thumbnail" style="max-height: 150px;">
+                    <img src="{{ asset($package->image) }}" alt="{{ $package->title }}" class="img-thumbnail" style="max-height: 150px;">
                                 </div>
                             @endif
                             <div class="input-group">

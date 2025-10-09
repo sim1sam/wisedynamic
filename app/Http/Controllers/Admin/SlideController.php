@@ -48,8 +48,10 @@ class SlideController extends Controller
         ];
 
         if ($data['image_source'] === 'upload' && $request->hasFile('image_file')) {
-            $path = $request->file('image_file')->store('slides','public');
-            $payload['image_path'] = $path;
+            $file = $request->file('image_file');
+            $filename = time() . '_slide.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images/slides'), $filename);
+            $payload['image_path'] = 'images/slides/' . $filename;
         }
 
         Slide::create($payload);
@@ -92,10 +94,13 @@ class SlideController extends Controller
         } else {
             $slide->image_url = null;
             if ($request->hasFile('image_file')) {
-                if ($slide->image_path) {
-                    Storage::disk('public')->delete($slide->image_path);
+                if ($slide->image_path && file_exists(public_path($slide->image_path))) {
+                    unlink(public_path($slide->image_path));
                 }
-                $slide->image_path = $request->file('image_file')->store('slides','public');
+                $file = $request->file('image_file');
+                $filename = time() . '_slide.' . $file->getClientOriginalExtension();
+                $file->move(public_path('images/slides'), $filename);
+                $slide->image_path = 'images/slides/' . $filename;
             }
         }
 
@@ -106,8 +111,8 @@ class SlideController extends Controller
 
     public function destroy(Slide $slide)
     {
-        if ($slide->image_path) {
-            Storage::disk('public')->delete($slide->image_path);
+        if ($slide->image_path && file_exists(public_path($slide->image_path))) {
+            unlink(public_path($slide->image_path));
         }
         $slide->delete();
         return redirect()->route('admin.slides.index')->with('success','Slide deleted');

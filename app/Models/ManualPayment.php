@@ -120,6 +120,6 @@ class ManualPayment extends Model
      */
     public function getScreenshotUrl()
     {
-        return asset('storage/' . $this->payment_screenshot);
+        return asset($this->payment_screenshot);
     }
 }

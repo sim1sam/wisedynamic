@@ -29,7 +29,7 @@
             <div class="row">
                 <div class="col-md-4">
                     @if($service->image)
-                        <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->title }}" class="img-fluid rounded mb-3">
+        <img src="{{ asset($service->image) }}" alt="{{ $service->title }}" class="img-fluid rounded mb-3">
                     @else
                         <div class="bg-light text-center py-5 mb-3 rounded">
                             <i class="fas fa-image fa-4x text-secondary"></i>

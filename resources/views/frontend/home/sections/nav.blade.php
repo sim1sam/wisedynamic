@@ -7,7 +7,7 @@
                     $websiteSetting = \App\Models\WebsiteSetting::first();
                 @endphp
                 @if($websiteSetting && $websiteSetting->site_logo)
-                    <img src="{{ asset('storage/' . $websiteSetting->site_logo) }}" alt="{{ $websiteSetting->logo_alt_text ?? 'Wise Dynamic Logo' }}" class="h-10 mr-3">
+                    <img src="{{ asset($websiteSetting->site_logo) }}" alt="{{ $websiteSetting->logo_alt_text ?? 'Wise Dynamic Logo' }}" class="h-10 mr-3">
                 @else
                     <i class="fas fa-code text-3xl gradient-text mr-3"></i>
                 @endif

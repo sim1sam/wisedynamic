@@ -47,7 +47,7 @@
           <small class="text-muted">Max 4MB</small>
           @if($slide->image_source==='upload' && $slide->image_path)
             <div class="mt-2">
-              <img src="{{ asset('storage/'.$slide->image_path) }}" style="height:60px;border-radius:6px;object-fit:cover;" alt="current">
+              <img src="{{ asset($slide->image_path) }}" style="height:60px;border-radius:6px;object-fit:cover;" alt="current">
               <div class="text-muted small">Current image</div>
             </div>
           @endif
