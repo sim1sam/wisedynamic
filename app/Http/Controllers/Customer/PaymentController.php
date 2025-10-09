@@ -10,6 +10,8 @@ use App\Models\FundRequest;
 use App\Models\ManualPayment;
 use App\Models\Transaction;
 use App\Http\Controllers\Api\TransactionController as ApiTransactionController;
+use App\Services\FraudDetectionService;
+use App\Services\PaymentAuditService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -93,6 +95,26 @@ class PaymentController extends Controller
      */
     public function sslIpn(Request $request)
     {
+        // Implement IP whitelisting for payment gateway callbacks
+        // Note: Replace these with the actual IPs from SSL Commerz
+        $allowedIPs = [
+            '203.112.xxx.xxx',
+            '203.112.xxx.xxx',
+            // Add development IPs for testing
+            '127.0.0.1',
+            '::1'
+        ];
+        
+        // Skip IP check in local/development environment
+        if (app()->environment('production') && !in_array($request->ip(), $allowedIPs)) {
+            Log::warning('Unauthorized IP attempting IPN callback', [
+                'ip' => $request->ip(),
+                'path' => $request->path()
+            ]);
+            
+            return response('Unauthorized', 403);
+        }
+        
         // Basic sanity check
         if (!$request->has(['tran_id', 'val_id', 'status'])) {
             Log::warning('SSL IPN missing required fields', $request->all());
@@ -126,7 +148,8 @@ class PaymentController extends Controller
         curl_setopt($ch, CURLOPT_URL, $validationUrl);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($validationData));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         $response = curl_exec($ch);
         $curlError = curl_error($ch);
         curl_close($ch);
@@ -275,8 +298,8 @@ class PaymentController extends Controller
         // SSL Commerz payment gateway integration
         $sslConfig = config('sslcommerz');
         
-        // Generate unique transaction ID
-        $transactionId = 'WD' . time() . rand(1000, 9999);
+        // Generate unique transaction ID with cryptographically secure random bytes
+        $transactionId = 'WD' . time() . bin2hex(random_bytes(6));
         
         // Get the current domain from the request
         $currentDomain = $request->getSchemeAndHttpHost();
@@ -340,7 +363,8 @@ class PaymentController extends Controller
         curl_setopt($ch, CURLOPT_URL, $apiUrl);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         
@@ -367,6 +391,55 @@ class PaymentController extends Controller
             return redirect()->back()->with('error', 'Payment initialization failed: ' . $errorMessage);
         }
 
+        // Create a transaction record for tracking and fraud detection
+        $transaction = Transaction::create([
+            'transaction_number' => Transaction::generateTransactionNumber(),
+            'ssl_transaction_id' => $transactionId,
+            'amount' => $paymentAmount,
+            'payment_method' => 'SSL Payment',
+            'status' => 'pending',
+            'customer_name' => Auth::user()->name,
+            'customer_email' => Auth::user()->email,
+            'customer_phone' => Auth::user()->phone,
+            'customer_address' => Auth::user()->address,
+            'order_type' => $type,
+        ]);
+        
+        // Set the appropriate foreign key based on order type
+        if ($type === 'package') {
+            $transaction->package_order_id = $id;
+        } elseif ($type === 'service') {
+            $transaction->service_order_id = $id;
+        } elseif ($type === 'custom-service') {
+            $transaction->custom_service_request_id = $id;
+        } elseif ($type === 'fund') {
+            $transaction->fund_request_id = $id;
+        }
+        $transaction->save();
+        
+        // Run fraud detection
+        $fraudDetection = app(FraudDetectionService::class)->checkTransaction($transaction, $request);
+        
+        // If transaction is suspicious, block it
+        if ($fraudDetection['is_suspicious']) {
+            Log::warning('Suspicious transaction blocked', [
+                'transaction_id' => $transactionId,
+                'fraud_score' => $fraudDetection['score'],
+                'fraud_flags' => $fraudDetection['flags']
+            ]);
+            
+            // Update transaction status
+            $transaction->update([
+                'status' => 'blocked',
+                'notes' => 'Blocked by fraud detection system. Score: ' . $fraudDetection['score']
+            ]);
+            
+            return redirect()->back()->with('error', 'Your payment could not be processed. Please contact customer support.');
+        }
+        
+        // Log payment attempt in audit log
+        app(PaymentAuditService::class)->logPaymentAttempt('ssl', $id, $type, $paymentAmount, $transactionId);
+        
         // Log successful payment initialization
         Log::info('SSL Payment Initialized', [
             'transaction_id' => $transactionId,
@@ -385,6 +458,27 @@ class PaymentController extends Controller
     public function sslSuccess(Request $request, $type, $id)
     {
         // No need to manually disable CSRF here - we've added these routes to the except array in VerifyCsrfToken middleware
+        
+        // Implement IP whitelisting for payment gateway callbacks
+        // Note: Replace these with the actual IPs from SSL Commerz
+        $allowedIPs = [
+            '203.112.xxx.xxx',
+            '203.112.xxx.xxx',
+            // Add development IPs for testing
+            '127.0.0.1',
+            '::1'
+        ];
+        
+        // Skip IP check in local/development environment
+        if (app()->environment('production') && !in_array($request->ip(), $allowedIPs)) {
+            Log::warning('Unauthorized IP attempting payment callback', [
+                'ip' => $request->ip(),
+                'path' => $request->path(),
+                'transaction_id' => $request->get('tran_id')
+            ]);
+            
+            abort(403, 'Unauthorized access');
+        }
         
         // If the user refreshes the page or hits the URL directly without
         // gateway payload, gracefully redirect to a safe page.
@@ -427,7 +521,8 @@ class PaymentController extends Controller
         curl_setopt($ch, CURLOPT_URL, $validationUrl);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($validationData));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
         
         $response = curl_exec($ch);
         $curlError = curl_error($ch);
@@ -638,6 +733,18 @@ class PaymentController extends Controller
                 
                 DB::commit();
                 
+                // Log successful payment in audit log
+                app(PaymentAuditService::class)->logPaymentSuccess(
+                    $transaction->id,
+                    $transaction->amount,
+                    [
+                        'order_type' => $type,
+                        'order_id' => $order->id,
+                        'ssl_transaction_id' => $transactionId,
+                        'payment_status' => $transaction->status
+                    ]
+                );
+                
                 // Store success message in session for display after login
                 session()->flash('payment_success', $message);
                 session()->flash('payment_order_type', $type);
@@ -772,6 +879,16 @@ class PaymentController extends Controller
                 Transaction::create($transactionData);
                 
                 DB::commit();
+                
+                // Log failed payment in audit log
+                app(PaymentAuditService::class)->logPaymentFailure(
+                    $transactionId,
+                    $request->get('failedreason') ?? 'Payment gateway failure',
+                    [
+                        'order_type' => $type,
+                        'order_id' => $order->id
+                    ]
+                );
             } catch (\Exception $e) {
                 DB::rollback();
                 Log::error('Failed to create failed transaction record: ' . $e->getMessage());

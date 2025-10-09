@@ -37,6 +37,12 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
+        // Handle payment-related exceptions for payment routes
+        if ($request->is('*/payment/*') || $request->is('api/ssl-gateway/*')) {
+            $paymentHandler = new PaymentExceptionHandler();
+            return $paymentHandler->handle($exception, $request);
+        }
+        
         // Handle ViewException specifically to avoid the problematic markdown renderer
         if ($exception instanceof ViewException) {
             return $this->renderViewException($request, $exception);

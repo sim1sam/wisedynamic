@@ -265,11 +265,42 @@ if (strtoupper($status) === 'SUCCESS') {
     $alertClass = 'alert-info';
 }
 
+// Get website settings for logo
+$websiteLogo = '';
+$logoAlt = 'Wise Dynamic';
+$siteName = 'Wise Dynamic';
+
+try {
+    $pdo = new PDO(
+        "mysql:host={$db['host']};port={$db['port']};dbname={$db['database']}",
+        $db['username'],
+        $db['password'],
+        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+    );
+    
+    $stmt = $pdo->query("SELECT site_logo, logo_alt_text, site_name FROM website_settings LIMIT 1");
+    $settings = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($settings) {
+        if (!empty($settings['site_logo'])) {
+            $websiteLogo = '/storage/' . $settings['site_logo'];
+        }
+        if (!empty($settings['logo_alt_text'])) {
+            $logoAlt = $settings['logo_alt_text'];
+        }
+        if (!empty($settings['site_name'])) {
+            $siteName = $settings['site_name'];
+        }
+    }
+} catch (Exception $e) {
+    error_log("Error getting website settings: " . $e->getMessage());
+}
+
 // Output the success page
 echo '<!DOCTYPE html>
 <html>
 <head>
-    <title>Payment Status</title>
+    <title>Payment Status - ' . htmlspecialchars($siteName) . '</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -281,8 +312,16 @@ echo '<!DOCTYPE html>
 </head>
 <body>
     <div class="container payment-container">
-        <div class="logo">
-            <img src="/images/logo.png" alt="Wise Dynamic" onerror="this.src=\'/images/logo-default.png\'; this.onerror=null;">
+        <div class="logo">';
+
+// Display the website logo if available, otherwise show site name
+if (!empty($websiteLogo)) {
+    echo '<img src="' . htmlspecialchars($websiteLogo) . '" alt="' . htmlspecialchars($logoAlt) . '" class="img-fluid">';
+} else {
+    echo '<h2>' . htmlspecialchars($siteName) . '</h2>';
+}
+
+echo '
         </div>
         
         <div class="card">

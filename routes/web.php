@@ -39,6 +39,7 @@ use App\Http\Controllers\Admin\AboutSettingController;
 use App\Http\Controllers\Admin\ContactSettingController;
 use App\Http\Controllers\Admin\WebsiteSettingController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
+use App\Http\Controllers\Admin\PaymentAuditController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\Admin\CustomerRequestController as AdminCustomerRequestController;
@@ -392,6 +393,12 @@ Route::match(['get', 'post'], '/ssl-callback', function (\Illuminate\Http\Reques
 
 // Admin Fund Request Management Routes
  Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+     // Payment Audit Routes
+     Route::get('/payment-audit', [PaymentAuditController::class, 'index'])->name('admin.payment-audit.index');
+     Route::get('/payment-audit-statistics', [PaymentAuditController::class, 'statistics'])->name('admin.payment-audit.statistics');
+     Route::get('/payment-audit-customer-info/{transactionId}', [PaymentAuditController::class, 'getCustomerInfo'])->name('admin.payment-audit.customer-info');
+     Route::get('/payment-audit/{id}', [PaymentAuditController::class, 'show'])->name('admin.payment-audit.show');
+     
      Route::get('/fund-requests', [\App\Http\Controllers\Admin\FundRequestController::class, 'index'])->name('admin.fund-requests.index');
      Route::get('/fund-requests/create', [\App\Http\Controllers\Admin\FundRequestController::class, 'create'])->name('admin.fund-requests.create');
      Route::post('/fund-requests', [\App\Http\Controllers\Admin\FundRequestController::class, 'store'])->name('admin.fund-requests.store');

@@ -325,6 +325,12 @@ return [
             'active' => ['admin/transactions*'],
         ],
         [
+            'text' => 'Payment Audit Logs',
+            'url' => 'admin/payment-audit',
+            'icon' => 'fas fa-fw fa-shield-alt',
+            'active' => ['admin/payment-audit*'],
+        ],
+        [
             'text' => 'Fund Requests',
             'url' => 'admin/fund-requests',
             'icon' => 'fas fa-fw fa-wallet',
